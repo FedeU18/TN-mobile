@@ -3,9 +3,9 @@ import { StatusBar } from "expo-status-bar";
 import { View, StyleSheet } from "react-native";
 import Header from './src/components/Header';
 import Footer from './src/components/Footer';
-import Home from './src/pages/Home';
-import Login from './src/pages/Login';
-import Register from './src/pages/Register';
+import Home from './src/pages/Home/Home';
+import Login from './src/pages/Login/Login';
+import Register from './src/pages/Register/Register';
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState('Home');
