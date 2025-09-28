@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { StatusBar } from "expo-status-bar";
 import { View, StyleSheet } from "react-native";
-import Header from './src/components/Header';
-import Footer from './src/components/Footer';
+import Header from './src/components/Header/Header';
+import Footer from './src/components/Footer/Footer';
 import Home from './src/pages/Home/Home';
 import Login from './src/pages/Login/Login';
 import Register from './src/pages/Register/Register';

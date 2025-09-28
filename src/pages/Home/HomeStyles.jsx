@@ -35,12 +35,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   registerButton: {
-    backgroundColor: '#3b82f6',
+    backgroundColor: '#1D6325',
   },
   loginButton: {
-    backgroundColor: 'transparent',
-    borderWidth: 2,
-    borderColor: '#3b82f6',
+    backgroundColor: '#0950C3',
   },
   registerButtonText: {
     color: 'white',
@@ -48,7 +46,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   loginButtonText: {
-    color: '#3b82f6',
+    color: '#ffffff',
     fontSize: 16,
     fontWeight: '600',
   },

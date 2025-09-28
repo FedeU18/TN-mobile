@@ -29,7 +29,14 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#1f2937',
     textAlign: 'center',
-    marginBottom: 32,
+    marginBottom: 16,
+  },
+  subtitle: {
+    fontSize: 18,
+    fontWeight: '500',
+    color: '#6b7280',
+    textAlign: 'center',
+    marginBottom: 24,
   },
   input: {
     borderWidth: 1,
@@ -42,7 +49,26 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   button: {
-    backgroundColor: '#3b82f6',
+    backgroundColor: '#1D6325',
+    borderRadius: 8,
+    paddingVertical: 12,
+    alignItems: 'center',
+    marginTop: 16,
+  },
+  buttonSecondary: {
+    backgroundColor: '#6b7280',
+    borderRadius: 8,
+    paddingVertical: 12,
+    alignItems: 'center',
+    marginTop: 16,
+  },
+  buttonSecondaryText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  buttonBack: {
+    backgroundColor: '#000000',
     borderRadius: 8,
     paddingVertical: 12,
     alignItems: 'center',

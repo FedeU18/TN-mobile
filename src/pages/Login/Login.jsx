@@ -10,6 +10,7 @@ import {
   Platform,
   ScrollView 
 } from 'react-native';
+import { validateLogin } from '../../utils/validations';
 
 export default function Login({ navigation }) {
   const [form, setForm] = useState({ email: "", password: "" });
@@ -24,12 +25,15 @@ export default function Login({ navigation }) {
   };
 
   const handleSubmit = () => {
-    if (form.email === "" || form.password === "") {
-      setError("Todos los campos son obligatorios");
-      Alert.alert("Error", "Todos los campos son obligatorios");
+    setError("");
+    
+    const validation = validateLogin(form);
+    if (!validation.isValid) {
+      setError(validation.message);
+      Alert.alert("Error", validation.message);
       return;
     }
-    setError("");
+    
     setLogeado(true);
   };
 
@@ -76,6 +80,10 @@ export default function Login({ navigation }) {
           
           <TouchableOpacity style={styles.button} onPress={handleSubmit}>
             <Text style={styles.buttonText}>Iniciar sesión</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.buttonBack} onPress={() => navigation.navigate('Home')}>
+            <Text style={styles.buttonText}>Volver al menú principal</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
