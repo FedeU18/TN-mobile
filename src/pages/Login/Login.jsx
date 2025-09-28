@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from './LoginStyles';
 import { 
   View, 
@@ -11,11 +11,21 @@ import {
   ScrollView 
 } from 'react-native';
 import { validateLogin } from '../../utils/validations';
+import useAuthStore from '../../stores/authStore';
 
-export default function Login({ navigation }) {
+export default function Login({ navigation, route }) {
   const [form, setForm] = useState({ email: "", password: "" });
-  const [error, setError] = useState("");
-  const [logeado, setLogeado] = useState(false);
+  
+  const { login, isLoading, error, token, clearError, successMessage, registeredEmail, clearSuccessMessage } = useAuthStore();
+
+  useEffect(() => {
+    if (successMessage && registeredEmail) {
+      setForm(prev => ({ ...prev, email: registeredEmail }));
+      setTimeout(() => {
+        clearSuccessMessage();
+      }, 5000);
+    }
+  }, [successMessage, registeredEmail, clearSuccessMessage]);
 
   const handleChange = (name, value) => {
     setForm({
@@ -24,23 +34,34 @@ export default function Login({ navigation }) {
     });
   };
 
-  const handleSubmit = () => {
-    setError("");
+  const handleSubmit = async () => {
+    clearError();
     
     const validation = validateLogin(form);
     if (!validation.isValid) {
-      setError(validation.message);
       Alert.alert("Error", validation.message);
       return;
     }
     
-    setLogeado(true);
+    const result = await login(form.email, form.password);
+    
+    if (result.success) {
+      Alert.alert("Éxito", "Login exitoso");
+    } else {
+      Alert.alert("Error", result.error);
+    }
   };
 
-  if (logeado) {
+  if (token) {
     return (
       <View style={styles.container}>
         <Text style={styles.welcomeText}>Bienvenido, {form.email}</Text>
+        <TouchableOpacity 
+          style={styles.button} 
+          onPress={() => useAuthStore.getState().logout()}
+        >
+          <Text style={styles.buttonText}>Cerrar sesión</Text>
+        </TouchableOpacity>
       </View>
     );
   }
@@ -53,6 +74,10 @@ export default function Login({ navigation }) {
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.formContainer}>
           <Text style={styles.title}>Iniciar Sesión</Text>
+          
+          {successMessage ? (
+            <Text style={styles.successText}>{successMessage}</Text>
+          ) : null}
           
           <TextInput
             style={styles.input}
@@ -78,8 +103,14 @@ export default function Login({ navigation }) {
 
           {error ? <Text style={styles.errorText}>{error}</Text> : null}
           
-          <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-            <Text style={styles.buttonText}>Iniciar sesión</Text>
+          <TouchableOpacity 
+            style={[styles.button, isLoading && styles.buttonDisabled]} 
+            onPress={handleSubmit}
+            disabled={isLoading}
+          >
+            <Text style={styles.buttonText}>
+              {isLoading ? 'Iniciando sesión...' : 'Iniciar sesión'}
+            </Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.buttonBack} onPress={() => navigation.navigate('Home')}>

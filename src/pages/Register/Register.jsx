@@ -11,6 +11,7 @@ import {
   ScrollView 
 } from 'react-native';
 import { validateRegistrationStep1, validateRegistrationStep2 } from '../../utils/validations';
+import useAuthStore from '../../stores/authStore';
 
 export default function Register({ navigation }) {
   const [currentStep, setCurrentStep] = useState(1);
@@ -22,11 +23,12 @@ export default function Register({ navigation }) {
     confirmPassword: "",
     telefono: "",
     foto_perfil: "",
-    //id_rol: "",
-    //id_estado: ""
+    rol: "cliente" // Agregar rol por defecto (por ahora)
   });
 
   const [error, setError] = useState("");
+  
+  const { register, isLoading, error: authError, clearError } = useAuthStore();
 
   const handleChange = (name, value) => {
     setForm({
@@ -59,6 +61,7 @@ export default function Register({ navigation }) {
 
   const handleSubmit = async () => {
     setError("");
+    clearError();
 
     // Validación del paso 2
     const validation = validateRegistrationStep2(form);
@@ -68,27 +71,20 @@ export default function Register({ navigation }) {
       return;
     }
 
-    try {
-      const response = await fetch("http://localhost:3000/api/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(form)
-      });
+    const result = await register({
+      nombre: form.nombre,
+      apellido: form.apellido,
+      email: form.email,
+      password: form.password,
+      telefono: form.telefono,
+      rol: form.rol
+    });
 
-      if (!response.ok) {
-        const data = await response.json();
-        setError(data.message || "Error al registrarse");
-        Alert.alert("Error", data.message || "Error al registrarse");
-      } else {
-        Alert.alert("Éxito", "Registro exitoso", [
-          { text: "OK", onPress: () => navigation.navigate("Login") }
-        ]);
-      }
-    } catch (err) {
-      setError("Error de conexión con el servidor");
-      Alert.alert("Error", "Error de conexión con el servidor");
+    if (result.success) {
+      navigation.navigate("Login");
+    } else {
+      setError(result.error);
+      Alert.alert("Error", result.error);
     }
   };
 
@@ -176,8 +172,14 @@ export default function Register({ navigation }) {
 
       {error ? <Text style={styles.errorText}>{error}</Text> : null}
       
-      <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-        <Text style={styles.buttonText}>Registrarse</Text>
+      <TouchableOpacity 
+        style={[styles.button, isLoading && styles.buttonDisabled]} 
+        onPress={handleSubmit}
+        disabled={isLoading}
+      >
+        <Text style={styles.buttonText}>
+          {isLoading ? 'Registrando...' : 'Registrarse'}
+        </Text>
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.buttonSecondary} onPress={handleBack}>

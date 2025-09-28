@@ -65,6 +65,17 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 16,
   },
+  successText: {
+    color: '#059669',
+    fontSize: 14,
+    textAlign: 'center',
+    marginBottom: 16,
+    backgroundColor: '#d1fae5',
+    padding: 12,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#a7f3d0',
+  },
   welcomeText: {
     fontSize: 24,
     fontWeight: '600',
