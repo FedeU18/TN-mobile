@@ -3,5 +3,14 @@
     "subtitle": "Tu solución de seguimiento de paquetes",
     "register": "Registrarse",
     "login": "Iniciar Sesión"
+  },
+  "register": {
+    "passwordRequirements": {
+      "title": "La contraseña debe contener:",
+      "minLength": "Al menos 6 caracteres",
+      "number": "Al menos un número",
+      "letter": "Al menos una letra",
+      "specialChar": "Al menos un carácter especial (como ! o &)"
+    }
   }
 }

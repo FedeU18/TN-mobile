@@ -34,6 +34,25 @@ export default function Login({ navigation, route }) {
     });
   };
 
+  // Redirigir según el rol del usuario
+  const redirectByRole = (user) => {
+    const userRole = user.rol.toLowerCase();
+    switch (userRole) {
+      case 'cliente':
+        navigation.navigate('ClienteDashboard');
+        break;
+      case 'repartidor':
+        navigation.navigate('RepartidorDashboard');
+        break;
+      case 'admin':
+        navigation.navigate('AdminDashboard');
+        break;
+      default:
+        navigation.navigate('Home');
+        break;
+    }
+  };
+
   const handleSubmit = async () => {
     clearError();
     
@@ -45,23 +64,25 @@ export default function Login({ navigation, route }) {
     
     const result = await login(form.email, form.password);
     
-    if (result.success) {
-      Alert.alert("Éxito", "Login exitoso");
+    if (result.success && result.user) {
+      redirectByRole(result.user);
     } else {
       Alert.alert("Error", result.error);
     }
   };
 
+  // Si ya hay token, redirigir al dashboard correspondiente
+  React.useEffect(() => {
+    if (token && useAuthStore.getState().user) {
+      const user = useAuthStore.getState().user;
+      redirectByRole(user);
+    }
+  }, [token, navigation]);
+
   if (token) {
     return (
       <View style={styles.container}>
-        <Text style={styles.welcomeText}>Bienvenido, {form.email}</Text>
-        <TouchableOpacity 
-          style={styles.button} 
-          onPress={() => useAuthStore.getState().logout()}
-        >
-          <Text style={styles.buttonText}>Cerrar sesión</Text>
-        </TouchableOpacity>
+        <Text style={styles.welcomeText}>Redirigiendo...</Text>
       </View>
     );
   }
@@ -110,6 +131,15 @@ export default function Login({ navigation, route }) {
           >
             <Text style={styles.buttonText}>
               {isLoading ? 'Iniciando sesión...' : 'Iniciar sesión'}
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            style={styles.linkButton} 
+            onPress={() => navigation.navigate('ForgotPassword')}
+          >
+            <Text style={styles.linkText}>
+              ¿Olvidaste tu contraseña?
             </Text>
           </TouchableOpacity>
 

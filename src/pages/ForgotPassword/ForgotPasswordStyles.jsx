@@ -9,7 +9,6 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     justifyContent: 'center',
     paddingHorizontal: 20,
-    paddingVertical: 20,
   },
   formContainer: {
     backgroundColor: 'white',
@@ -32,11 +31,11 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   subtitle: {
-    fontSize: 18,
-    fontWeight: '500',
+    fontSize: 16,
     color: '#6b7280',
     textAlign: 'center',
-    marginBottom: 24,
+    marginBottom: 32,
+    lineHeight: 24,
   },
   input: {
     borderWidth: 1,
@@ -49,23 +48,14 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   button: {
-    backgroundColor: '#1D6325',
+    backgroundColor: '#0950C3',
     borderRadius: 8,
     paddingVertical: 12,
     alignItems: 'center',
     marginTop: 16,
   },
-  buttonSecondary: {
-    backgroundColor: '#6b7280',
-    borderRadius: 8,
-    paddingVertical: 12,
-    alignItems: 'center',
-    marginTop: 16,
-  },
-  buttonSecondaryText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: '600',
+  buttonDisabled: {
+    backgroundColor: '#9ca3af',
   },
   buttonBack: {
     backgroundColor: '#000000',
@@ -79,31 +69,33 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
   },
+  linkButton: {
+    alignItems: 'center',
+    marginTop: 16,
+    paddingVertical: 8,
+  },
+  linkText: {
+    color: '#0950C3',
+    fontSize: 16,
+    fontWeight: '600',
+    textDecorationLine: 'underline',
+  },
   errorText: {
     color: 'red',
     fontSize: 14,
     textAlign: 'center',
     marginBottom: 16,
   },
-  passwordRequirements: {
-    backgroundColor: '#f5f5f5',
-    borderRadius: 8,
-    borderLeftWidth: 4,
-    borderLeftColor: '#1D6325',
-    padding: 12,
-    marginBottom: 16,
-  },
-  requirementsTitle: {
+  successText: {
+    color: '#059669',
     fontSize: 14,
-    fontWeight: '600',
-    color: '#333',
-    marginBottom: 8,
-  },
-  requirementItem: {
-    fontSize: 13,
-    color: '#666',
-    marginBottom: 4,
-    lineHeight: 18,
+    textAlign: 'center',
+    marginBottom: 16,
+    backgroundColor: '#d1fae5',
+    padding: 12,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#a7f3d0',
   },
 });
 

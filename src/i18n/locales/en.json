@@ -3,5 +3,14 @@
     "subtitle": "Your package tracking solution",
     "register": "Register",
     "login": "Login"
+  },
+  "register": {
+    "passwordRequirements": {
+      "title": "Password must contain:",
+      "minLength": "At least 6 characters",
+      "number": "At least one number",
+      "letter": "At least one letter",
+      "specialChar": "At least one special character (like ! or &)"
+    }
   }
 }

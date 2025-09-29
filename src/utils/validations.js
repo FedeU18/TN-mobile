@@ -97,6 +97,30 @@ export const validatePasswordMatch = (password, confirmPassword) => {
 };
 
 /**
+ * Valida que un nombre o apellido solo contenga letras y espacios
+ * @param {string} name
+ * @param {string} fieldName
+ * @returns {object} - { isValid: boolean, message: string }
+ */
+export const validateName = (name, fieldName) => {
+  const requiredValidation = validateRequired(name, fieldName);
+  if (!requiredValidation.isValid) {
+    return requiredValidation;
+  }
+  
+  // Regex que permite solo letras (incluyendo acentos), espacios y guiones
+  const nameRegex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s\-]+$/;
+  if (!nameRegex.test(name)) {
+    return {
+      isValid: false,
+      message: `El campo "${fieldName}" solo puede contener letras y espacios`
+    };
+  }
+  
+  return { isValid: true, message: "" };
+};
+
+/**
  * Valida formato de teléfono (básico)
  * @param {string} phone
  * @returns {object} - { isValid: boolean, message: string }
@@ -144,8 +168,8 @@ export const validateMultiple = (validations) => {
  */
 export const validateRegistrationStep1 = (form) => {
   const validations = [
-    validateRequired(form.nombre, "Nombre"),
-    validateRequired(form.apellido, "Apellido"),
+    validateName(form.nombre, "Nombre"),
+    validateName(form.apellido, "Apellido"),
     validatePhone(form.telefono)
   ];
   
@@ -166,6 +190,16 @@ export const validateLogin = (form) => {
   const validations = [
     validateEmail(form.email),
     validateRequired(form.password, "Contraseña")
+  ];
+
+  return validateMultiple(validations);
+};
+
+export const validateResetPassword = (form) => {
+  const validations = [
+    validateRequired(form.token, "Código de recuperación"),
+    validatePassword(form.newPassword),
+    validatePasswordMatch(form.newPassword, form.confirmPassword)
   ];
 
   return validateMultiple(validations);

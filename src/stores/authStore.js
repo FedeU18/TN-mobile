@@ -18,15 +18,16 @@ const useAuthStore = create((set) => ({
         password
       });
 
-      const { token } = response.data;
+      const { token, user } = response.data;
       
       set({ 
         token,
+        user,
         isLoading: false,
         error: null
       });
 
-      return { success: true };
+      return { success: true, user };
     } catch (error) {
       const errorMessage = error.response?.data?.error || 'Error en el login';
       set({ 
@@ -74,6 +75,55 @@ const useAuthStore = create((set) => ({
   clearError: () => set({ error: null }),
 
   clearSuccessMessage: () => set({ successMessage: null, registeredEmail: null }),
+
+  forgotPassword: async (email) => {
+    set({ isLoading: true, error: null });
+    
+    try {
+      const response = await api.post('/auth/forgot-password', { email });
+      
+      set({ 
+        isLoading: false,
+        error: null,
+        successMessage: 'Se envió un enlace de recuperación a tu correo electrónico'
+      });
+
+      return { success: true, data: response.data };
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || 'Error al enviar el enlace de recuperación';
+      set({ 
+        isLoading: false, 
+        error: errorMessage
+      });
+      return { success: false, error: errorMessage };
+    }
+  },
+
+  resetPassword: async (token, newPassword) => {
+    set({ isLoading: true, error: null });
+    
+    try {
+      const response = await api.post('/auth/reset-password', { 
+        token, 
+        newPassword 
+      });
+      
+      set({ 
+        isLoading: false,
+        error: null,
+        successMessage: 'Contraseña reseteada exitosamente'
+      });
+
+      return { success: true, data: response.data };
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || 'Error al resetear la contraseña';
+      set({ 
+        isLoading: false, 
+        error: errorMessage
+      });
+      return { success: false, error: errorMessage };
+    }
+  },
 }));
 
 export default useAuthStore;

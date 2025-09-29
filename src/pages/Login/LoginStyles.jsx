@@ -83,6 +83,17 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 50,
   },
+  linkButton: {
+    alignItems: 'center',
+    marginTop: 16,
+    paddingVertical: 8,
+  },
+  linkText: {
+    color: '#0950C3',
+    fontSize: 16,
+    fontWeight: '600',
+    textDecorationLine: 'underline',
+  },
 });
 
 export default styles;

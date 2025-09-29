@@ -31,9 +31,12 @@ export default function Register({ navigation }) {
   const { register, isLoading, error: authError, clearError } = useAuthStore();
 
   const handleChange = (name, value) => {
+    // Aplicar trim automático a campos de nombre y apellido
+    const trimmedValue = (name === 'nombre' || name === 'apellido') ? value.trim() : value;
+    
     setForm({
       ...form,
-      [name]: value
+      [name]: trimmedValue
     });
   };
 
@@ -72,11 +75,11 @@ export default function Register({ navigation }) {
     }
 
     const result = await register({
-      nombre: form.nombre,
-      apellido: form.apellido,
-      email: form.email,
+      nombre: form.nombre.trim(),
+      apellido: form.apellido.trim(),
+      email: form.email.trim(),
       password: form.password,
-      telefono: form.telefono,
+      telefono: form.telefono.trim(),
       rol: form.rol
     });
 
@@ -158,6 +161,14 @@ export default function Register({ navigation }) {
         autoCapitalize="none"
         autoCorrect={false}
       />
+      
+      <View style={styles.passwordRequirements}>
+        <Text style={styles.requirementsTitle}>La contraseña debe contener:</Text>
+        <Text style={styles.requirementItem}>• Al menos 6 caracteres</Text>
+        <Text style={styles.requirementItem}>• Al menos un número</Text>
+        <Text style={styles.requirementItem}>• Al menos una letra</Text>
+        <Text style={styles.requirementItem}>• Al menos un carácter especial (como ! o &)</Text>
+      </View>
       
       <TextInput
         style={styles.input}
