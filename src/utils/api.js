@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { EXPO_CONFIG } from '../config/expo.config';
+import useAuthStore from '../stores/authStore';
 
 const api = axios.create({
   baseURL: EXPO_CONFIG.getAPIUrl(),
@@ -11,7 +12,14 @@ const api = axios.create({
 
 api.interceptors.request.use(
   (config) => {
-
+    // Obtener token del store de Zustand
+    const token = useAuthStore.getState().token;
+    
+    // Agregarlo al header
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    
     return config;
   },
   (error) => {

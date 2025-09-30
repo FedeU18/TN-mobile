@@ -1,7 +1,11 @@
 import { create } from 'zustand';
+import { persist, createJSONStorage } from 'zustand/middleware';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import api from '../utils/api';
 
-const useAuthStore = create((set) => ({
+const useAuthStore = create(
+  persist(
+    (set) => ({
   user: null,
   token: null,
   isLoading: false,
@@ -144,6 +148,15 @@ const useAuthStore = create((set) => ({
       return { success: false, error: errorMessage };
     }
   },
-}));
+}),
+{
+  name: 'auth-storage', // nombre de la clave en AsyncStorage
+  storage: createJSONStorage(() => AsyncStorage), // configuración del storage
+  partialize: (state) => ({ 
+    token: state.token, 
+    user: state.user 
+  }), 
+}
+));
 
 export default useAuthStore;

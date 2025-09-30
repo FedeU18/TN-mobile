@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { StatusBar } from "expo-status-bar";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, Text } from "react-native";
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import useAuthStore from './src/stores/authStore';
 import Header from './src/components/Header/Header';
 import Footer from './src/components/Footer/Footer';
 import Home from './src/pages/Home/Home';
@@ -30,10 +31,45 @@ function AppLayout({ children }) {
 }
 
 export default function App() {
+  const { token, user } = useAuthStore();
+  const [isLoading, setIsLoading] = useState(true);
+  
+  // Determinar la pantalla inicial basada en el token
+  const getInitialRouteName = () => {
+    if (token && user) {
+      // Redirigir al dashboard
+      const roleScreenMap = {
+        'cliente': 'ClienteDashboard',
+        'repartidor': 'RepartidorDashboard', 
+        'admin': 'AdminDashboard'
+      };
+      return roleScreenMap[user.rol] || 'Home';
+    }
+    return 'Home';
+  };
+
+  // Delay para que AsyncStorage termine de cargar
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 100);
+    
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Mostrar loading
+  if (isLoading) {
+    return (
+      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+        <Text>Cargando...</Text>
+      </View>
+    );
+  }
+
   return (
     <NavigationContainer>
       <Stack.Navigator 
-        initialRouteName="Home"
+        initialRouteName={getInitialRouteName()}
         screenOptions={{
           headerShown: false, 
         }}
