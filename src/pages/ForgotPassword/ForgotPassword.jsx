@@ -1,99 +1,145 @@
-import React, { useState } from 'react';
-import styles from './ForgotPasswordStyles';
-import { 
-  View, 
-  Text, 
-  TextInput, 
-  TouchableOpacity, 
+import React, { useState } from "react";
+import styles from "./ForgotPasswordStyles";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
   Alert,
   KeyboardAvoidingView,
   Platform,
-  ScrollView 
-} from 'react-native';
-import { validateEmail } from '../../utils/validations';
-import useAuthStore from '../../stores/authStore';
+  ScrollView,
+  SafeAreaView,
+} from "react-native";
+import { validateEmail } from "../../utils/validations";
+import useAuthStore from "../../stores/authStore";
 
 export default function ForgotPassword({ navigation }) {
-  const [email, setEmail] = useState('');
-  
-  const { forgotPassword, isLoading, error, clearError, successMessage, clearSuccessMessage } = useAuthStore();
+  const [email, setEmail] = useState("");
+  const [validationError, setValidationError] = useState("");
 
-  const handleSubmit = async () => {
+  const {
+    forgotPassword,
+    isLoading,
+    error,
+    clearError,
+    successMessage,
+    clearSuccessMessage,
+  } = useAuthStore();
+
+  // Limpiar mensajes al entrar a la pantalla
+  React.useEffect(() => {
     clearError();
     clearSuccessMessage();
-    
-    const validation = validateEmail(email);
-    if (!validation.isValid) {
-      Alert.alert("Error", validation.message);
-      return;
-    }
-    
-    const result = await forgotPassword(email);
-    
-    if (result.success) {
-      Alert.alert(
-        "Éxito", 
-        "Se envió un enlace de recuperación a tu correo electrónico. Revisa tu bandeja de entrada.",
-        [
-          {
-            text: "OK",
-            onPress: () => navigation.navigate('ResetPassword', { email })
-          }
-        ]
-      );
-    } else {
-      Alert.alert("Error", result.error);
+  }, [clearError, clearSuccessMessage]);
+
+  const handleSubmit = async () => {
+    try {
+      clearError();
+      clearSuccessMessage();
+      setValidationError("");
+
+      const validation = validateEmail(email);
+      if (!validation.isValid) {
+        setValidationError(validation.message);
+        return;
+      }
+
+      const result = await forgotPassword(email);
+
+      if (result && result.success) {
+        navigation.navigate("ResetPassword", { email });
+
+        setTimeout(() => {
+          Alert.alert(
+            "Éxito",
+            "Se envió un código de recuperación a tu correo electrónico. Revisa tu bandeja de entrada."
+          );
+        }, 100);
+      } else {
+        setValidationError(
+          result?.error || "Error al enviar el enlace de recuperación"
+        );
+      }
+    } catch (error) {
+      setValidationError("Error inesperado. Por favor intenta nuevamente.");
     }
   };
 
-  return (
-    <KeyboardAvoidingView 
-      style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-    >
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
+  try {
+    return (
+      <SafeAreaView style={styles.container}>
+        <KeyboardAvoidingView
+          style={styles.container}
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+        >
+          <ScrollView contentContainerStyle={styles.scrollContainer}>
+            <View style={styles.formContainer}>
+              <Text style={styles.title}>Recuperar Contraseña</Text>
+
+              <Text style={styles.subtitle}>
+                Ingresá tu email y te enviaremos un enlace para restablecer tu
+                contraseña.
+              </Text>
+
+              <TextInput
+                style={styles.input}
+                placeholder="Email"
+                placeholderTextColor="#9CA3AF"
+                value={email}
+                onChangeText={(text) => {
+                  setEmail(text);
+                  // Limpiar errores cuando el usuario empiece a escribir
+                  if (validationError) {
+                    setValidationError("");
+                  }
+                }}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                autoCorrect={false}
+              />
+
+              {error || validationError ? (
+                <Text style={styles.errorText}>{validationError || error}</Text>
+              ) : null}
+
+              <TouchableOpacity
+                style={[styles.button, isLoading && styles.buttonDisabled]}
+                onPress={handleSubmit}
+                disabled={isLoading}
+              >
+                <Text style={styles.buttonText}>
+                  {isLoading ? "Enviando..." : "Enviar enlace de recuperación"}
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.buttonBack}
+                onPress={() => navigation.goBack()}
+              >
+                <Text style={styles.buttonText}>Volver</Text>
+              </TouchableOpacity>
+            </View>
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
+    );
+  } catch (renderError) {
+    return (
+      <SafeAreaView style={styles.container}>
         <View style={styles.formContainer}>
-          <Text style={styles.title}>Recuperar Contraseña</Text>
-          
-          <Text style={styles.subtitle}>
-            Ingresá tu email y te enviaremos un enlace para restablecer tu contraseña.
+          <Text style={styles.title}>Error</Text>
+          <Text style={styles.errorText}>
+            Ha ocurrido un error inesperado. Por favor reinicia la aplicación.
           </Text>
-          
-          {successMessage ? (
-            <Text style={styles.successText}>{successMessage}</Text>
-          ) : null}
-          
-          <TextInput
-            style={styles.input}
-            placeholder="Email"
-            placeholderTextColor="#9CA3AF"
-            value={email}
-            onChangeText={setEmail}
-            keyboardType="email-address"
-            autoCapitalize="none"
-            autoCorrect={false}
-          />
-
-          {error ? <Text style={styles.errorText}>{error}</Text> : null}
-          
-          <TouchableOpacity 
-            style={[styles.button, isLoading && styles.buttonDisabled]} 
-            onPress={handleSubmit}
-            disabled={isLoading}
-          >
-            <Text style={styles.buttonText}>
-              {isLoading ? 'Enviando...' : 'Enviar enlace de recuperación'}
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity 
-            style={styles.buttonBack} 
-            onPress={() => navigation.navigate('Home')}
+          <TouchableOpacity
+            style={styles.buttonBack}
+            onPress={() => navigation.goBack()}
           >
             <Text style={styles.buttonText}>Volver</Text>
           </TouchableOpacity>
         </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
-  );
+      </SafeAreaView>
+    );
+  }
 }

@@ -97,6 +97,45 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#a7f3d0',
   },
+  inputDisabled: {
+    backgroundColor: '#f3f4f6',
+    borderColor: '#9ca3af',
+    color: '#6b7280',
+  },
+  tokenConfirmed: {
+    backgroundColor: '#d1fae5',
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: '#a7f3d0',
+  },
+  tokenConfirmedText: {
+    color: '#059669',
+    fontSize: 14,
+    textAlign: 'center',
+    fontWeight: '600',
+  },
+  passwordRequirements: {
+    backgroundColor: '#f5f5f5',
+    borderRadius: 8,
+    borderLeftWidth: 4,
+    borderLeftColor: '#0950C3',
+    padding: 12,
+    marginBottom: 16,
+  },
+  requirementsTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#333',
+    marginBottom: 8,
+  },
+  requirementItem: {
+    fontSize: 13,
+    color: '#666',
+    marginBottom: 4,
+    lineHeight: 18,
+  },
 });
 
 export default styles;

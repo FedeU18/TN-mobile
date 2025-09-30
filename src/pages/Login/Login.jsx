@@ -34,23 +34,18 @@ export default function Login({ navigation, route }) {
     });
   };
 
+  // Mapa de roles a pantallas
+  const roleScreenMap = new Map([
+    ['cliente', 'ClienteDashboard'],
+    ['repartidor', 'RepartidorDashboard'],
+    ['admin', 'AdminDashboard']
+  ]);
+
   // Redirigir según el rol del usuario
   const redirectByRole = (user) => {
     const userRole = user.rol.toLowerCase();
-    switch (userRole) {
-      case 'cliente':
-        navigation.navigate('ClienteDashboard');
-        break;
-      case 'repartidor':
-        navigation.navigate('RepartidorDashboard');
-        break;
-      case 'admin':
-        navigation.navigate('AdminDashboard');
-        break;
-      default:
-        navigation.navigate('Home');
-        break;
-    }
+    const targetScreen = roleScreenMap.get(userRole) || 'Home';
+    navigation.replace(targetScreen);
   };
 
   const handleSubmit = async () => {
@@ -96,7 +91,7 @@ export default function Login({ navigation, route }) {
         <View style={styles.formContainer}>
           <Text style={styles.title}>Iniciar Sesión</Text>
           
-          {successMessage ? (
+          {successMessage && registeredEmail ? (
             <Text style={styles.successText}>{successMessage}</Text>
           ) : null}
           

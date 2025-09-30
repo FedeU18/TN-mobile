@@ -10,6 +10,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: 20,
     paddingVertical: 20,
+    paddingBottom: 10,
   },
   formContainer: {
     backgroundColor: 'white',

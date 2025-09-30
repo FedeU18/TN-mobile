@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { StatusBar } from "expo-status-bar";
 import { View, StyleSheet } from "react-native";
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
 import Header from './src/components/Header/Header';
 import Footer from './src/components/Footer/Footer';
 import Home from './src/pages/Home/Home';
@@ -12,50 +14,88 @@ import ClienteDashboard from './src/pages/ClienteDashboard/ClienteDashboard';
 import RepartidorDashboard from './src/pages/RepartidorDashboard/RepartidorDashboard';
 import AdminDashboard from './src/pages/AdminDashboard/AdminDashboard';
 
-export default function App() {
-  const [currentScreen, setCurrentScreen] = useState('Home');
-  const [routeParams, setRouteParams] = useState({});
+const Stack = createStackNavigator();
 
-  const navigation = {
-    navigate: (screenName, params = {}) => {
-      setCurrentScreen(screenName);
-      setRouteParams(params);
-    }
-  };
-
-  const renderScreen = () => {
-    const route = { params: routeParams };
-    
-    switch (currentScreen) {
-      case 'Login':
-        return <Login navigation={navigation} route={route} />;
-      case 'Register':
-        return <Register navigation={navigation} route={route} />;
-      case 'ForgotPassword':
-        return <ForgotPassword navigation={navigation} route={route} />;
-      case 'ResetPassword':
-        return <ResetPassword navigation={navigation} route={route} />;
-      case 'ClienteDashboard':
-        return <ClienteDashboard navigation={navigation} route={route} />;
-      case 'RepartidorDashboard':
-        return <RepartidorDashboard navigation={navigation} route={route} />;
-      case 'AdminDashboard':
-        return <AdminDashboard navigation={navigation} route={route} />;
-      case 'Home':
-      default:
-        return <Home navigation={navigation} route={route} />;
-    }
-  };
-
+function AppLayout({ children }) {
   return (
     <View style={styles.container}>
       <StatusBar style="auto" />
       <Header />
       <View style={styles.content}>
-        {renderScreen()}
+        {children}
       </View>
       <Footer />
     </View>
+  );
+}
+
+export default function App() {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator 
+        initialRouteName="Home"
+        screenOptions={{
+          headerShown: false, 
+        }}
+      >
+        <Stack.Screen name="Home">
+          {(props) => (
+            <AppLayout>
+              <Home {...props} />
+            </AppLayout>
+          )}
+        </Stack.Screen>
+        <Stack.Screen name="Login">
+          {(props) => (
+            <AppLayout>
+              <Login {...props} />
+            </AppLayout>
+          )}
+        </Stack.Screen>
+        <Stack.Screen name="Register">
+          {(props) => (
+            <AppLayout>
+              <Register {...props} />
+            </AppLayout>
+          )}
+        </Stack.Screen>
+        <Stack.Screen name="ForgotPassword">
+          {(props) => (
+            <AppLayout>
+              <ForgotPassword {...props} />
+            </AppLayout>
+          )}
+        </Stack.Screen>
+        <Stack.Screen name="ResetPassword">
+          {(props) => (
+            <AppLayout>
+              <ResetPassword {...props} />
+            </AppLayout>
+          )}
+        </Stack.Screen>
+        <Stack.Screen name="ClienteDashboard">
+          {(props) => (
+            <AppLayout>
+              <ClienteDashboard {...props} />
+            </AppLayout>
+          )}
+        </Stack.Screen>
+        <Stack.Screen name="RepartidorDashboard">
+          {(props) => (
+            <AppLayout>
+              <RepartidorDashboard {...props} />
+            </AppLayout>
+          )}
+        </Stack.Screen>
+        <Stack.Screen name="AdminDashboard">
+          {(props) => (
+            <AppLayout>
+              <AdminDashboard {...props} />
+            </AppLayout>
+          )}
+        </Stack.Screen>
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
 

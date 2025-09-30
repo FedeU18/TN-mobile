@@ -6,8 +6,6 @@ import {
   TextInput, 
   TouchableOpacity, 
   Alert,
-  KeyboardAvoidingView,
-  Platform,
   ScrollView 
 } from 'react-native';
 import { validateRegistrationStep1, validateRegistrationStep2 } from '../../utils/validations';
@@ -31,12 +29,9 @@ export default function Register({ navigation }) {
   const { register, isLoading, error: authError, clearError } = useAuthStore();
 
   const handleChange = (name, value) => {
-    // Aplicar trim automático a campos de nombre y apellido
-    const trimmedValue = (name === 'nombre' || name === 'apellido') ? value.trim() : value;
-    
     setForm({
       ...form,
-      [name]: trimmedValue
+      [name]: value
     });
   };
 
@@ -160,6 +155,10 @@ export default function Register({ navigation }) {
         secureTextEntry={true}
         autoCapitalize="none"
         autoCorrect={false}
+        autoComplete="new-password"
+        textContentType="newPassword"
+        importantForAutofill="no"
+        keyboardType="default"
       />
       
       <View style={styles.passwordRequirements}>
@@ -179,6 +178,10 @@ export default function Register({ navigation }) {
         secureTextEntry={true}
         autoCapitalize="none"
         autoCorrect={false}
+        autoComplete="new-password"
+        textContentType="newPassword"
+        importantForAutofill="no"
+        keyboardType="default"
       />
 
       {error ? <Text style={styles.errorText}>{error}</Text> : null}
@@ -204,16 +207,18 @@ export default function Register({ navigation }) {
   );
 
   return (
-    <KeyboardAvoidingView 
+    <ScrollView 
       style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      contentContainerStyle={styles.scrollContainer}
+      showsVerticalScrollIndicator={false}
+      keyboardShouldPersistTaps="handled"
+      nestedScrollEnabled={true}
+      keyboardDismissMode="on-drag"
     >
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <View style={styles.formContainer}>
-          {currentStep === 1 ? renderStep1() : renderStep2()}
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+      <View style={styles.formContainer}>
+        {currentStep === 1 ? renderStep1() : renderStep2()}
+      </View>
+    </ScrollView>
   );
 }
 

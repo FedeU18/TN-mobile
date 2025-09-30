@@ -84,13 +84,34 @@ const useAuthStore = create((set) => ({
       
       set({ 
         isLoading: false,
-        error: null,
-        successMessage: 'Se envió un enlace de recuperación a tu correo electrónico'
+        error: null
       });
 
       return { success: true, data: response.data };
     } catch (error) {
-      const errorMessage = error.response?.data?.message || 'Error al enviar el enlace de recuperación';
+      const errorMessage = error.response?.data?.message || error.response?.data?.error || 'Error al enviar el enlace de recuperación';
+      set({ 
+        isLoading: false, 
+        error: errorMessage
+      });
+      return { success: false, error: errorMessage };
+    }
+  },
+
+  verifyResetToken: async (token) => {
+    set({ isLoading: true, error: null });
+    
+    try {
+      const response = await api.post('/auth/verify-reset-token', { token });
+      
+      set({ 
+        isLoading: false,
+        error: null
+      });
+
+      return { success: true, valid: response.data.valid, data: response.data };
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || 'Token inválido o expirado';
       set({ 
         isLoading: false, 
         error: errorMessage
@@ -110,8 +131,7 @@ const useAuthStore = create((set) => ({
       
       set({ 
         isLoading: false,
-        error: null,
-        successMessage: 'Contraseña reseteada exitosamente'
+        error: null
       });
 
       return { success: true, data: response.data };
