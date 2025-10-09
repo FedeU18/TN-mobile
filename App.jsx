@@ -14,6 +14,7 @@ import ResetPassword from './src/pages/ResetPassword/ResetPassword';
 import ClienteDashboard from './src/pages/ClienteDashboard/ClienteDashboard';
 import RepartidorDashboard from './src/pages/RepartidorDashboard/RepartidorDashboard';
 import AdminDashboard from './src/pages/AdminDashboard/AdminDashboard';
+import PedidosDisponibles from '../components/PedidosDisponibles/PedidosDisponibles';
 
 const Stack = createStackNavigator();
 
@@ -33,14 +34,14 @@ function AppLayout({ children }) {
 export default function App() {
   const { token, user } = useAuthStore();
   const [isLoading, setIsLoading] = useState(true);
-  
+
   // Determinar la pantalla inicial basada en el token
   const getInitialRouteName = () => {
     if (token && user) {
       // Redirigir al dashboard
       const roleScreenMap = {
         'cliente': 'ClienteDashboard',
-        'repartidor': 'RepartidorDashboard', 
+        'repartidor': 'RepartidorDashboard',
         'admin': 'AdminDashboard'
       };
       return roleScreenMap[user.rol] || 'Home';
@@ -53,7 +54,7 @@ export default function App() {
     const timer = setTimeout(() => {
       setIsLoading(false);
     }, 100);
-    
+
     return () => clearTimeout(timer);
   }, []);
 
@@ -68,10 +69,10 @@ export default function App() {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator 
+      <Stack.Navigator
         initialRouteName={getInitialRouteName()}
         screenOptions={{
-          headerShown: false, 
+          headerShown: false,
         }}
       >
         <Stack.Screen name="Home">
@@ -130,6 +131,16 @@ export default function App() {
             </AppLayout>
           )}
         </Stack.Screen>
+        <Stack.Screen
+          name="PedidosDisponibles"
+          component={PedidosDisponibles}
+          options={{
+            title: 'Pedidos Disponibles',
+            headerShown: true
+          }}
+        />
+        <Stack.Screen name="MisPedidos" component={MisPedidos} />
+        <Stack.Screen name="PedidoDetalle" component={PedidoDetalle} />
       </Stack.Navigator>
     </NavigationContainer>
   );

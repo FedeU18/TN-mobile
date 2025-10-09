@@ -11,6 +11,14 @@ export default function RepartidorDashboard({ navigation }) {
     navigation.navigate('Home');
   };
 
+  const navigateToPedidosDisponibles = () => {
+    navigation.navigate('PedidosDisponibles');
+  };
+
+  const navigateToMisPedidos = () => {
+    navigation.navigate('MisPedidos');
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.welcomeContainer}>
@@ -24,12 +32,16 @@ export default function RepartidorDashboard({ navigation }) {
       </View>
 
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.primaryButton}>
-          <Text style={styles.primaryButtonText}>Lista de Pedidos</Text>
+        <TouchableOpacity
+        style={styles.primaryButton}
+        onPress = {navigateToPedidosDisponibles}>
+          <Text style={styles.primaryButtonText}>Pedidos Disponibles</Text>
         </TouchableOpacity>
         
-        <TouchableOpacity style={styles.secondaryButton}>
-          <Text style={styles.secondaryButtonText}>Entregas Pendientes</Text>
+        <TouchableOpacity
+        style={styles.secondaryButton}
+        onPress={navigateToMisPedidos}>
+          <Text style={styles.secondaryButtonText}>Mis Pedidos</Text>
         </TouchableOpacity>
         
         <TouchableOpacity style={styles.secondaryButton}>
