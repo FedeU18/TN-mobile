@@ -9,7 +9,7 @@ import {
     Alert,
     RefreshControl
 } from 'react-native';
-import usePedidoStore from '../../store/pedidoStore';
+import usePedidoStore from '../../stores/pedidoStore';
 import useAuthStore from '../../stores/authStore';
 import styles from './PedidosDisponiblesStyles';
 
@@ -23,6 +23,7 @@ const PedidoItem = ({ pedido, onTomarPedido, loading }) => {
 
     const handleTomarPedido = () => {
         Alert.alert(
+            'Confirmar Pedido',
             `¿Deseás tomar el pedido #${pedido.id_pedido}?`,
             [
                 { text: 'Cancelar', style: 'cancel' },
@@ -75,7 +76,7 @@ const PedidoItem = ({ pedido, onTomarPedido, loading }) => {
 
 export default function PedidosDisponibles({ navigation }) {
     const {
-        PedidosDisponibles,
+        pedidosDisponibles,
         loading,
         error,
         fetchPedidosDisponibles,
@@ -88,7 +89,6 @@ export default function PedidosDisponibles({ navigation }) {
 
     useEffect(() => {
         fetchPedidosDisponibles();
-
     }, []);
 
     useEffect(() => {

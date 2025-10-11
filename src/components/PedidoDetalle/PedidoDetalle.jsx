@@ -7,7 +7,7 @@ import {
     ActivityIndicator,
     Alert
 } from 'react-native';
-import usePedidosStore from '../../stores/pedidosStore';
+import usePedidoStore from '../../stores/pedidoStore';
 import styles from './PedidoDetalleStyles';
 
 export default function PedidoDetalle({ route, navigation }) {
@@ -17,13 +17,16 @@ export default function PedidoDetalle({ route, navigation }) {
         loading,
         error,
         fetchPedidoDetalle,
-        actualizarEstado,
+        cambiarEstadoPedido,
         clearError,
         clearPedidoSeleccionado
-    } = usePedidosStore();
+    } = usePedidoStore();
 
-    const [actualizandoEstado, setActulizandoEstado] = useState(false);
 
+
+    const [actualizandoEstado, setActualizandoEstado] = useState(false);
+
+    // Priorizar pedidoSeleccionado del store (datos más recientes)
     const pedido = pedidoSeleccionado || pedidoInicial;
 
     useEffect(() => {
@@ -46,9 +49,11 @@ export default function PedidoDetalle({ route, navigation }) {
 
     const getEstadoColor = (estado) => {
         switch (estado?.nombre_estado) {
-            case 'Asignado': return '#007AFF';
-            case 'En camino': return '#FF9500';
-            case 'Entregado': return '#28a745';
+            case 'Pendiente': return '#ffc107';  
+            case 'Asignado': return '#007AFF';   
+            case 'En camino': return '#FF9500'; 
+            case 'Entregado': return '#28a745'; 
+            case 'Cancelado': return '#dc3545'; 
             default: return '#666';
         }
     };
@@ -81,13 +86,43 @@ export default function PedidoDetalle({ route, navigation }) {
     const cambiarEstado = async (nuevoEstado) => {
         setActualizandoEstado(true);
         try {
-            await actualizarEstado(pedidoId, nuevoEstado);
-            Alert.alert('Éxito', `Estado actualizado a "${nuevoEstado}"`);
+            await cambiarEstadoPedido(pedidoId, nuevoEstado);
+            
+            // Diferentes mensajes según el estado
+            const mensajes = {
+                'En camino': {
+                    titulo: '🚛 Entrega iniciada',
+                    mensaje: 'Has iniciado la entrega del pedido. El cliente será notificado del progreso.'
+                },
+                'Entregado': {
+                    titulo: '✅ Pedido completado',
+                    mensaje: '¡Excelente trabajo! El pedido ha sido entregado exitosamente.'
+                }
+            };
 
-            //Actualizar los datos localmente
+            const mensaje = mensajes[nuevoEstado] || {
+                titulo: '✅ Estado actualizado',
+                mensaje: `El pedido ha sido marcado como "${nuevoEstado}".`
+            };
+            
+            Alert.alert(
+                mensaje.titulo,
+                mensaje.mensaje,
+                [{ text: 'OK', style: 'default' }]
+            );
+
+            // Actualizar los datos del pedido para reflejar el cambio
             await fetchPedidoDetalle(pedidoId);
         } catch (error) {
-            Alert.alert('Error', 'No se pudo actualizar el estado del pedido');
+            console.error('Error al cambiar estado:', error);
+            Alert.alert(
+                '❌ Error al actualizar', 
+                'No se pudo cambiar el estado del pedido. Verifica tu conexión e inténtalo de nuevo.',
+                [
+                    { text: 'Cancelar', style: 'cancel' },
+                    { text: 'Reintentar', onPress: () => cambiarEstado(nuevoEstado) }
+                ]
+            );
         } finally {
             setActualizandoEstado(false);
         }
@@ -99,16 +134,30 @@ export default function PedidoDetalle({ route, navigation }) {
         if (estadoActual === 'Entregado') {
             return (
                 <View style={styles.estadoCompletado}>
-                    <Text style={styles.estadoCompletadoText}>Pedido completado</Text>
+                    <Text style={styles.estadoCompletadoText}>✅ Pedido completado</Text>
+                    <Text style={styles.estadoCompletadoSubtext}>
+                        Entregado exitosamente
+                    </Text>
                 </View>
             );
         }
 
         return (
             <View style={styles.botonesContainer}>
+                <View style={styles.estadoActualContainer}>
+                    <Text style={styles.estadoActualLabel}>Estado actual:</Text>
+                    <Text style={[styles.estadoActualText, { color: getEstadoColor(pedido.estado) }]}>
+                        {estadoActual}
+                    </Text>
+                </View>
+
                 {estadoActual === 'Asignado' && (
                     <TouchableOpacity
-                        style={[styles.botonEstado, styles.botonEnCamino]}
+                        style={[
+                            styles.botonEstado, 
+                            styles.botonEnCamino,
+                            actualizandoEstado && styles.botonDeshabilitado
+                        ]}
                         onPress={() => handleCambiarEstado('En camino')}
                         disabled={actualizandoEstado}
                     >
@@ -122,14 +171,21 @@ export default function PedidoDetalle({ route, navigation }) {
 
                 {estadoActual === 'En camino' && (
                     <TouchableOpacity
-                        style={[styles.botonEstado, styles.botonEntregado]}
+                        style={[
+                            styles.botonEstado, 
+                            styles.botonEntregado,
+                            actualizandoEstado && styles.botonDeshabilitado
+                        ]}
                         onPress={() => handleCambiarEstado('Entregado')}
                         disabled={actualizandoEstado}
                     >
                         {actualizandoEstado ? (
                             <ActivityIndicator color="#fff" size="small" />
                         ) : (
-                            <Text style={styles.botonEstadoText}>Marcar como entregado</Text>
+                            <>
+                                <Text style={styles.botonEstadoText}>📦 Marcar como entregado</Text>
+                                <Text style={styles.botonEstadoSubtext}>Completar pedido</Text>
+                            </>
                         )}
                     </TouchableOpacity>
                 )}

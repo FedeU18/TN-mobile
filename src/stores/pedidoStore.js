@@ -8,7 +8,7 @@ import {
 } from "../utils/pedidoService";
 
 const usePedidoStore = create((set, get) => ({
-    getPedidosDisponibles: [],
+    pedidosDisponibles: [],
     misPedidos: [],
     loading: false,
     error: null,
@@ -18,7 +18,7 @@ const usePedidoStore = create((set, get) => ({
         set({ loading: true, error: null });
         try {
             const pedidos = await getPedidosDisponibles();
-            set({ getPedidosDisponibles: pedidos, loading: false });
+            set({ pedidosDisponibles: pedidos, loading: false });
         } catch (error) {
             set({ error: error.message, loading: false });
         }
@@ -35,7 +35,7 @@ const usePedidoStore = create((set, get) => ({
 
             //Remover de pedidos disponibles
             const nuevosDisponibles = pedidosDisponibles.filter(
-                pedido => pedido.id !== pedidoId
+                pedido => pedido.id_pedido !== pedidoId
             );
 
             //Agregar a pedidos del repartidor
@@ -82,17 +82,23 @@ const usePedidoStore = create((set, get) => ({
         try {
             const pedidoActualizado = await actualizarEstadoPedido(pedidoId, nuevoEstado);
 
-            const { misPedidos } = get();
+            const { misPedidos, pedidoSeleccionado } = get();
 
-            //Actualizar localmente
+            //Actualizar localmente en misPedidos
             const misPedidosActualizados = misPedidos.map(pedido =>
-                pedido.id === pedidoId
+                pedido.id_pedido === pedidoId
                     ? { ...pedido, estado: { nombre_estado: nuevoEstado } }
                     : pedido
             );
 
+            //También actualizar pedidoSeleccionado si coincide
+            const pedidoSeleccionadoActualizado = pedidoSeleccionado?.id_pedido === pedidoId
+                ? { ...pedidoSeleccionado, estado: { nombre_estado: nuevoEstado } }
+                : pedidoSeleccionado;
+
             set({
                 misPedidos: misPedidosActualizados,
+                pedidoSeleccionado: pedidoSeleccionadoActualizado,
                 loading: false
             });
 
@@ -101,6 +107,12 @@ const usePedidoStore = create((set, get) => ({
             set({ error: error.message, loading: false });
             throw error;
         }
+    },
+
+    //Actualizar estado
+    actualizarEstado: async (pedidoId, nuevoEstado) => {
+        const { cambiarEstadoPedido } = get();
+        return await cambiarEstadoPedido(pedidoId, nuevoEstado);
     },
 
     //Limpiar pedido seleccionado

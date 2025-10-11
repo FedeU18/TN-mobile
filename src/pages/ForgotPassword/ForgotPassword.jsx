@@ -9,8 +9,8 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  SafeAreaView,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { validateEmail } from "../../utils/validations";
 import useAuthStore from "../../stores/authStore";
 
@@ -89,7 +89,6 @@ export default function ForgotPassword({ navigation }) {
                 value={email}
                 onChangeText={(text) => {
                   setEmail(text);
-                  // Limpiar errores cuando el usuario empiece a escribir
                   if (validationError) {
                     setValidationError("");
                   }

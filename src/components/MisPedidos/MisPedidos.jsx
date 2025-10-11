@@ -22,7 +22,7 @@ const PedidoItem = ({ pedido, onVerDetalle }) => {
     };
 
     const formatearFecha = (fecha) => {
-        return newDate(fecha).toLocaleDateString('es-ES', {
+        return new Date(fecha).toLocaleDateString('es-ES', {
             day: '2-digit',
             month: '2-digit',
             year: 'numeric',
@@ -130,7 +130,7 @@ export default function MisPedidos({ navigation }) {
             <FlatList
                 data={misPedidos}
                 renderItem={renderPedido}
-                keyExtractor={(item) => item.id_pedido.toString()}
+                keyExtractor={(item) => item?.id_pedido?.toString() || Math.random().toString()}
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={styles.listContainer}
                 refreshControl={

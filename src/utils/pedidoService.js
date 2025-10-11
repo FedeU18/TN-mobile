@@ -12,10 +12,10 @@ export const getPedidosDisponibles = async () => {
 
 export const asignarPedido = async (pedidoId) => {
     try {
-        const response = await api.put(`/pedidos/asignar/${pedidoId}`);
+        const response = await api.put(`/pedidos/tomar/${pedidoId}`);
         return response.data;
     } catch (error) {
-        console.error('Error al asignar pedido:', error);
+        console.error('Error al tomar pedido:', error);
         throw error;
     }
 };
@@ -42,7 +42,7 @@ export const getPedidoDetalle = async (pedidoId) => {
 
 export const actualizarEstadoPedido = async (pedidoId, nuevoEstado) => {
     try {
-        const response = await api.put(`/pedidos/${pedidoId}/estado/`, { estado: nuevoEstado });
+        const response = await api.put(`/pedidos/estado/${pedidoId}`, { nuevoEstado });
         return response.data;
     } catch (error) {
         console.error('Error al actualizar estado del pedido:', error);

@@ -3,6 +3,7 @@ import { StatusBar } from "expo-status-bar";
 import { View, StyleSheet, Text } from "react-native";
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import { CommonActions } from '@react-navigation/native';
 import useAuthStore from './src/stores/authStore';
 import Header from './src/components/Header/Header';
 import Footer from './src/components/Footer/Footer';
@@ -14,7 +15,9 @@ import ResetPassword from './src/pages/ResetPassword/ResetPassword';
 import ClienteDashboard from './src/pages/ClienteDashboard/ClienteDashboard';
 import RepartidorDashboard from './src/pages/RepartidorDashboard/RepartidorDashboard';
 import AdminDashboard from './src/pages/AdminDashboard/AdminDashboard';
-import PedidosDisponibles from '../components/PedidosDisponibles/PedidosDisponibles';
+import PedidosDisponibles from './src/components/PedidosDisponibles/PedidosDisponibles';
+import MisPedidos from './src/components/MisPedidos/MisPedidos';
+import PedidoDetalle from './src/components/PedidoDetalle/PedidoDetalle';
 
 const Stack = createStackNavigator();
 
@@ -31,23 +34,45 @@ function AppLayout({ children }) {
   );
 }
 
-export default function App() {
-  const { token, user } = useAuthStore();
-  const [isLoading, setIsLoading] = useState(true);
+// Componente que maneja la navegación automática al dashboard correcto
+function AuthenticatedApp({ navigation }) {
+  const { user } = useAuthStore();
+  const [hasNavigated, setHasNavigated] = useState(false);
 
-  // Determinar la pantalla inicial basada en el token
-  const getInitialRouteName = () => {
-    if (token && user) {
-      // Redirigir al dashboard
+  useEffect(() => {
+    if (user && !hasNavigated) {
       const roleScreenMap = {
         'cliente': 'ClienteDashboard',
         'repartidor': 'RepartidorDashboard',
         'admin': 'AdminDashboard'
       };
-      return roleScreenMap[user.rol] || 'Home';
+      
+      const targetScreen = roleScreenMap[user.rol?.toLowerCase()] || 'ClienteDashboard';
+      
+      setHasNavigated(true);
+      
+      // Pequeño delay para asegurar que la navegación funcione
+      setTimeout(() => {
+        navigation.dispatch(
+          CommonActions.reset({
+            index: 0,
+            routes: [{ name: targetScreen }],
+          })
+        );
+      }, 50);
     }
-    return 'Home';
-  };
+  }, [user, navigation, hasNavigated]);
+
+  return (
+    <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+      <Text>Redirigiendo a tu panel...</Text>
+    </View>
+  );
+}
+
+export default function App() {
+  const { token, user } = useAuthStore();
+  const [isLoading, setIsLoading] = useState(true);
 
   // Delay para que AsyncStorage termine de cargar
   useEffect(() => {
@@ -70,77 +95,82 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName={getInitialRouteName()}
         screenOptions={{
           headerShown: false,
         }}
       >
-        <Stack.Screen name="Home">
-          {(props) => (
-            <AppLayout>
-              <Home {...props} />
-            </AppLayout>
-          )}
-        </Stack.Screen>
-        <Stack.Screen name="Login">
-          {(props) => (
-            <AppLayout>
-              <Login {...props} />
-            </AppLayout>
-          )}
-        </Stack.Screen>
-        <Stack.Screen name="Register">
-          {(props) => (
-            <AppLayout>
-              <Register {...props} />
-            </AppLayout>
-          )}
-        </Stack.Screen>
-        <Stack.Screen name="ForgotPassword">
-          {(props) => (
-            <AppLayout>
-              <ForgotPassword {...props} />
-            </AppLayout>
-          )}
-        </Stack.Screen>
-        <Stack.Screen name="ResetPassword">
-          {(props) => (
-            <AppLayout>
-              <ResetPassword {...props} />
-            </AppLayout>
-          )}
-        </Stack.Screen>
-        <Stack.Screen name="ClienteDashboard">
-          {(props) => (
-            <AppLayout>
-              <ClienteDashboard {...props} />
-            </AppLayout>
-          )}
-        </Stack.Screen>
-        <Stack.Screen name="RepartidorDashboard">
-          {(props) => (
-            <AppLayout>
-              <RepartidorDashboard {...props} />
-            </AppLayout>
-          )}
-        </Stack.Screen>
-        <Stack.Screen name="AdminDashboard">
-          {(props) => (
-            <AppLayout>
-              <AdminDashboard {...props} />
-            </AppLayout>
-          )}
-        </Stack.Screen>
-        <Stack.Screen
-          name="PedidosDisponibles"
-          component={PedidosDisponibles}
-          options={{
-            title: 'Pedidos Disponibles',
-            headerShown: true
-          }}
-        />
-        <Stack.Screen name="MisPedidos" component={MisPedidos} />
-        <Stack.Screen name="PedidoDetalle" component={PedidoDetalle} />
+        {!token || !user ? (
+          // Pantallas públicas (no autenticado)
+          <>
+            <Stack.Screen name="Home">
+              {(props) => (
+                <AppLayout>
+                  <Home {...props} />
+                </AppLayout>
+              )}
+            </Stack.Screen>
+            <Stack.Screen name="Login">
+              {(props) => (
+                <AppLayout>
+                  <Login {...props} />
+                </AppLayout>
+              )}
+            </Stack.Screen>
+            <Stack.Screen name="Register">
+              {(props) => (
+                <AppLayout>
+                  <Register {...props} />
+                </AppLayout>
+              )}
+            </Stack.Screen>
+            <Stack.Screen name="ForgotPassword">
+              {(props) => (
+                <AppLayout>
+                  <ForgotPassword {...props} />
+                </AppLayout>
+              )}
+            </Stack.Screen>
+            <Stack.Screen name="ResetPassword">
+              {(props) => (
+                <AppLayout>
+                  <ResetPassword {...props} />
+                </AppLayout>
+              )}
+            </Stack.Screen>
+          </>
+        ) : (
+          // Pantallas privadas (autenticado)
+          <>
+            <Stack.Screen name="AuthRedirect" component={AuthenticatedApp} />
+            <Stack.Screen name="ClienteDashboard">
+              {(props) => (
+                <AppLayout>
+                  <ClienteDashboard {...props} />
+                </AppLayout>
+              )}
+            </Stack.Screen>
+            <Stack.Screen name="RepartidorDashboard">
+              {(props) => (
+                <AppLayout>
+                  <RepartidorDashboard {...props} />
+                </AppLayout>
+              )}
+            </Stack.Screen>
+            <Stack.Screen name="AdminDashboard">
+              {(props) => (
+                <AppLayout>
+                  <AdminDashboard {...props} />
+                </AppLayout>
+              )}
+            </Stack.Screen>
+            <Stack.Screen
+              name="PedidosDisponibles"
+              component={PedidosDisponibles}
+            />
+            <Stack.Screen name="MisPedidos" component={MisPedidos} />
+            <Stack.Screen name="PedidoDetalle" component={PedidoDetalle} />
+          </>
+        )}
       </Stack.Navigator>
     </NavigationContainer>
   );
