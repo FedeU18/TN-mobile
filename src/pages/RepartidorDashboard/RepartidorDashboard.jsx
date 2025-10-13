@@ -16,7 +16,7 @@ export default function RepartidorDashboard({ navigation }) {
   };
 
   const navigateToMisPedidos = () => {
-    navigation.navigate('MisPedidos');
+    navigation.navigate('MisPedidos', { userRole: 'repartidor' });
   };
 
   return (

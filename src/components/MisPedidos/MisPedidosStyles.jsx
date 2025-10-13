@@ -68,6 +68,25 @@ export default StyleSheet.create({
     color: '#333',
     marginBottom: 5,
   },
+  repartidor: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#28a745',
+    marginBottom: 5,
+  },
+  seguimientoIndicador: {
+    backgroundColor: '#e8f5e8',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
+    marginTop: 5,
+    alignSelf: 'flex-start',
+  },
+  seguimientoTexto: {
+    fontSize: 12,
+    color: '#155724',
+    fontWeight: 'bold',
+  },
   direccion: {
     fontSize: 14,
     color: '#666',

@@ -1,30 +1,56 @@
-import React, { useEffect, useState } from 'react';
+import React, { use, useEffect, useState } from 'react';
 import {
     View,
     Text,
     ScrollView,
     TouchableOpacity,
     ActivityIndicator,
-    Alert
+    Alert,
+    Linking
 } from 'react-native';
 import usePedidoStore from '../../stores/pedidoStore';
+import usarUbicacion from '../../hooks/useLocationTracking';
 import styles from './PedidoDetalleStyles';
 
 export default function PedidoDetalle({ route, navigation }) {
     const { pedidoId, pedido: pedidoInicial } = route.params;
     const {
         pedidoSeleccionado,
+        pedidoEnSeguimiento,
         loading,
         error,
         fetchPedidoDetalle,
         cambiarEstadoPedido,
+        setPedidoEnSeguimiento,
+        clearPedidoEnSeguimiento,
         clearError,
         clearPedidoSeleccionado
     } = usePedidoStore();
 
+    const [
+        estaSiguiendo,
+        permisosUbicacion,
+        ultimaUbicacion,
+        error: errorUbicacion,
+        iniciarSeguimiento,
+        detenerSeguimiento
+    ] = usarUbicacion();
 
 
     const [actualizandoEstado, setActualizandoEstado] = useState(false);
+
+    // Abrir directamente la página de permisos de la app en Android
+    const abrirConfiguracionApp = async () => {
+        try {
+            await Linking.openSettings();
+        } catch (error) {
+            console.error('Error al abrir configuración:', error);
+            Alert.alert(
+                'No se pudo abrir la configuración',
+                'Por favor, ve manualmente a Configuración > Aplicaciones > TN-mobile > Permisos > Ubicación'
+            );
+        }
+    };
 
     // Priorizar pedidoSeleccionado del store (datos más recientes)
     const pedido = pedidoSeleccionado || pedidoInicial;
@@ -47,13 +73,39 @@ export default function PedidoDetalle({ route, navigation }) {
         }
     }, [error]);
 
+    // Manejar seguimiento de ubicación
+    useEffect(() => {
+        if (pedido) {
+            const estadoActual = pedido.estado?.nombre_estado;
+
+            if (estadoActual === 'En camino' && !estaSiguiendo && pedidoEnSeguimiento === pedidoId) {
+                console.log(pedidoId, 'en camino, iniciando seguimiento de ubicación.');
+                iniciarSeguimiento(pedidoId);
+                setPedidoEnSeguimiento(pedidoId);
+            } else if (estadoActual !== 'En camino' && estaSiguiendo && pedidoEnSeguimiento === pedidoId) {
+                console.log(pedidoId, 'entregrado, deteniendo seguimiento de ubicación.');
+                detenerSeguimiento();
+                clearPedidoEnSeguimiento();
+            }
+        }
+    }, [pedido?.estado?.nombre_estado, estaSiguiendo, pedidoEnSeguimiento]);
+
+    // Limpiar seguimiento al salir del componente
+    useEffect(() => {
+        return () => {
+            if (estaSiguiendo && pedidoEnSeguimiento === pedidoId) {
+                detenerSeguimiento();
+            }
+        };
+    }, []);
+
     const getEstadoColor = (estado) => {
         switch (estado?.nombre_estado) {
-            case 'Pendiente': return '#ffc107';  
-            case 'Asignado': return '#007AFF';   
-            case 'En camino': return '#FF9500'; 
-            case 'Entregado': return '#28a745'; 
-            case 'Cancelado': return '#dc3545'; 
+            case 'Pendiente': return '#ffc107';
+            case 'Asignado': return '#007AFF';
+            case 'En camino': return '#FF9500';
+            case 'Entregado': return '#28a745';
+            case 'Cancelado': return '#dc3545';
             default: return '#666';
         }
     };
@@ -69,6 +121,23 @@ export default function PedidoDetalle({ route, navigation }) {
     };
 
     const handleCambiarEstado = (nuevoEstado) => {
+        //Verificar permisos de ubicación antes de cambiar a "En camino"
+        if (nuevoEstado === 'En camino' && !permisosUbicacion.foreground) {
+            Alert.alert(
+                'Permisos de ubicación requeridos',
+                'Para iniciar la entrega necesitamos acceso a tu ubicación. Por favor, habilitá los permisos en la configuración de tu dispositivo.',
+                [
+                    { text: 'Cancelar', style: 'cancel' },
+                    {
+                        text: 'Abrir configuración',
+                        onPress: (abrirConfiguracionApp),
+                        style: 'default'
+                    }
+                ]
+            );
+            return;
+        }
+
         Alert.alert(
             'Confirmar cambio de estado',
             `¿Cambiar el estado del pedido a "${nuevoEstado}"?`,
@@ -87,7 +156,7 @@ export default function PedidoDetalle({ route, navigation }) {
         setActualizandoEstado(true);
         try {
             await cambiarEstadoPedido(pedidoId, nuevoEstado);
-            
+
             // Diferentes mensajes según el estado
             const mensajes = {
                 'En camino': {
@@ -104,7 +173,7 @@ export default function PedidoDetalle({ route, navigation }) {
                 titulo: '✅ Estado actualizado',
                 mensaje: `El pedido ha sido marcado como "${nuevoEstado}".`
             };
-            
+
             Alert.alert(
                 mensaje.titulo,
                 mensaje.mensaje,
@@ -116,7 +185,7 @@ export default function PedidoDetalle({ route, navigation }) {
         } catch (error) {
             console.error('Error al cambiar estado:', error);
             Alert.alert(
-                '❌ Error al actualizar', 
+                '❌ Error al actualizar',
                 'No se pudo cambiar el estado del pedido. Verifica tu conexión e inténtalo de nuevo.',
                 [
                     { text: 'Cancelar', style: 'cancel' },
@@ -127,6 +196,31 @@ export default function PedidoDetalle({ route, navigation }) {
             setActualizandoEstado(false);
         }
     };
+
+    // Para mostrar si hay estado de seguimiento (borrar si funciona)
+    const renderEstadoSeguimiento = () => {
+        if (!isTracking || pedidoEnSeguimiento !== pedidoId) return null;
+
+        return (
+            <View style={styles.seguimientoContainer}>
+                <View style={styles.seguimientoHeader}>
+                    <Text style={styles.seguimientoTitulo}>Seguimiento activo</Text>
+                    <View style={styles.indicadorActivo} />
+                </View>
+                {ultimaUbicacion && (
+                    <Text style={styles.seguimientoTexto}>
+                        Última ubicación: {new Date(ultimaUbicacion.timestamp).toLocaleTimeString('es-ES')}
+                    </Text>
+                )}
+                {errorUbicacion && (
+                    <Text style={styles.seguimientoError}>
+                        {errorUbicacion}
+                    </Text>
+                )}
+            </View>
+        );
+    };
+
 
     const renderBotonesEstado = () => {
         const estadoActual = pedido?.estado?.nombre_estado;
@@ -151,10 +245,12 @@ export default function PedidoDetalle({ route, navigation }) {
                     </Text>
                 </View>
 
+                {renderEstadoSeguimiento()}
+
                 {estadoActual === 'Asignado' && (
                     <TouchableOpacity
                         style={[
-                            styles.botonEstado, 
+                            styles.botonEstado,
                             styles.botonEnCamino,
                             actualizandoEstado && styles.botonDeshabilitado
                         ]}
@@ -172,7 +268,7 @@ export default function PedidoDetalle({ route, navigation }) {
                 {estadoActual === 'En camino' && (
                     <TouchableOpacity
                         style={[
-                            styles.botonEstado, 
+                            styles.botonEstado,
                             styles.botonEntregado,
                             actualizandoEstado && styles.botonDeshabilitado
                         ]}

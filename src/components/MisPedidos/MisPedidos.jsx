@@ -11,12 +11,14 @@ import {
 import usePedidoStore from '../../stores/pedidoStore';
 import styles from './MisPedidosStyles';
 
-const PedidoItem = ({ pedido, onVerDetalle }) => {
+const PedidoItem = ({ pedido, onVerDetalle, userRole }) => {
     const getEstadoColor = (estado) => {
         switch (estado?.nombre_estado) {
+            case 'Pendiente': return '#ffc107';
             case 'Asignado': return '#007AFF';
             case 'En camino': return '#FF9500';
             case 'Entregado': return '#28a745';
+            case 'Cancelado': return '#dc3545';
             default: return '#666';
         }
     };
@@ -46,15 +48,28 @@ const PedidoItem = ({ pedido, onVerDetalle }) => {
             </View>
 
             <View style={styles.pedidoInfo}>
-                <Text style={styles.cliente}>
-                    Cliente: {pedido.cliente?.nombre || 'Sin Nombre'} {pedido.cliente?.apellido || ''}
-                </Text>
+                {userRole === 'repartidor' ? (
+                    <Text style={styles.cliente}>
+                        Cliente: {pedido.cliente?.nombre || 'Sin Nombre'} {pedido.cliente?.apellido || ''}
+                    </Text>
+                ) : (
+                    <Text style={styles.repartidor}>
+                        Repartidor: {pedido.repartidor?.nombre || 'No asignado'} {pedido.repartidor?.apellido || ''}
+                    </Text>
+                )}
                 <Text style={styles.direccion}>
                     Destino: {pedido.direccion_destino}
                 </Text>
                 <Text style={styles.fecha}>
                     Creado: {formatearFecha(pedido.fecha_creacion)}
                 </Text>
+                
+                {/* Indicador de seguimiento para clientes */}
+                {userRole === 'cliente' && pedido.estado?.nombre_estado === 'En camino' && (
+                    <View style={styles.seguimientoIndicador}>
+                        <Text style={styles.seguimientoTexto}>Seguimiento disponible</Text>
+                    </View>
+                )}
             </View>
 
             <View style={styles.verDetalleContainer}>
@@ -66,14 +81,20 @@ const PedidoItem = ({ pedido, onVerDetalle }) => {
     );
 }
 
-export default function MisPedidos({ navigation }) {
+export default function MisPedidos({ navigation, userRole }) {
+
+    // Usar el store apropiado según el rol
+    const usePedidos = userRole === 'cliente' ? 
+        require('../../stores/clienteStore').default :
+        require('../../stores/pedidoStore').default;
+        
     const {
         misPedidos,
         loading,
         error,
         fetchMisPedidos,
         clearError
-    } = usePedidoStore();
+    } = usePedidos();
 
     const [refreshing, setRefreshing] = React.useState(false);
 
@@ -96,7 +117,9 @@ export default function MisPedidos({ navigation }) {
     };
 
     const handleVerDetalle = (pedido) => {
-        navigation.navigate('PedidoDetalle', {
+        // Navegar al detalle apropiado según el rol
+        const targetScreen = userRole === 'cliente' ? 'PedidoDetalleCliente' : 'PedidoDetalle';
+        navigation.navigate(targetScreen, {
             pedidoId: pedido.id_pedido,
             pedido: pedido
         });
@@ -106,6 +129,7 @@ export default function MisPedidos({ navigation }) {
         <PedidoItem
             pedido={item}
             onVerDetalle={handleVerDetalle}
+            userRole={userRole}
         />
     );
 
@@ -123,7 +147,9 @@ export default function MisPedidos({ navigation }) {
             <View style={styles.header}>
                 <Text style={styles.title}>Mis Pedidos</Text>
                 <Text style={styles.subtitle}>
-                    {misPedidos.length} pedido{misPedidos.length !== 1 ? 's' : ''} asignado{misPedidos.length !== 1 ? 's' : ''}
+                    {misPedidos.length} pedido{misPedidos.length !== 1 ? 's' : ''} 
+                    {userRole === 'repartidor' ? ' asignado' : ''}
+                    {misPedidos.length !== 1 && userRole === 'repartidor' ? 's' : ''}
                 </Text>
             </View>
 

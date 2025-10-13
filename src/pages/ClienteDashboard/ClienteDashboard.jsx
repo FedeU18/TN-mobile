@@ -11,6 +11,10 @@ export default function ClienteDashboard({ navigation }) {
     navigation.navigate('Home');
   };
 
+  const navigateToMisPedidos = () => {
+    navigation.navigate('MisPedidos', { userRole: 'cliente' });
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.welcomeContainer}>
@@ -19,19 +23,18 @@ export default function ClienteDashboard({ navigation }) {
           Dashboard del rol Cliente.
         </Text>
         <Text style={styles.subtitle}>
-          Desde aquí podrás realizar y gestionar tus pedidos.
+          Desde aquí podrás gestionar tus pedidos y seguir las entregas.
         </Text>
       </View>
 
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.primaryButton}>
-          <Text style={styles.primaryButtonText}>Hacer Pedido</Text>
+        <TouchableOpacity
+          style={styles.primaryButton}
+          onPress={navigateToMisPedidos}
+        >
+          <Text style={styles.primaryButtonText}>Mis Pedidos</Text>
         </TouchableOpacity>
-        
-        <TouchableOpacity style={styles.secondaryButton}>
-          <Text style={styles.secondaryButtonText}>Mis Pedidos</Text>
-        </TouchableOpacity>
-        
+
         <TouchableOpacity style={styles.secondaryButton}>
           <Text style={styles.secondaryButtonText}>Mi Perfil</Text>
         </TouchableOpacity>

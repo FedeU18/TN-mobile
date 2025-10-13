@@ -10,6 +10,8 @@ import {
 const usePedidoStore = create((set, get) => ({
     pedidosDisponibles: [],
     misPedidos: [],
+    pedidoSeleccionado: null,
+    pedidoEnSeguimiento: null,
     loading: false,
     error: null,
 
@@ -76,7 +78,7 @@ const usePedidoStore = create((set, get) => ({
         }
     },
 
-    //Actualizar estado de un pedido
+    //Cambiar estado de un pedido
     cambiarEstadoPedido: async (pedidoId, nuevoEstado) => {
         set({ loading: true, error: null });
         try {
@@ -91,14 +93,23 @@ const usePedidoStore = create((set, get) => ({
                     : pedido
             );
 
-            //También actualizar pedidoSeleccionado si coincide
+            //Actualizar pedidoSeleccionado si es el mismo
             const pedidoSeleccionadoActualizado = pedidoSeleccionado?.id_pedido === pedidoId
                 ? { ...pedidoSeleccionado, estado: { nombre_estado: nuevoEstado } }
                 : pedidoSeleccionado;
 
+                //Gestionar seguimiento de ubicación
+                let pedidoEnSeguimiento = get().pedidoEnSeguimiento;
+                if (nuevoEstado === 'En camino') {
+                    pedidoEnSeguimiento = pedidoId;
+                }else if (nuevoEstado === 'Entregado' && pedidoEnSeguimiento === pedidoId){
+                    pedidoEnSeguimiento = null;
+                }
+
             set({
                 misPedidos: misPedidosActualizados,
                 pedidoSeleccionado: pedidoSeleccionadoActualizado,
+                pedidoEnSeguimiento,
                 loading: false
             });
 
@@ -107,6 +118,11 @@ const usePedidoStore = create((set, get) => ({
             set({ error: error.message, loading: false });
             throw error;
         }
+    },
+
+    //Establecer pedido en seguimiento
+    setPedidoEnSeguimiento: (pedidoId) => {
+        set({ pedidoEnSeguimiento: pedidoId });
     },
 
     //Actualizar estado

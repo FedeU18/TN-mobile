@@ -17,18 +17,6 @@ export default StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#e0e0e0',
   },
-  refreshButton: {
-    padding: 8,
-    borderRadius: 8,
-    backgroundColor: '#f8f9fa',
-    borderWidth: 1,
-    borderColor: '#dee2e6',
-  },
-  refreshButtonText: {
-    fontSize: 12,
-    color: '#007AFF',
-    fontWeight: '500',
-  },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
@@ -102,6 +90,61 @@ export default StyleSheet.create({
   botonesContainer: {
     margin: 15,
   },
+  
+  // Estilos para seguimiento, borrar si no se usa
+  estadoActualContainer: {
+    backgroundColor: '#f8f9fa',
+    padding: 15,
+    borderRadius: 10,
+    marginBottom: 15,
+    alignItems: 'center',
+  },
+  estadoActualLabel: {
+    fontSize: 14,
+    color: '#666',
+    marginBottom: 5,
+  },
+  estadoActualText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  seguimientoContainer: {
+    backgroundColor: '#e8f5e8',
+    padding: 15,
+    borderRadius: 10,
+    marginBottom: 15,
+    borderLeftWidth: 4,
+    borderLeftColor: '#28a745',
+  },
+  seguimientoHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  seguimientoTitulo: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#155724',
+    flex: 1,
+  },
+  indicadorActivo: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: '#28a745',
+  },
+  seguimientoTexto: {
+    fontSize: 14,
+    color: '#155724',
+    fontStyle: 'italic',
+  },
+  seguimientoError: {
+    fontSize: 12,
+    color: '#721c24',
+    marginTop: 5,
+  },
+  //
+
   botonEstado: {
     paddingVertical: 15,
     paddingHorizontal: 20,
@@ -115,10 +158,19 @@ export default StyleSheet.create({
   botonEntregado: {
     backgroundColor: '#28a745',
   },
+  botonDeshabilitado: {
+    backgroundColor: '#ccc',
+  },
   botonEstadoText: {
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
+    marginBottom: 3,
+  },
+  botonEstadoSubtext: {
+    color: '#fff',
+    fontSize: 12,
+    opacity: 0.9,
   },
   estadoCompletado: {
     margin: 15,
@@ -131,131 +183,11 @@ export default StyleSheet.create({
     fontSize: 18,
     color: '#155724',
     fontWeight: 'bold',
-    marginBottom: 4,
+    marginBottom: 5,
   },
   estadoCompletadoSubtext: {
     fontSize: 14,
     color: '#155724',
-    opacity: 0.8,
-  },
-  estadoActualContainer: {
-    backgroundColor: '#f8f9fa',
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 16,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#e9ecef',
-  },
-  estadoActualLabel: {
-    fontSize: 14,
-    color: '#6c757d',
-    fontWeight: '500',
-    marginBottom: 4,
-  },
-  estadoActualText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  botonDeshabilitado: {
-    opacity: 0.6,
-  },
-  botonEstadoSubtext: {
-    color: '#fff',
-    fontSize: 12,
-    opacity: 0.9,
-    marginTop: 2,
-  },
-  estadisticaItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
-  },
-  estadisticaLabel: {
-    fontSize: 14,
-    color: '#666',
-    fontWeight: '500',
-  },
-  estadisticaValor: {
-    fontSize: 14,
-    color: '#333',
-    fontWeight: 'bold',
-  },
-  progresoContainer: {
-    marginTop: 16,
-  },
-  progresoLabel: {
-    fontSize: 14,
-    color: '#666',
-    fontWeight: '500',
-    marginBottom: 8,
-  },
-  progresoBarra: {
-    height: 8,
-    backgroundColor: '#e9ecef',
-    borderRadius: 4,
-    overflow: 'hidden',
-    marginBottom: 8,
-  },
-  progresoRelleno: {
-    height: '100%',
-    borderRadius: 4,
-  },
-  progresoEtapas: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  etapa: {
-    fontSize: 12,
-    fontWeight: '500',
-  },
-  sectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 15,
-  },
-  monitoreoButton: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 15,
-    backgroundColor: '#e9ecef',
-    borderWidth: 1,
-    borderColor: '#dee2e6',
-  },
-  monitoreoButtonActivo: {
-    backgroundColor: '#d1ecf1',
-    borderColor: '#bee5eb',
-  },
-  monitoreoButtonText: {
-    fontSize: 12,
-    color: '#6c757d',
-    fontWeight: 'bold',
-  },
-  monitoreoButtonTextActivo: {
-    color: '#0c5460',
-  },
-  monitoreoIndicador: {
-    backgroundColor: '#d1ecf1',
-    borderRadius: 6,
-    padding: 8,
-    marginBottom: 12,
-    borderLeftWidth: 3,
-    borderLeftColor: '#17a2b8',
-  },
-  monitoreoTexto: {
-    fontSize: 12,
-    color: '#0c5460',
-    fontWeight: '500',
-  },
-  ultimaActualizacionTexto: {
-    fontSize: 10,
-    color: '#0c5460',
-    opacity: 0.8,
-    marginTop: 2,
   },
   loadingContainer: {
     flex: 1,
