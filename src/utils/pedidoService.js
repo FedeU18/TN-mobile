@@ -45,11 +45,13 @@ export const actualizarEstadoPedido = async (pedidoId, nuevoEstado) => {
 // --SERVICIOS PARA CLIENTES--
 export const getMisPedidosCliente = async () => {
     try {
-        // El backend usa el mismo endpoint pero filtra por rol del usuario
-        const response = await api.get('/pedidos/mis-pedidos');
+        console.log('PedidoService - Llamando a /clientes/pedidos');
+        // Los clientes usan un endpoint específico para sus pedidos
+        const response = await api.get('/clientes/pedidos');
+        console.log('PedidoService - Respuesta exitosa:', response.data.length, 'pedidos');
         return response.data;
     } catch (error) {
-        console.error('Error al obtener pedidos del cliente:', error);
+        console.error('PedidoService - Error al obtener pedidos del cliente:', error.response?.data || error.message);
         throw error;
     }
 };
@@ -61,6 +63,17 @@ export const getPedidoDetalle = async (pedidoId) => {
         return response.data;
     } catch (error) {
         console.error('Error al obtener detalle del pedido:', error);
+        throw error;
+    }
+};
+
+// Servicio específico para que los clientes obtengan detalles de sus pedidos
+export const getPedidoDetalleCliente = async (pedidoId) => {
+    try {
+        const response = await api.get(`/clientes/pedidos/${pedidoId}`);
+        return response.data;
+    } catch (error) {
+        console.error('Error al obtener detalle del pedido del cliente:', error);
         throw error;
     }
 };

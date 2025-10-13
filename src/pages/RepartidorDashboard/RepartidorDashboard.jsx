@@ -2,13 +2,21 @@ import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import styles from './RepartidorDashboardStyles';
 import useAuthStore from '../../stores/authStore';
+import usarUbicacion from '../../hooks/usarUbicacion';
 
 export default function RepartidorDashboard({ navigation }) {
   const { user, logout } = useAuthStore();
+  const { limpiarSeguimiento } = usarUbicacion();
+
+  React.useEffect(() => {
+    if (!user) {
+      limpiarSeguimiento();
+    }
+  }, [user]);
 
   const handleLogout = () => {
     logout();
-    navigation.navigate('Home');
+    // El App.jsx manejará automáticamente el cambio de navegación cuando el token se limpie
   };
 
   const navigateToPedidosDisponibles = () => {

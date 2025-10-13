@@ -1,4 +1,4 @@
-import React, { useEffect, useEffectEvent } from 'react';
+import React, { useEffect } from 'react';
 import {
     View,
     Text,
@@ -8,7 +8,6 @@ import {
     Alert,
     RefreshControl
 } from 'react-native';
-import usePedidoStore from '../../stores/pedidoStore';
 import styles from './MisPedidosStyles';
 
 const PedidoItem = ({ pedido, onVerDetalle, userRole }) => {
@@ -81,12 +80,18 @@ const PedidoItem = ({ pedido, onVerDetalle, userRole }) => {
     );
 }
 
-export default function MisPedidos({ navigation, userRole }) {
+export default function MisPedidos({ navigation, route }) {
+    // Obtener userRole de route.params
+    const userRole = route?.params?.userRole;
+    
+    console.log('MisPedidos - userRole recibido:', userRole);
 
     // Usar el store apropiado según el rol
     const usePedidos = userRole === 'cliente' ? 
         require('../../stores/clienteStore').default :
         require('../../stores/pedidoStore').default;
+        
+    console.log('MisPedidos - usando store:', userRole === 'cliente' ? 'clienteStore' : 'pedidoStore');
         
     const {
         misPedidos,
@@ -117,11 +122,11 @@ export default function MisPedidos({ navigation, userRole }) {
     };
 
     const handleVerDetalle = (pedido) => {
-        // Navegar al detalle apropiado según el rol
-        const targetScreen = userRole === 'cliente' ? 'PedidoDetalleCliente' : 'PedidoDetalle';
-        navigation.navigate(targetScreen, {
+        // Usar la misma pantalla pero pasar el rol del usuario
+        navigation.navigate('PedidoDetalle', {
             pedidoId: pedido.id_pedido,
-            pedido: pedido
+            pedido: pedido,
+            userRole: userRole
         });
     };
 
