@@ -8,7 +8,7 @@ export default function ClienteDashboard({ navigation }) {
 
   const handleLogout = () => {
     logout();
-    navigation.navigate('Home');
+    // El App.jsx manejará automáticamente el cambio de navegación cuando el token se limpie
   };
 
   const navigateToMisPedidos = () => {
@@ -29,10 +29,10 @@ export default function ClienteDashboard({ navigation }) {
 
       <View style={styles.buttonContainer}>
         <TouchableOpacity
-          style={styles.primaryButton}
+          style={styles.secondaryButton}
           onPress={navigateToMisPedidos}
         >
-          <Text style={styles.primaryButtonText}>Mis Pedidos</Text>
+          <Text style={styles.secondaryButtonText}>Mis Pedidos</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.secondaryButton}>

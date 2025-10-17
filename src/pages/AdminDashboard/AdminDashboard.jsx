@@ -8,7 +8,7 @@ export default function AdminDashboard({ navigation }) {
 
   const handleLogout = () => {
     logout();
-    navigation.navigate('Home');
+    // El App.jsx manejará automáticamente el cambio de navegación cuando el token se limpie
   };
 
   return (

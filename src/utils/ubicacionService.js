@@ -33,7 +33,6 @@ export const obtenerUbicacionActual = async () => {
         return {
             latitud: location.coords.latitude,
             longitud: location.coords.longitude,
-            precision: location.coords.accuracy,
             timestamp: new Date().toISOString()
         };
     } catch (error) {
@@ -47,7 +46,6 @@ export const enviarUbicacionAlBackend = async (pedidoId, ubicacion) => {
         const response = await api.post(`/pedidos/${pedidoId}/ubicacion`, {
             latitud: ubicacion.latitud,
             longitud: ubicacion.longitud,
-            precision: ubicacion.precision,
             timestamp: ubicacion.timestamp
         });
 

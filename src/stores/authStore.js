@@ -72,7 +72,7 @@ const useAuthStore = create(
     set({ 
       user: null, 
       token: null, 
-      error: null 
+      error: null,
     });
   },
 

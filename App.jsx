@@ -18,8 +18,6 @@ import AdminDashboard from './src/pages/AdminDashboard/AdminDashboard';
 import PedidosDisponibles from './src/components/PedidosDisponibles/PedidosDisponibles';
 import MisPedidos from './src/components/MisPedidos/MisPedidos';
 import PedidoDetalle from './src/components/PedidoDetalle/PedidoDetalle';
-import MisPedidosCliente from './src/components/PedidosCliente/PedidosCliente';
-import PedidoDetalleCliente from './src/components/PedidoClienteDetalle/PedidoClienteDetalle';
 
 const Stack = createStackNavigator();
 
@@ -171,16 +169,6 @@ export default function App() {
             />
             <Stack.Screen name="MisPedidos" component={MisPedidos} />
             <Stack.Screen name="PedidoDetalle" component={PedidoDetalle} />
-            <Stack.Screen
-              name="MisPedidosCliente"
-              component={MisPedidosCliente}
-              options={{ title: 'Mis Pedidos' }}
-            />
-            <Stack.Screen
-              name="PedidoDetalleCliente"
-              component={PedidoDetalleCliente}
-              options={{ title: 'Detalle del Pedido' }}
-            />
           </>
         )}
       </Stack.Navigator>

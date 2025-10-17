@@ -46,7 +46,7 @@
         "@rnmapbox/maps",
         {
           "RNMapboxMapsImpl": "mapbox",
-          "RNMapboxMapsDownloadToken": "TU_MAPBOX_DOWNLOAD_TOKEN"
+          "RNMapboxMapsDownloadToken": "pk.eyJ1IjoiemV5cmEiLCJhIjoiY21nb2IwMXpnMXhmbjJqbjJ1ejZ3MG51dyJ9.JOtbGwYlMwdOj3FzFgiI_A"
         }
       ]
     ]

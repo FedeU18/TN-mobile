@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import {
     getMisPedidosCliente,
-    getPedidoDetalle,
+    getPedidoDetalleCliente,
     getPedidoConUbicacion
 } from '../utils/pedidoService';
 
@@ -15,11 +15,14 @@ const useClienteStore = create((set, get) => ({
 
     // Obtener pedidos
     fetchMisPedidos: async () => {
+        console.log('ClienteStore - fetchMisPedidos iniciado');
         set({ loading: true, error: null });
         try {
             const pedidos = await getMisPedidosCliente();
+            console.log('ClienteStore - pedidos obtenidos:', pedidos.length);
             set({ misPedidos: pedidos, loading: false });
         } catch (error) {
+            console.log('ClienteStore - error:', error.message);
             set({ error: error.message, loading: false });
         }
     },
