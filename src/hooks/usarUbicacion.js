@@ -18,7 +18,7 @@ const usarUbicacion = () => {
 
     const intervaloRef = useRef(null);
     const pedidoActivoRef = useRef(null);
-    const aooStateRef = useRef(AppState.currentState);
+        const appStateRef = useRef(AppState.currentState);
 
     // Verificar y solicitar permisos al inicializar
     useEffect(() => {
@@ -39,7 +39,7 @@ const usarUbicacion = () => {
                 if (!permisos.foreground) {
                     Alert.alert(
                         "Permisos de ubicación requeridos",
-                        "Para realizar las entregas necesitás otorgar permisos de ubicación."
+                        "Para realizar las entregas necesitás otorgar permisos de ubicación.",
                         [{ text: "OK" }]
                     );
                 }
@@ -62,6 +62,12 @@ const usarUbicacion = () => {
             subscription?.remove();
         };
     }, []);
+        // Detener seguimiento automáticamente si el pedido activo se borra
+        useEffect(() => {
+            if (!pedidoActivoRef.current && estaRastreando) {
+                detenerSeguimiento();
+            }
+        }, [estaRastreando]);
 
     // Función para iniciar el rastreo
     const iniciarSeguimiento = async (pedidoId) => {
@@ -81,12 +87,11 @@ const usarUbicacion = () => {
             console.log("Iniciando seguimiento de ubicación para el pedido:", pedidoId);
 
             //Enviar ubicación inicial inmediatamente
-
             await enviarUbicacion(pedidoId);
 
             //Configurar intervalo para enviar ubicación cada 10 segundos
             intervaloRef.current = setInterval(async () => {
-                if (pedidoActivo.ref.current === pedidoId) {
+                if (pedidoActivoRef.current === pedidoId) {
                     await enviarUbicacion(pedidoId);
                 }
             }, 10000);
