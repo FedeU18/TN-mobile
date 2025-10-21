@@ -82,7 +82,6 @@ const usarUbicacion = () => {
         const permisos = await solicitarPermisosUbicacion();
         setPermisosUbicacion(permisos);
 
-<<<<<<< HEAD
             console.log("Iniciando seguimiento de ubicación para el pedido:", pedidoId);
 
             //Enviar ubicación inicial inmediatamente
@@ -101,14 +100,6 @@ const usarUbicacion = () => {
             setError(error.message);
             setEstaRastreando(false);
             return false;
-=======
-        if (!permisos.foreground) {
-          Alert.alert(
-            "Permisos de ubicación requeridos",
-            "Para realizar las entregas necesitás otorgar permisos de ubicación.",
-            [{ text: "OK" }]
-          );
->>>>>>> 405d6059d062e94e3b2fc40905ac10630594eb8f
         }
       } catch (error) {
         setError(error.message);
