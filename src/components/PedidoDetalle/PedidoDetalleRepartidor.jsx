@@ -212,8 +212,13 @@ export default function PedidoDetalleRepartidor({ pedido }) {
             {/* ✅ Aseguramos que muestre correctamente la imagen Base64 */}
             {detalle?.qr_codigo ? (
               <Image
-                source={{ uri: detalle.qr_codigo }}
+                source={{
+                  uri: detalle.qr_codigo.startsWith("data:image")
+                    ? detalle.qr_codigo
+                    : `data:image/png;base64,${detalle.qr_codigo}`,
+                }}
                 style={{ width: 220, height: 220, alignSelf: "center" }}
+                resizeMode="contain"
               />
             ) : (
               <Text>No hay QR disponible</Text>
