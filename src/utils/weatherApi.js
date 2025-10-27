@@ -1,7 +1,7 @@
 // Utilidad para obtener el clima actual y el de la próxima hora usando el backend (proxy seguro)
 // location puede ser string (ciudad) o { latitud, longitud }
 
-const API_URL = 'http://localhost:3000/api/weather';
+const API_URL = `${process.env.EXPO_PUBLIC_API_BASE_URL}/api/weather`;
 
 export async function getWeatherForecast(location) {
   let q;

@@ -26,7 +26,7 @@ const useAuthStore = create(
         try {
           const { data } = await api.post("/auth/login", { email, password });
           set({ token: data.token, user: data.user, isLoading: false });
-          return { success: true };
+          return { success: true, user: data.user, token: data.token };
         } catch (error) {
           const message = handleApiError(error, "Error en el login");
           set({ isLoading: false, error: message });
