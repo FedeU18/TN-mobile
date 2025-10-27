@@ -34,17 +34,17 @@ export default function PedidoDetalleCliente({ pedido }) {
         setDetalle(data);
 
         // Si la API devuelve ubicaciones fijas, las guardamos
-        if (data.origen_lat && data.origen_lng) {
+        if (data.origen_latitud && data.origen_longitud) {
           setOrigen({
-            latitud: data.origen_lat,
-            longitud: data.origen_lng,
+            latitud: parseFloat(data.origen_latitud),
+            longitud: parseFloat(data.origen_longitud),
           });
         }
 
-        if (data.destino_lat && data.destino_lng) {
+        if (data.destino_latitud && data.destino_longitud) {
           setDestino({
-            latitud: data.destino_lat,
-            longitud: data.destino_lng,
+            latitud: parseFloat(data.destino_latitud),
+            longitud: parseFloat(data.destino_longitud),
           });
         }
       } catch (err) {
@@ -91,6 +91,10 @@ export default function PedidoDetalleCliente({ pedido }) {
       Entregado: "#28a745",
       Cancelado: "#dc3545",
     }[detalle.estado?.nombre_estado] || "#666";
+
+  console.log("ubicacionRepartidor:", ubicacionRepartidor);
+  console.log("origen:", origen);
+  console.log("destino:", destino);
 
   return (
     <ScrollView style={styles.container}>
