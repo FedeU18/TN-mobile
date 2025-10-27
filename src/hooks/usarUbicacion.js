@@ -16,205 +16,100 @@ const usarUbicacion = () => {
   const [ultimaUbicacion, setUltimaUbicacion] = useState(null);
   const [error, setError] = useState(null);
 
-    const intervaloRef = useRef(null);
-    const pedidoActivoRef = useRef(null);
-        const appStateRef = useRef(AppState.currentState);
+  const intervaloRef = useRef(null);
+  const pedidoActivoRef = useRef(null);
+  const appStateRef = useRef(AppState.currentState);
 
-    // Verificar y solicitar permisos al inicializar
-    useEffect(() => {
-        const inicializarPermisos = async () => {
-            try {
-                const servicioHabilitado = await verificarEstadoUbicacion();
-                if (!servicioHabilitado) {
-                    Alert.alert(
-                        "Servicio de ubicación deshabilitado",
-                        "Para realizar las entregas necesitás habilitar el servicio de ubicación en la configuración de tu dispositivo."
-                    );
-                    return;
-                }
-
-                const permisos = await solicitarPermisosUbicacion();
-                setPermisosUbicacion(permisos);
-
-                if (!permisos.foreground) {
-                    Alert.alert(
-                        "Permisos de ubicación requeridos",
-                        "Para realizar las entregas necesitás otorgar permisos de ubicación.",
-                        [{ text: "OK" }]
-                    );
-                }
-            } catch (error) {
-                setError(error.message);
-                Alert.alert('Error', error.message);
-            }
-        };
-
-        inicializarPermisos();
-
-        //Monitorear cambios en el estado de la app
-        const handleAppStateChange = (nextAppState) => {
-            appStateRef.current = nextAppState;
-        };
-
-        const subscription = AppState.addEventListener('change', handleAppStateChange);
-
-        return () => {
-            subscription?.remove();
-        };
-    }, []);
-        // Detener seguimiento automáticamente si el pedido activo se borra
-        useEffect(() => {
-            if (!pedidoActivoRef.current && estaRastreando) {
-                detenerSeguimiento();
-            }
-        }, [estaRastreando]);
-
-    // Función para iniciar el rastreo
-    const iniciarSeguimiento = async (pedidoId) => {
-        if (!permisosUbicacion.foreground) {
-            Alert.alert(
-                "Permisos de ubicación requeridos",
-                "Para realizar las entregas necesitás otorgar permisos de ubicación."
-            );
-            return false;
+  // ---- Inicializar permisos al cargar hook ----
+  useEffect(() => {
+    const inicializarPermisos = async () => {
+      try {
+        const servicioHabilitado = await verificarEstadoUbicacion();
+        if (!servicioHabilitado) {
+          Alert.alert(
+            "Servicio de ubicación deshabilitado",
+            "Para realizar las entregas necesitás habilitar la ubicación en tu dispositivo."
+          );
+          return;
         }
 
         const permisos = await solicitarPermisosUbicacion();
         setPermisosUbicacion(permisos);
 
-            console.log("Iniciando seguimiento de ubicación para el pedido:", pedidoId);
-
-            //Enviar ubicación inicial inmediatamente
-            await enviarUbicacion(pedidoId);
-
-            //Configurar intervalo para enviar ubicación cada 10 segundos
-            intervaloRef.current = setInterval(async () => {
-                if (pedidoActivoRef.current === pedidoId) {
-                    await enviarUbicacion(pedidoId);
-                }
-            }, 10000);
-
-            return true;
-        } catch (error) {
-            console.error("Error al iniciar el seguimiento:", error);
-            setError(error.message);
-            setEstaRastreando(false);
-            return false;
+        if (!permisos.foreground) {
+          Alert.alert(
+            "Permisos de ubicación requeridos",
+            "Para realizar las entregas necesitás otorgar permisos de ubicación."
+          );
         }
-      } catch (error) {
-        setError(error.message);
-        Alert.alert("Error", error.message);
+      } catch (err) {
+        setError(err?.message || "Error inicializando permisos");
       }
     };
 
     inicializarPermisos();
 
-    //Monitorear cambios en el estado de la app
-    const handleAppStateChange = (nextAppState) => {
-      appStateRef.current = nextAppState;
-    };
+    const subscription = AppState.addEventListener("change", (next) => {
+      appStateRef.current = next;
+    });
 
-    const subscription = AppState.addEventListener(
-      "change",
-      handleAppStateChange
-    );
-
-    return () => {
-      subscription?.remove();
-    };
+    return () => subscription?.remove();
   }, []);
 
-  // Función para iniciar el rastreo
+  // ---- Iniciar seguimiento ----
   const iniciarSeguimiento = async (pedidoId) => {
     if (!permisosUbicacion.foreground) {
       Alert.alert(
         "Permisos de ubicación requeridos",
-        "Para realizar las entregas necesitás otorgar permisos de ubicación."
+        "Para iniciar la entrega necesitamos permisos de ubicación."
       );
       return false;
     }
 
     try {
+      pedidoActivoRef.current = pedidoId;
       setEstaRastreando(true);
       setError(null);
-      pedidoActivoRef.current = pedidoId;
-
-      console.log(
-        "Iniciando seguimiento de ubicación para el pedido:",
-        pedidoId
-      );
-
-      //Enviar ubicación inicial inmediatamente
 
       await enviarUbicacion(pedidoId);
 
-      //Configurar intervalo para enviar ubicación cada 10 segundos
       intervaloRef.current = setInterval(async () => {
-        if (pedidoActivoRef.current === pedidoId) {
+        if (
+          appStateRef.current === "active" &&
+          pedidoActivoRef.current === pedidoId
+        ) {
           await enviarUbicacion(pedidoId);
         }
       }, 10000);
 
       return true;
-    } catch (error) {
-      console.error("Error al iniciar el seguimiento:", error);
-      setError(error.message);
+    } catch (err) {
+      setError(err.message);
       setEstaRastreando(false);
       return false;
     }
   };
 
+  // ---- Detener seguimiento ----
   const detenerSeguimiento = () => {
-    console.log(
-      "Deteniendo seguimiento de ubicación para el pedido:",
-      pedidoActivoRef.current
-    );
-
     if (intervaloRef.current) {
       clearInterval(intervaloRef.current);
       intervaloRef.current = null;
     }
-
     pedidoActivoRef.current = null;
     setEstaRastreando(false);
-    setError(null);
   };
 
+  // ---- Envío de ubicación ----
   const enviarUbicacion = async (pedidoId) => {
     try {
       const ubicacion = await obtenerUbicacionActual();
       setUltimaUbicacion(ubicacion);
 
-      console.log(
-        `Enviando ubicación: ${ubicacion.latitud}, ${ubicacion.longitud}`
-      );
-
       await enviarUbicacionAlBackend(pedidoId, ubicacion);
-    } catch (error) {
-      console.error("Error al enviar la ubicación:", error);
-
-      if (error.message.includes("timeout")) {
-        setError("Timeout al obtener la ubicación. Verificá tu conexión.");
-      } else {
-        setError(error.message);
-      }
+    } catch (err) {
+      setError(err.message);
     }
-  };
-
-  const forzarEnvioUbicacion = async () => {
-    if (pedidoActivoRef.current && permisosUbicacion.foreground) {
-      await enviarUbicacion(pedidoActivoRef.current);
-    }
-  };
-
-  const limpiarSeguimiento = () => {
-    if (intervaloRef.current) {
-      clearInterval(intervaloRef.current);
-      intervaloRef.current = null;
-    }
-    pedidoActivoRef.current = null;
-    setEstaRastreando(false);
-    setError(null);
   };
 
   return {
@@ -224,8 +119,6 @@ const usarUbicacion = () => {
     error,
     iniciarSeguimiento,
     detenerSeguimiento,
-    forzarEnvioUbicacion,
-    limpiarSeguimiento
   };
 };
 

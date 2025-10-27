@@ -1,162 +1,118 @@
-import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import api from '../utils/api';
+import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import api from "../utils/api";
+
+const handleApiError = (error, defaultMessage) => {
+  return (
+    error.response?.data?.message ||
+    error.response?.data?.error ||
+    defaultMessage
+  );
+};
 
 const useAuthStore = create(
   persist(
     (set) => ({
-  user: null,
-  token: null,
-  isLoading: false,
-  error: null,
-  successMessage: null,
-  registeredEmail: null,
-
-  login: async (email, password) => {
-    set({ isLoading: true, error: null });
-    
-    try {
-      const response = await api.post('/auth/login', {
-        email,
-        password
-      });
-
-      const { token, user } = response.data;
-      
-      set({ 
-        token,
-        user,
-        isLoading: false,
-        error: null
-      });
-
-      return { success: true, user };
-    } catch (error) {
-      const errorMessage = error.response?.data?.error || 'Error en el login';
-      set({ 
-        isLoading: false, 
-        error: errorMessage,
-        user: null,
-        token: null
-      });
-      return { success: false, error: errorMessage };
-    }
-  },
-
-  register: async (userData) => {
-    set({ isLoading: true, error: null });
-    
-    try {
-      const response = await api.post('/auth/registro', userData);
-      
-      set({ 
-        isLoading: false,
-        error: null,
-        successMessage: 'Usuario creado con éxito',
-        registeredEmail: userData.email
-      });
-
-      return { success: true, data: response.data };
-    } catch (error) {
-      const errorMessage = error.response?.data?.error || 'Error en el registro';
-      set({ 
-        isLoading: false, 
-        error: errorMessage
-      });
-      return { success: false, error: errorMessage };
-    }
-  },
-
-  logout: () => {
-    set({ 
-      user: null, 
-      token: null, 
+      user: null,
+      token: null,
+      isLoading: false,
       error: null,
-    });
-  },
+      successMessage: null,
+      registeredEmail: null,
 
-  clearError: () => set({ error: null }),
+      login: async (email, password) => {
+        set({ isLoading: true, error: null });
+        try {
+          const { data } = await api.post("/auth/login", { email, password });
+          set({ token: data.token, user: data.user, isLoading: false });
+          return { success: true };
+        } catch (error) {
+          const message = handleApiError(error, "Error en el login");
+          set({ isLoading: false, error: message });
+          return { success: false, error: message };
+        }
+      },
 
-  clearSuccessMessage: () => set({ successMessage: null, registeredEmail: null }),
+      register: async (userData) => {
+        set({ isLoading: true, error: null });
+        try {
+          await api.post("/auth/registro", userData);
+          set({
+            isLoading: false,
+            successMessage: "Usuario creado con éxito",
+            registeredEmail: userData.email,
+          });
+          return { success: true };
+        } catch (error) {
+          const message = handleApiError(error, "Error en el registro");
+          set({ isLoading: false, error: message });
+          return { success: false, error: message };
+        }
+      },
 
-  forgotPassword: async (email) => {
-    set({ isLoading: true, error: null });
-    
-    try {
-      const response = await api.post('/auth/forgot-password', { email });
-      
-      set({ 
-        isLoading: false,
-        error: null
-      });
+      logout: () => set({ user: null, token: null, error: null }),
 
-      return { success: true, data: response.data };
-    } catch (error) {
-      const errorMessage = error.response?.data?.message || error.response?.data?.error || 'Error al enviar el enlace de recuperación';
-      set({ 
-        isLoading: false, 
-        error: errorMessage
-      });
-      return { success: false, error: errorMessage };
+      clearError: () => set({ error: null }),
+      clearSuccessMessage: () =>
+        set({ successMessage: null, registeredEmail: null }),
+
+      forgotPassword: async (email) => {
+        set({ isLoading: true, error: null });
+        try {
+          const { data } = await api.post("/auth/forgot-password", { email });
+          set({ isLoading: false });
+          return { success: true, data };
+        } catch (error) {
+          const message = handleApiError(
+            error,
+            "Error al enviar el enlace de recuperación"
+          );
+          set({ isLoading: false, error: message });
+          return { success: false, error: message };
+        }
+      },
+
+      verifyResetToken: async (token) => {
+        set({ isLoading: true, error: null });
+        try {
+          const { data } = await api.post("/auth/verify-reset-token", {
+            token,
+          });
+          set({ isLoading: false });
+          return { success: true, data };
+        } catch (error) {
+          const message = handleApiError(error, "Token inválido o expirado");
+          set({ isLoading: false, error: message });
+          return { success: false, error: message };
+        }
+      },
+
+      resetPassword: async (token, newPassword) => {
+        set({ isLoading: true, error: null });
+        try {
+          const { data } = await api.post("/auth/reset-password", {
+            token,
+            newPassword,
+          });
+          set({ isLoading: false });
+          return { success: true, data };
+        } catch (error) {
+          const message = handleApiError(
+            error,
+            "Error al resetear la contraseña"
+          );
+          set({ isLoading: false, error: message });
+          return { success: false, error: message };
+        }
+      },
+    }),
+    {
+      name: "auth-storage",
+      storage: createJSONStorage(() => AsyncStorage),
+      partialize: (state) => ({ token: state.token, user: state.user }),
     }
-  },
-
-  verifyResetToken: async (token) => {
-    set({ isLoading: true, error: null });
-    
-    try {
-      const response = await api.post('/auth/verify-reset-token', { token });
-      
-      set({ 
-        isLoading: false,
-        error: null
-      });
-
-      return { success: true, valid: response.data.valid, data: response.data };
-    } catch (error) {
-      const errorMessage = error.response?.data?.message || 'Token inválido o expirado';
-      set({ 
-        isLoading: false, 
-        error: errorMessage
-      });
-      return { success: false, error: errorMessage };
-    }
-  },
-
-  resetPassword: async (token, newPassword) => {
-    set({ isLoading: true, error: null });
-    
-    try {
-      const response = await api.post('/auth/reset-password', { 
-        token, 
-        newPassword 
-      });
-      
-      set({ 
-        isLoading: false,
-        error: null
-      });
-
-      return { success: true, data: response.data };
-    } catch (error) {
-      const errorMessage = error.response?.data?.message || 'Error al resetear la contraseña';
-      set({ 
-        isLoading: false, 
-        error: errorMessage
-      });
-      return { success: false, error: errorMessage };
-    }
-  },
-}),
-{
-  name: 'auth-storage', // nombre de la clave en AsyncStorage
-  storage: createJSONStorage(() => AsyncStorage), // configuración del storage
-  partialize: (state) => ({ 
-    token: state.token, 
-    user: state.user 
-  }), 
-}
-));
+  )
+);
 
 export default useAuthStore;
