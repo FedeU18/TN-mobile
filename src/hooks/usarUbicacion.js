@@ -20,7 +20,7 @@ const usarUbicacion = () => {
   const pedidoActivoRef = useRef(null);
   const appStateRef = useRef(AppState.currentState);
 
-  // ---- Inicializar permisos al cargar hook ----
+  // ---- Inicializar permisos ----
   useEffect(() => {
     const inicializarPermisos = async () => {
       try {
@@ -53,7 +53,13 @@ const usarUbicacion = () => {
       appStateRef.current = next;
     });
 
-    return () => subscription?.remove();
+    // ✅ limpiar intervalos si el hook se desmonta
+    return () => {
+      subscription?.remove();
+      if (intervaloRef.current) {
+        clearInterval(intervaloRef.current);
+      }
+    };
   }, []);
 
   // ---- Iniciar seguimiento ----
@@ -67,12 +73,19 @@ const usarUbicacion = () => {
     }
 
     try {
+      // Evitar duplicar intervalos
+      if (intervaloRef.current) {
+        clearInterval(intervaloRef.current);
+      }
+
       pedidoActivoRef.current = pedidoId;
       setEstaRastreando(true);
       setError(null);
 
+      // Enviar la ubicación inicial
       await enviarUbicacion(pedidoId);
 
+      // Configurar intervalo de envío
       intervaloRef.current = setInterval(async () => {
         if (
           appStateRef.current === "active" &&
@@ -98,6 +111,7 @@ const usarUbicacion = () => {
     }
     pedidoActivoRef.current = null;
     setEstaRastreando(false);
+    console.log("🛑 Seguimiento detenido correctamente");
   };
 
   // ---- Envío de ubicación ----
@@ -105,9 +119,19 @@ const usarUbicacion = () => {
     try {
       const ubicacion = await obtenerUbicacionActual();
       setUltimaUbicacion(ubicacion);
+      const respuesta = await enviarUbicacionAlBackend(pedidoId, ubicacion);
 
-      await enviarUbicacionAlBackend(pedidoId, ubicacion);
+      // 👇 Si el backend devuelve 401 (token expirado / sesión cerrada)
+      if (respuesta?.status === 401) {
+        console.log("⚠️ Token inválido: deteniendo seguimiento...");
+        detenerSeguimiento();
+      }
     } catch (err) {
+      // 👇 Si el backend lanza 401 en el catch
+      if (err.message?.includes("401")) {
+        console.log("⚠️ Backend devolvió 401. Deteniendo seguimiento...");
+        detenerSeguimiento();
+      }
       setError(err.message);
     }
   };

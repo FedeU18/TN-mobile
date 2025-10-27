@@ -58,6 +58,10 @@ export default function PedidoDetalleRepartidor({ pedido }) {
     };
 
     fetchDetalle();
+
+    return () => {
+      detenerSeguimiento();
+    };
   }, [pedido.id_pedido]);
 
   const manejarCambioEstado = async (nuevoEstado) => {
