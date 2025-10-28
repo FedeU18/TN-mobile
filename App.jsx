@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import useRegistrarTokenPush from "./src/hooks/useRegistrarTokenPush";
 import { View, Text, ActivityIndicator, StyleSheet } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import useAuthStore from "./src/stores/authStore";
@@ -7,6 +8,7 @@ import AuthNavigator from "./src/navigation/AuthNavigator";
 import AppLayout from "./src/components/layout/AppLayout";
 
 export default function App() {
+  useRegistrarTokenPush();
   const { token, user } = useAuthStore();
   const [isReady, setIsReady] = useState(false);
 

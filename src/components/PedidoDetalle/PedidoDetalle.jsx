@@ -2,8 +2,8 @@
 import React from "react";
 import { View, Text } from "react-native";
 import useAuthStore from "../../stores/authStore";
-import PedidoDetalleCliente from "./PedidoDetalleCliente";
-import PedidoDetalleRepartidor from "./PedidoDetalleRepartidor";
+import PedidoDetalleCliente from "./Cliente/PedidoDetalleCliente";
+import PedidoDetalleRepartidor from "./Repartidor/PedidoDetalleRepartidor";
 
 export default function PedidoDetalle({ route }) {
   const { user } = useAuthStore();
