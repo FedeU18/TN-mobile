@@ -88,3 +88,18 @@ export const getPedidoConUbicacion = async (pedidoId) => {
     }
 };
 
+// Calificar al repartidor después de la entrega
+export const calificarRepartidor = async (pedidoId, puntuacion, comentario) => {
+    try {
+        const response = await api.post('/repartidores/calificar', {
+            pedidoId,
+            puntuacion,
+            comentario: comentario || null, // El comentario es opcional
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error al calificar al repartidor:', error);
+        throw error;
+    }
+};
+

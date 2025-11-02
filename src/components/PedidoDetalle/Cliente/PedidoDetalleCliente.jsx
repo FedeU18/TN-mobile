@@ -11,6 +11,7 @@ import {
 import {
   getPedidoDetalleCliente,
   getPedidoConUbicacion,
+  calificarRepartidor,
 } from "../../../utils/pedidoService";
 import { useUbicacionSocket } from "../../../hooks/useUbicacionSocket";
 import MapaRepartidor from "../../MapaRepartidor/MapaRepartidor";
@@ -249,12 +250,17 @@ export default function PedidoDetalleCliente({ pedido }) {
                   <CalificacionRepartidor
                     onSubmit={async ({ rating, comentario }) => {
                       try {
-                        // Hacer el llamado a la API para enviar la calificación
-                        // await enviarCalificacionRepartidor(detalle.id_pedido, rating, comentario);
-                        Alert.alert("¡Gracias!", "Tu calificación ha sido enviada.");
+                        // Enviar la calificación al repartidor
+                        await calificarRepartidor(detalle.id_pedido, rating, comentario);
+                        Alert.alert(
+                          "¡Gracias!", 
+                          "Tu calificación ha sido enviada exitosamente."
+                        );
                         setModalVisible(false);
                       } catch (err) {
-                        Alert.alert("Error", "No se pudo enviar la calificación.");
+                        console.error('Error al enviar calificación:', err);
+                        const errorMsg = err.response?.data?.message || "No se pudo enviar la calificación. Por favor, intenta nuevamente.";
+                        Alert.alert("Error", errorMsg);
                       }
                     }}
                   />

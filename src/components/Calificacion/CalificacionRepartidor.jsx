@@ -1,13 +1,11 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
-import styles from "./CalificacionRepartidorStyles";
+import { View, Text, TextInput, TouchableOpacity } from "react-native";
+import styles from "./CalificacionRepartidorStyles.jsx";
 
 const MAX_STARS = 5;
-const MIN_RATING = 0.5;
 
 export default function CalificacionRepartidor({ onSubmit }) {
   const [rating, setRating] = useState(0);
-  const [hover, setHover] = useState(null);
   const [comentario, setComentario] = useState("");
   const [error, setError] = useState("");
 
@@ -17,11 +15,16 @@ export default function CalificacionRepartidor({ onSubmit }) {
   };
 
   const handleSubmit = () => {
-    if (rating < MIN_RATING) {
-      setError("Debes seleccionar una calificación (mínimo 0.5 estrellas)");
+    // Validar que se haya seleccionado una puntuación
+    if (rating < 1) {
+      setError("Debes seleccionar al menos 1 estrella");
       return;
     }
-    onSubmit({ rating, comentario });
+
+    // Enviar la calificación (comentario es opcional)
+    onSubmit({ rating, comentario: comentario.trim() || null });
+    
+    // Resetear el formulario
     setRating(0);
     setComentario("");
   };
@@ -29,36 +32,45 @@ export default function CalificacionRepartidor({ onSubmit }) {
   return (
     <View style={styles.container}>
       <Text style={styles.label}>Califica al repartidor:</Text>
+      
+      {/* Sistema de estrellas */}
       <View style={styles.starsContainer}>
-        {[...Array(MAX_STARS * 2)].map((_, i) => {
-          const value = (i + 1) * 0.5;
-          return (
-            <TouchableOpacity
-              key={value}
-              onPress={() => handleStarPress(value)}
-              onMouseEnter={() => setHover(value)}
-              onMouseLeave={() => setHover(null)}
-            >
-              <Text style={
-                value <= (hover || rating)
-                  ? styles.starSelected
-                  : styles.star
-              }>
-                {value % 1 === 0 ? "★" : "☆"}
-              </Text>
-            </TouchableOpacity>
-          );
-        })}
+        {[1, 2, 3, 4, 5].map((star) => (
+          <TouchableOpacity
+            key={star}
+            onPress={() => handleStarPress(star)}
+            style={styles.starButton}
+          >
+            <Text style={star <= rating ? styles.starSelected : styles.star}>
+              ★
+            </Text>
+          </TouchableOpacity>
+        ))}
       </View>
-      <Text style={styles.ratingText}>{rating ? `${rating} estrellas` : ""}</Text>
+      
+      {/* Mostrar puntuación actual */}
+      {rating > 0 && (
+        <Text style={styles.ratingText}>
+          {rating} {rating === 1 ? "estrella" : "estrellas"}
+        </Text>
+      )}
+      
+      {/* Input de comentario opcional */}
       <TextInput
         style={styles.input}
         placeholder="Deja un comentario (opcional)"
+        placeholderTextColor="#999"
         value={comentario}
         onChangeText={setComentario}
         multiline
+        numberOfLines={3}
+        textAlignVertical="top"
       />
+      
+      {/* Mensaje de error */}
       {error ? <Text style={styles.error}>{error}</Text> : null}
+      
+      {/* Botón enviar */}
       <TouchableOpacity style={styles.button} onPress={handleSubmit}>
         <Text style={styles.buttonText}>Enviar calificación</Text>
       </TouchableOpacity>
