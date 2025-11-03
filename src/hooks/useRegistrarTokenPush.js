@@ -8,9 +8,20 @@ export default function useRegistrarTokenPush() {
   const { tokenPushExpo } = useNotificacionesPush();
 
   useEffect(() => {
-    if (user && tokenPushExpo) {
+    if (user && tokenPushExpo && token) {
       // Enviar el token al backend
-      // api.post('/users/push-token', { userId: user.id, token: tokenPushExpo });
+      const registrarToken = async () => {
+        try {
+          const response = await api.post('/users/push-token', { 
+            token: tokenPushExpo 
+          });
+          console.log('✅ Token push registrado en el backend:', response.data);
+        } catch (error) {
+          console.error('❌ Error al registrar token push:', error.response?.data || error.message);
+        }
+      };
+      
+      registrarToken();
     }
-  }, [user, tokenPushExpo]);
+  }, [user, tokenPushExpo, token]);
 }

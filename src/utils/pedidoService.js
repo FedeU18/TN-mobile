@@ -32,9 +32,14 @@ export const getMisPedidos = async () => {
     }
 };
 
-export const actualizarEstadoPedido = async (pedidoId, nuevoEstado) => {
+export const actualizarEstadoPedido = async (pedidoId, nuevoEstado, qr_token = null) => {
     try {
-        const response = await api.put(`/pedidos/estado/${pedidoId}`, { nuevoEstado });
+        const body = { nuevoEstado };
+        // Si se proporciona un token QR, se incluye en el body
+        if (qr_token) {
+            body.qr_token = qr_token;
+        }
+        const response = await api.put(`/pedidos/estado/${pedidoId}`, body);
         return response.data;
     } catch (error) {
         console.error('Error al actualizar estado del pedido:', error);
@@ -106,11 +111,8 @@ export const calificarRepartidor = async (pedidoId, puntuacion, comentario) => {
 // Validar QR y confirmar entrega del pedido
 export const validarQREntrega = async (pedidoId, qr_token) => {
     try {
-        const response = await api.post('/pedidos/validarQR', {
-            pedidoId,
-            qr_token,
-        });
-        return response.data;
+        // Usa el endpoint existente PUT /pedidos/estado/:id que ya valida el token
+        return await actualizarEstadoPedido(pedidoId, 'Entregado', qr_token);
     } catch (error) {
         console.error('Error al validar QR de entrega:', error);
         throw error;
