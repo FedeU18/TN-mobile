@@ -94,7 +94,7 @@ export const calificarRepartidor = async (pedidoId, puntuacion, comentario) => {
         const response = await api.post('/repartidores/calificar', {
             pedidoId,
             puntuacion,
-            comentario: comentario || null, // El comentario es opcional
+            comentario: comentario || null,
         });
         return response.data;
     } catch (error) {
@@ -103,3 +103,16 @@ export const calificarRepartidor = async (pedidoId, puntuacion, comentario) => {
     }
 };
 
+// Validar QR y confirmar entrega del pedido
+export const validarQREntrega = async (pedidoId, qr_token) => {
+    try {
+        const response = await api.post('/pedidos/validarQR', {
+            pedidoId,
+            qr_token,
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error al validar QR de entrega:', error);
+        throw error;
+    }
+};

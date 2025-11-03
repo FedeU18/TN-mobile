@@ -1,17 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { Camera } from 'expo-camera';
-import { useRef } from 'react';
+import { CameraView, useCameraPermissions } from 'expo-camera';
 import {
   View,
   Text,
   ActivityIndicator,
   ScrollView,
-  StyleSheet,
 } from "react-native";
 import {
   getPedidoDetalleCliente,
   getPedidoConUbicacion,
   calificarRepartidor,
+  validarQREntrega,
 } from "../../../utils/pedidoService";
 import { useUbicacionSocket } from "../../../hooks/useUbicacionSocket";
 import MapaRepartidor from "../../MapaRepartidor/MapaRepartidor";
@@ -20,16 +19,15 @@ import { Alert, Modal, TouchableOpacity } from "react-native";
 import styles from "./PedidoDetalleClienteStyles";
 
 export default function PedidoDetalleCliente({ pedido }) {
-  const [hasPermission, setHasPermission] = useState(null);
+  const [permission, requestPermission] = useCameraPermissions();
   const [scannerVisible, setScannerVisible] = useState(false);
   const [scanned, setScanned] = useState(false);
-  const cameraRef = useRef(null);
   const [detalle, setDetalle] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [origen, setOrigen] = useState(null);
   const [destino, setDestino] = useState(null);
-    const [modalVisible, setModalVisible] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
 
   // Repartidor en tiempo real vía socket
   const ubicacionRepartidor = useUbicacionSocket(
@@ -38,10 +36,6 @@ export default function PedidoDetalleCliente({ pedido }) {
   );
 
   useEffect(() => {
-    (async () => {
-      const { status } = await Camera.requestCameraPermissionsAsync();
-      setHasPermission(status === 'granted');
-    })();
     const fetchDetalle = async () => {
       try {
         setLoading(true);
@@ -111,12 +105,82 @@ export default function PedidoDetalleCliente({ pedido }) {
   console.log("origen:", origen);
   console.log("destino:", destino);
 
-  const handleBarCodeScanned = ({ data }) => {
+  const handleBarCodeScanned = async ({ data }) => {
+    if (scanned) return;
     setScanned(true);
-    setScannerVisible(false);
-    Alert.alert('QR escaneado', 'Entrega confirmada. Código: ' + data);
-    // Acá iría la conexión con el backend para confirmar la entrega
-    // await confirmarEntregaPedido(detalle.id_pedido, data);
+
+    try {
+      // Extraemos el token del query string
+      const url = new URL(data);
+      const token = url.searchParams.get('token');
+      
+      if (!token) {
+        Alert.alert('❌ Error', 'El código QR no contiene un token válido');
+        setScanned(false);
+        return;
+      }
+
+      // Validar el QR con el backend
+      const resultado = await validarQREntrega(detalle.id_pedido, token);
+      
+      // Cerrar el scanner
+      setScannerVisible(false);
+      
+      // Mostrar confirmación
+      Alert.alert(
+        'Entrega confirmada',
+        `Pedido #${detalle.id_pedido} entregado exitosamente`,
+        [{ 
+          text: 'OK', 
+          onPress: () => {
+            // Actualizar el estado local del pedido
+            setDetalle(prev => ({
+              ...prev,
+              estado: { nombre_estado: 'Entregado' }
+            }));
+          }
+        }]
+      );
+      
+    } catch (error) {
+      console.error('Error al validar QR:', error);
+      setScanned(false); // Permitir reintentar
+      
+      const errorMsg = error.response?.data?.message || 'QR inválido o expirado. Por favor, verifica con el repartidor.';
+      
+      Alert.alert(
+        'Error al validar QR', 
+        errorMsg,
+        [
+          { 
+            text: 'Reintentar', 
+            onPress: () => setScanned(false) 
+          },
+          { 
+            text: 'Cancelar', 
+            onPress: () => setScannerVisible(false),
+            style: 'cancel'
+          }
+        ]
+      );
+    }
+  };
+
+  const abrirScanner = async () => {
+    // Solicitar permisos si aún no se han otorgado
+    if (!permission?.granted) {
+      const { granted } = await requestPermission();
+      if (!granted) {
+        Alert.alert(
+          'Permiso requerido',
+          'Necesitas otorgar permiso de cámara para escanear el código QR'
+        );
+        return;
+      }
+    }
+    
+    setScanned(false);
+    setScannerVisible(true);
   };
 
   return (
@@ -163,18 +227,12 @@ export default function PedidoDetalleCliente({ pedido }) {
               📍 Seguimiento en tiempo real activo
             </Text>
           </View>
-          <View style={{ alignItems: "center", marginVertical: 20 }}>
+          <View style={styles.botonContainer}>
             <TouchableOpacity
-              style={{
-                backgroundColor: "#28a745",
-                padding: 12,
-                borderRadius: 8,
-                minWidth: 180,
-                alignItems: "center",
-              }}
-              onPress={() => setScannerVisible(true)}
+              style={styles.botonEscanear}
+              onPress={abrirScanner}
             >
-              <Text style={{ color: "#fff", fontWeight: "bold" }}>
+              <Text style={styles.botonTexto}>
                 Escanear QR para entrega
               </Text>
             </TouchableOpacity>
@@ -183,32 +241,69 @@ export default function PedidoDetalleCliente({ pedido }) {
             visible={scannerVisible}
             animationType="slide"
             transparent={false}
-            onRequestClose={() => setScannerVisible(false)}
+            onRequestClose={() => {
+              setScannerVisible(false);
+              setScanned(false);
+            }}
           >
-            <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#000" }}>
-              {hasPermission === null ? (
-                <Text style={{ color: '#fff' }}>Solicitando permiso para la cámara...</Text>
-              ) : hasPermission === false ? (
-                <Text style={{ color: '#fff' }}>No se tiene acceso a la cámara</Text>
-              ) : (
-                <Camera
-                  ref={cameraRef}
-                  style={{ height: 400, width: 300 }}
-                  barCodeScannerSettings={{
-                    barCodeTypes: ["qr"],
+            <View style={styles.modalScanner}>
+              {/* Encabezado del scanner */}
+              <View style={styles.scannerHeader}>
+                <Text style={styles.scannerTitulo}>
+                  Escanear código QR
+                </Text>
+                <Text style={styles.scannerSubtitulo}>
+                  Apunta la cámara al código QR del repartidor
+                </Text>
+              </View>
+
+              {/* Cámara */}
+              <View style={styles.cameraContainer}>
+                {permission?.granted ? (
+                  <CameraView
+                    style={styles.cameraView}
+                    facing="back"
+                    barcodeScannerSettings={{
+                      barcodeTypes: ["qr"],
+                    }}
+                    onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
+                  >
+                    {/* Marco visual para el QR */}
+                    <View style={styles.qrMarcoContainer}>
+                      <View style={styles.qrMarco} />
+                    </View>
+                  </CameraView>
+                ) : (
+                  <View style={styles.permisoContainer}>
+                    <Text style={styles.permisoTexto}>
+                      Se requiere permiso de cámara para escanear códigos QR
+                    </Text>
+                    <TouchableOpacity
+                      style={styles.botonPermiso}
+                      onPress={requestPermission}
+                    >
+                      <Text style={styles.botonTexto}>
+                        Otorgar permiso
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                )}
+              </View>
+
+              {/* Botón cancelar */}
+              <View style={styles.scannerFooter}>
+                <TouchableOpacity
+                  style={styles.botonCancelar}
+                  onPress={() => {
+                    setScannerVisible(false);
+                    setScanned(false);
                   }}
-                  onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
-                />
-              )}
-              <TouchableOpacity
-                style={{ marginTop: 20, backgroundColor: '#fff', padding: 10, borderRadius: 8 }}
-                onPress={() => {
-                  setScannerVisible(false);
-                  setScanned(false);
-                }}
-              >
-                <Text style={{ color: '#007AFF' }}>Cancelar</Text>
-              </TouchableOpacity>
+                >
+                  <Text style={styles.botonCancelarTexto}>
+                    Cancelar
+                  </Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </Modal>
         </>
@@ -216,65 +311,59 @@ export default function PedidoDetalleCliente({ pedido }) {
 
       {detalle.estado?.nombre_estado === "Entregado" && (
         <View style={styles.seguimiento}>
-          <Text style={styles.entregadoTexto}>✅ Pedido entregado</Text>
+          <Text style={styles.entregadoTexto}>Pedido entregado</Text>
         </View>
       )}
 
-        {/* Módulo de calificación al repartidor */}
-        {detalle.estado?.nombre_estado === "Entregado" && (
-          <View>
-            <View style={{ alignItems: "center", marginVertical: 20 }}>
-              <TouchableOpacity
-                style={{
-                  backgroundColor: "#007AFF",
-                  padding: 12,
-                  borderRadius: 8,
-                  minWidth: 180,
-                  alignItems: "center",
-                }}
-                onPress={() => setModalVisible(true)}
-              >
-                <Text style={{ color: "#fff", fontWeight: "bold" }}>
-                  Calificar repartidor
-                </Text>
-              </TouchableOpacity>
-            </View>
-            <Modal
-              visible={modalVisible}
-              animationType="slide"
-              transparent={true}
-              onRequestClose={() => setModalVisible(false)}
+      {/* Módulo de calificación al repartidor */}
+      {detalle.estado?.nombre_estado === "Entregado" && (
+        <View>
+          <View style={styles.botonContainer}>
+            <TouchableOpacity
+              style={styles.botonCalificar}
+              onPress={() => setModalVisible(true)}
             >
-              <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "rgba(0,0,0,0.4)" }}>
-                <View style={{ backgroundColor: "#fff", borderRadius: 12, padding: 20, width: "90%", elevation: 5 }}>
-                  <CalificacionRepartidor
-                    onSubmit={async ({ rating, comentario }) => {
-                      try {
-                        // Enviar la calificación al repartidor
-                        await calificarRepartidor(detalle.id_pedido, rating, comentario);
-                        Alert.alert(
-                          "¡Gracias!", 
-                          "Tu calificación ha sido enviada exitosamente."
-                        );
-                        setModalVisible(false);
-                      } catch (err) {
-                        console.error('Error al enviar calificación:', err);
-                        const errorMsg = err.response?.data?.message || "No se pudo enviar la calificación. Por favor, intenta nuevamente.";
-                        Alert.alert("Error", errorMsg);
-                      }
-                    }}
-                  />
-                  <TouchableOpacity
-                    style={{ marginTop: 10, alignItems: "center" }}
-                    onPress={() => setModalVisible(false)}
-                  >
-                    <Text style={{ color: "#007AFF" }}>Cancelar</Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            </Modal>
+              <Text style={styles.botonTexto}>
+                Calificar repartidor
+              </Text>
+            </TouchableOpacity>
           </View>
-  )}
+          <Modal
+            visible={modalVisible}
+            animationType="slide"
+            transparent={true}
+            onRequestClose={() => setModalVisible(false)}
+          >
+            <View style={styles.modalCalificacionContainer}>
+              <View style={styles.modalCalificacionContent}>
+                <CalificacionRepartidor
+                  onSubmit={async ({ rating, comentario }) => {
+                    try {
+                      // Enviar la calificación al repartidor
+                      await calificarRepartidor(detalle.id_pedido, rating, comentario);
+                      Alert.alert(
+                        "¡Gracias!", 
+                        "Tu calificación ha sido enviada exitosamente."
+                      );
+                      setModalVisible(false);
+                    } catch (err) {
+                      console.error('Error al enviar calificación:', err);
+                      const errorMsg = err.response?.data?.message || "No se pudo enviar la calificación. Por favor, intenta nuevamente.";
+                      Alert.alert("Error", errorMsg);
+                    }
+                  }}
+                />
+                <TouchableOpacity
+                  style={styles.botonCancelarCalificacion}
+                  onPress={() => setModalVisible(false)}
+                >
+                  <Text style={styles.textoCancelarCalificacion}>Cancelar</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </Modal>
+        </View>
+      )}
     </ScrollView>
   );
 }

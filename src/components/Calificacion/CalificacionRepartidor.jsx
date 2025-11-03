@@ -17,7 +17,7 @@ export default function CalificacionRepartidor({ onSubmit }) {
   const handleSubmit = () => {
     // Validar que se haya seleccionado una puntuación
     if (rating < 1) {
-      setError("Debes seleccionar al menos 1 estrella");
+      setError("Debés seleccionar al menos 1 estrella");
       return;
     }
 
