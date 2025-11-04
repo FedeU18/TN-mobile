@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
+import io from "socket.io-client";
 import {
   View,
   Text,
   ActivityIndicator,
   ScrollView,
-  StyleSheet,
   TouchableOpacity,
   Alert,
   Image,
@@ -26,6 +26,9 @@ export default function PedidoDetalleRepartidor({ pedido }) {
   const [destino, setDestino] = useState(null);
   const [mostrarQR, setMostrarQR] = useState(false);
 
+  // 👉 Nuevo: flag para evitar alertas duplicadas
+  const cambioLocalRef = useRef(false);
+
   const {
     estaRastreando,
     ultimaUbicacion,
@@ -33,41 +36,101 @@ export default function PedidoDetalleRepartidor({ pedido }) {
     detenerSeguimiento,
   } = usarUbicacion();
 
-  useEffect(() => {
-    const fetchDetalle = async () => {
-      try {
-        setLoading(true);
-        const data = await getPedidoDetalle(pedido.id_pedido);
-        setDetalle(data);
+  // 🔹 Fetch detalle reutilizable
+  const fetchDetalle = useCallback(async () => {
+    try {
+      setLoading(true);
+      const data = await getPedidoDetalle(pedido.id_pedido);
+      setDetalle(data);
 
-        // ✅ Campos correctos según tu backend
-        if (data.origen_latitud && data.origen_longitud) {
-          setOrigen({
-            latitud: parseFloat(data.origen_latitud),
-            longitud: parseFloat(data.origen_longitud),
-          });
-        }
-        if (data.destino_latitud && data.destino_longitud) {
-          setDestino({
-            latitud: parseFloat(data.destino_latitud),
-            longitud: parseFloat(data.destino_longitud),
-          });
-        }
-      } catch (err) {
-        console.error("Error al cargar detalle:", err);
-        setError("No se pudo cargar el pedido.");
-      } finally {
-        setLoading(false);
+      if (data.origen_latitud && data.origen_longitud) {
+        setOrigen({
+          latitud: parseFloat(data.origen_latitud),
+          longitud: parseFloat(data.origen_longitud),
+        });
       }
-    };
-
-    fetchDetalle();
-
-    return () => detenerSeguimiento();
+      if (data.destino_latitud && data.destino_longitud) {
+        setDestino({
+          latitud: parseFloat(data.destino_latitud),
+          longitud: parseFloat(data.destino_longitud),
+        });
+      }
+    } catch (err) {
+      console.error("Error al cargar detalle:", err);
+      setError("No se pudo cargar el pedido.");
+    } finally {
+      setLoading(false);
+    }
   }, [pedido.id_pedido]);
 
+  // 🔹 Carga inicial
+  useEffect(() => {
+    fetchDetalle();
+    return () => detenerSeguimiento();
+  }, [fetchDetalle]);
+
+  // 🧩 Socket: escuchar cambios de estado en tiempo real
+  useEffect(() => {
+    const socket = io(
+      process.env.EXPO_PUBLIC_API_BASE_URL || "http://localhost:3000",
+      { transports: ["websocket"] }
+    );
+
+    socket.on("connect", () => {
+      console.log("✅ Socket conectado:", socket.id);
+      socket.emit("joinPedido", pedido.id_pedido);
+    });
+
+    socket.on("connect_error", (err) => {
+      console.error("❌ Error de conexión socket:", err.message);
+    });
+
+    socket.on("estadoActualizado", async (data) => {
+      if (data.pedidoId === Number(pedido.id_pedido)) {
+        console.log("📦 Estado actualizado recibido:", data);
+
+        // Actualizamos estado local rápido
+        setDetalle((prev) => ({
+          ...prev,
+          estado: { nombre_estado: data.nuevoEstado },
+          ...(data.qr_codigo ? { qr_codigo: data.qr_codigo } : {}),
+        }));
+
+        if (
+          data.nuevoEstado === "En camino" ||
+          data.nuevoEstado === "Entregado"
+        ) {
+          await fetchDetalle();
+        }
+
+        // 👇 Evitamos alerta si el cambio fue hecho localmente
+        if (!cambioLocalRef.current) {
+          Alert.alert(
+            "🔔 Pedido actualizado",
+            `Nuevo estado: ${data.nuevoEstado}`
+          );
+        } else {
+          // reset del flag luego de recibir confirmación
+          cambioLocalRef.current = false;
+        }
+      }
+    });
+
+    socket.on("disconnect", (reason) => {
+      console.warn("⚠️ Socket desconectado:", reason);
+    });
+
+    return () => {
+      socket.emit("leavePedido", pedido.id_pedido);
+      socket.off("estadoActualizado");
+      socket.disconnect();
+    };
+  }, [pedido.id_pedido, fetchDetalle]);
+
+  // 🔸 Cambiar estado manualmente
   const manejarCambioEstado = async (nuevoEstado) => {
     try {
+      cambioLocalRef.current = true; // 👉 marcamos que es un cambio local
       const resp = await actualizarEstadoPedido(pedido.id_pedido, nuevoEstado);
 
       Alert.alert("Éxito", `Estado actualizado a ${nuevoEstado}`);
@@ -78,27 +141,29 @@ export default function PedidoDetalleRepartidor({ pedido }) {
         estado: { nombre_estado: nuevoEstado },
       }));
 
-      if (nuevoEstado === "En camino" && resp?.qr_codigo) {
-        setMostrarQR(true);
+      if (nuevoEstado === "En camino" || nuevoEstado === "Entregado") {
+        await fetchDetalle();
       }
     } catch (err) {
       console.error("Error al cambiar estado:", err);
       Alert.alert("Error", "No se pudo actualizar el estado del pedido.");
+      cambioLocalRef.current = false; // revertir flag en caso de error
     }
   };
 
+  // 🔸 Iniciar/detener seguimiento de ubicación
   const manejarSeguimiento = async () => {
     if (estaRastreando) {
       detenerSeguimiento();
       Alert.alert("Seguimiento detenido", "Ya no se enviará tu ubicación.");
     } else {
       const ok = await iniciarSeguimiento(pedido.id_pedido);
-      if (ok) {
+      if (ok)
         Alert.alert("Seguimiento iniciado", "Tu ubicación se está enviando.");
-      }
     }
   };
 
+  // 🔹 Estados visuales
   if (loading) {
     return (
       <View style={styles.center}>
@@ -133,6 +198,7 @@ export default function PedidoDetalleRepartidor({ pedido }) {
       Cancelado: "#dc3545",
     }[detalle.estado?.nombre_estado] || "#666";
 
+  // 🔹 Render principal
   return (
     <ScrollView style={styles.container}>
       <View style={styles.card}>
@@ -165,7 +231,6 @@ export default function PedidoDetalleRepartidor({ pedido }) {
         destinoUbicacion={destino}
       />
 
-      {/* Botón de seguimiento */}
       <TouchableOpacity
         style={[
           styles.boton,
@@ -178,7 +243,6 @@ export default function PedidoDetalleRepartidor({ pedido }) {
         </Text>
       </TouchableOpacity>
 
-      {/* Botones de estado */}
       <View style={styles.botonesEstado}>
         {detalle.estado?.nombre_estado === "Asignado" && (
           <TouchableOpacity
@@ -189,7 +253,6 @@ export default function PedidoDetalleRepartidor({ pedido }) {
           </TouchableOpacity>
         )}
 
-        {/* ✅ Solo mostrar botón QR cuando está “En camino” */}
         {detalle.estado?.nombre_estado === "En camino" && (
           <TouchableOpacity
             style={[styles.botonEstado, { backgroundColor: "#007AFF" }]}
@@ -200,7 +263,6 @@ export default function PedidoDetalleRepartidor({ pedido }) {
         )}
       </View>
 
-      {/* Modal del QR */}
       <Modal visible={mostrarQR} transparent animationType="slide">
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
@@ -210,7 +272,6 @@ export default function PedidoDetalleRepartidor({ pedido }) {
               Mostrale este código al cliente
             </Text>
 
-            {/* ✅ Aseguramos que muestre correctamente la imagen Base64 */}
             {detalle?.qr_codigo ? (
               <Image
                 source={{

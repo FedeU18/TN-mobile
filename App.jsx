@@ -23,19 +23,19 @@ export default function App() {
 
   // 🔔 Simulación de recepción de notificaciones
   // (podés reemplazar esto por llamadas reales desde el backend si querés)
-  useEffect(() => {
-    // Ejemplo: mostrar un mensaje simulado al iniciar sesión
-    if (user) {
-      const timer = setTimeout(() => {
-        Alert.alert(
-          "📦 Pedido confirmado",
-          "Tu pedido #123 fue confirmado correctamente 🚴‍♂️"
-        );
-      }, 3000);
+  // useEffect(() => {
+  //   // Ejemplo: mostrar un mensaje simulado al iniciar sesión
+  //   if (user) {
+  //     const timer = setTimeout(() => {
+  //       Alert.alert(
+  //         "📦 Pedido confirmado",
+  //         "Tu pedido #123 fue confirmado correctamente 🚴‍♂️"
+  //       );
+  //     }, 3000);
 
-      return () => clearTimeout(timer);
-    }
-  }, [user]);
+  //     return () => clearTimeout(timer);
+  //   }
+  // }, [user]);
 
   if (!isReady) {
     return (

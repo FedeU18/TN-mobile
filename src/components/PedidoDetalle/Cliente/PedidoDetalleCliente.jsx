@@ -1,21 +1,23 @@
 import React, { useEffect, useState } from "react";
-import { CameraView, useCameraPermissions } from 'expo-camera';
+import { CameraView, useCameraPermissions } from "expo-camera";
 import {
   View,
   Text,
   ActivityIndicator,
   ScrollView,
+  Alert,
+  Modal,
+  TouchableOpacity,
 } from "react-native";
+import io from "socket.io-client";
 import {
   getPedidoDetalleCliente,
-  getPedidoConUbicacion,
   calificarRepartidor,
   validarQREntrega,
 } from "../../../utils/pedidoService";
 import { useUbicacionSocket } from "../../../hooks/useUbicacionSocket";
 import MapaRepartidor from "../../MapaRepartidor/MapaRepartidor";
 import CalificacionRepartidor from "../../Calificacion/CalificacionRepartidor";
-import { Alert, Modal, TouchableOpacity } from "react-native";
 import styles from "./PedidoDetalleClienteStyles";
 
 export default function PedidoDetalleCliente({ pedido }) {
@@ -29,12 +31,62 @@ export default function PedidoDetalleCliente({ pedido }) {
   const [destino, setDestino] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
 
-  // Repartidor en tiempo real vía socket
+  // 🔹 Ubicación del repartidor (socket separado)
   const ubicacionRepartidor = useUbicacionSocket(
     pedido.id_pedido,
     pedido.estado?.nombre_estado === "En camino"
   );
 
+  // 🧩 Escuchar cambios de estado en tiempo real
+  useEffect(() => {
+    const socket = io(
+      process.env.EXPO_PUBLIC_API_BASE_URL || "http://localhost:3000",
+      { transports: ["websocket"] }
+    );
+    socket.on("connect", () => {
+      console.log("✅ Conectado al servidor socket con ID:", socket.id);
+    });
+
+    socket.on("connect_error", (err) => {
+      console.error("❌ Error de conexión:", err.message);
+    });
+
+    socket.on("disconnect", (reason) => {
+      console.warn("⚠️ Desconectado del servidor:", reason);
+    });
+    socket.emit("joinPedido", pedido.id_pedido);
+    console.log("🛰️ Cliente unido al room pedido_", pedido.id_pedido);
+
+    socket.on("estadoActualizado", (data) => {
+      if (data.pedidoId === Number(pedido.id_pedido)) {
+        console.log("📦 Cliente recibió actualización de estado:", data);
+
+        setDetalle((prev) => ({
+          ...prev,
+          estado: { nombre_estado: data.nuevoEstado },
+        }));
+
+        // Aviso visual simple
+        Alert.alert(
+          "🔔 Pedido actualizado",
+          `Nuevo estado: ${data.nuevoEstado}`
+        );
+      }
+    });
+
+    socket.on("connect_error", (err) => {
+      console.error("❌ Error de conexión socket (cliente):", err.message);
+    });
+
+    return () => {
+      socket.emit("leavePedido", pedido.id_pedido);
+      socket.off("estadoActualizado");
+      socket.disconnect();
+      console.log("🛰️ Cliente desconectado del pedido", pedido.id_pedido);
+    };
+  }, [pedido.id_pedido]);
+
+  // 🔹 Fetch inicial
   useEffect(() => {
     const fetchDetalle = async () => {
       try {
@@ -42,7 +94,6 @@ export default function PedidoDetalleCliente({ pedido }) {
         const data = await getPedidoDetalleCliente(pedido.id_pedido);
         setDetalle(data);
 
-        // Si la API devuelve ubicaciones fijas, las guardamos
         if (data.origen_latitud && data.origen_longitud) {
           setOrigen({
             latitud: parseFloat(data.origen_latitud),
@@ -67,6 +118,75 @@ export default function PedidoDetalleCliente({ pedido }) {
     fetchDetalle();
   }, [pedido.id_pedido]);
 
+  // 🔹 Escanear QR para confirmar entrega
+  const handleBarCodeScanned = async ({ data }) => {
+    if (scanned) return;
+    setScanned(true);
+
+    try {
+      const url = new URL(data);
+      const token = url.searchParams.get("token");
+
+      if (!token) {
+        Alert.alert("❌ Error", "El código QR no contiene un token válido");
+        setScanned(false);
+        return;
+      }
+
+      const resultado = await validarQREntrega(detalle.id_pedido, token);
+      setScannerVisible(false);
+
+      Alert.alert(
+        "✅ Entrega confirmada",
+        `Pedido #${detalle.id_pedido} entregado`,
+        [
+          {
+            text: "OK",
+            onPress: () => {
+              setDetalle((prev) => ({
+                ...prev,
+                estado: { nombre_estado: "Entregado" },
+              }));
+            },
+          },
+        ]
+      );
+    } catch (error) {
+      console.error("Error al validar QR:", error);
+      setScanned(false);
+
+      const errorMsg =
+        error.response?.data?.message ||
+        "QR inválido o expirado. Por favor, verifica con el repartidor.";
+
+      Alert.alert("Error al validar QR", errorMsg, [
+        { text: "Reintentar", onPress: () => setScanned(false) },
+        {
+          text: "Cancelar",
+          onPress: () => setScannerVisible(false),
+          style: "cancel",
+        },
+      ]);
+    }
+  };
+
+  const abrirScanner = async () => {
+    if (!permission?.granted) {
+      const { granted } = await requestPermission();
+      if (!granted) {
+        Alert.alert(
+          "Permiso requerido",
+          "Necesitas otorgar permiso de cámara para escanear el código QR"
+        );
+        return;
+      }
+    }
+
+    setScanned(false);
+    setScannerVisible(true);
+  };
+
+  // 🔹 Estados visuales
   if (loading) {
     return (
       <View style={styles.center}>
@@ -101,88 +221,7 @@ export default function PedidoDetalleCliente({ pedido }) {
       Cancelado: "#dc3545",
     }[detalle.estado?.nombre_estado] || "#666";
 
-  console.log("ubicacionRepartidor:", ubicacionRepartidor);
-  console.log("origen:", origen);
-  console.log("destino:", destino);
-
-  const handleBarCodeScanned = async ({ data }) => {
-    if (scanned) return;
-    setScanned(true);
-
-    try {
-      // Extraemos el token del query string
-      const url = new URL(data);
-      const token = url.searchParams.get('token');
-      
-      if (!token) {
-        Alert.alert('❌ Error', 'El código QR no contiene un token válido');
-        setScanned(false);
-        return;
-      }
-
-      // Validar el QR con el backend
-      const resultado = await validarQREntrega(detalle.id_pedido, token);
-      
-      // Cerrar el scanner
-      setScannerVisible(false);
-      
-      // Mostrar confirmación
-      Alert.alert(
-        'Entrega confirmada',
-        `Pedido #${detalle.id_pedido} entregado exitosamente`,
-        [{ 
-          text: 'OK', 
-          onPress: () => {
-            // Actualizar el estado local del pedido
-            setDetalle(prev => ({
-              ...prev,
-              estado: { nombre_estado: 'Entregado' }
-            }));
-          }
-        }]
-      );
-      
-    } catch (error) {
-      console.error('Error al validar QR:', error);
-      setScanned(false); // Permitir reintentar
-      
-      const errorMsg = error.response?.data?.message || 'QR inválido o expirado. Por favor, verifica con el repartidor.';
-      
-      Alert.alert(
-        'Error al validar QR', 
-        errorMsg,
-        [
-          { 
-            text: 'Reintentar', 
-            onPress: () => setScanned(false) 
-          },
-          { 
-            text: 'Cancelar', 
-            onPress: () => setScannerVisible(false),
-            style: 'cancel'
-          }
-        ]
-      );
-    }
-  };
-
-  const abrirScanner = async () => {
-    // Solicitar permisos si aún no se han otorgado
-    if (!permission?.granted) {
-      const { granted } = await requestPermission();
-      if (!granted) {
-        Alert.alert(
-          'Permiso requerido',
-          'Necesitas otorgar permiso de cámara para escanear el código QR'
-        );
-        return;
-      }
-    }
-    
-    setScanned(false);
-    setScannerVisible(true);
-  };
-
+  // 🔹 Render principal
   return (
     <ScrollView style={styles.container}>
       <View style={styles.card}>
@@ -206,7 +245,6 @@ export default function PedidoDetalleCliente({ pedido }) {
         </Text>
       </View>
 
-      {/* Mostrar mapa si hay ubicaciones */}
       {ubicacionRepartidor || origen || destino ? (
         <MapaRepartidor
           repartidorUbicacion={ubicacionRepartidor}
@@ -219,7 +257,6 @@ export default function PedidoDetalleCliente({ pedido }) {
         </View>
       )}
 
-      {/* Estado de seguimiento y escáner QR */}
       {detalle.estado?.nombre_estado === "En camino" && (
         <>
           <View style={styles.seguimiento}>
@@ -227,16 +264,16 @@ export default function PedidoDetalleCliente({ pedido }) {
               📍 Seguimiento en tiempo real activo
             </Text>
           </View>
+
           <View style={styles.botonContainer}>
             <TouchableOpacity
               style={styles.botonEscanear}
               onPress={abrirScanner}
             >
-              <Text style={styles.botonTexto}>
-                Escanear QR para entrega
-              </Text>
+              <Text style={styles.botonTexto}>Escanear QR para entrega</Text>
             </TouchableOpacity>
           </View>
+
           <Modal
             visible={scannerVisible}
             animationType="slide"
@@ -247,28 +284,23 @@ export default function PedidoDetalleCliente({ pedido }) {
             }}
           >
             <View style={styles.modalScanner}>
-              {/* Encabezado del scanner */}
               <View style={styles.scannerHeader}>
-                <Text style={styles.scannerTitulo}>
-                  Escanear código QR
-                </Text>
+                <Text style={styles.scannerTitulo}>Escanear código QR</Text>
                 <Text style={styles.scannerSubtitulo}>
                   Apunta la cámara al código QR del repartidor
                 </Text>
               </View>
 
-              {/* Cámara */}
               <View style={styles.cameraContainer}>
                 {permission?.granted ? (
                   <CameraView
                     style={styles.cameraView}
                     facing="back"
-                    barcodeScannerSettings={{
-                      barcodeTypes: ["qr"],
-                    }}
-                    onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
+                    barcodeScannerSettings={{ barcodeTypes: ["qr"] }}
+                    onBarcodeScanned={
+                      scanned ? undefined : handleBarCodeScanned
+                    }
                   >
-                    {/* Marco visual para el QR */}
                     <View style={styles.qrMarcoContainer}>
                       <View style={styles.qrMarco} />
                     </View>
@@ -282,15 +314,12 @@ export default function PedidoDetalleCliente({ pedido }) {
                       style={styles.botonPermiso}
                       onPress={requestPermission}
                     >
-                      <Text style={styles.botonTexto}>
-                        Otorgar permiso
-                      </Text>
+                      <Text style={styles.botonTexto}>Otorgar permiso</Text>
                     </TouchableOpacity>
                   </View>
                 )}
               </View>
 
-              {/* Botón cancelar */}
               <View style={styles.scannerFooter}>
                 <TouchableOpacity
                   style={styles.botonCancelar}
@@ -299,9 +328,7 @@ export default function PedidoDetalleCliente({ pedido }) {
                     setScanned(false);
                   }}
                 >
-                  <Text style={styles.botonCancelarTexto}>
-                    Cancelar
-                  </Text>
+                  <Text style={styles.botonCancelarTexto}>Cancelar</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -310,24 +337,20 @@ export default function PedidoDetalleCliente({ pedido }) {
       )}
 
       {detalle.estado?.nombre_estado === "Entregado" && (
-        <View style={styles.seguimiento}>
-          <Text style={styles.entregadoTexto}>Pedido entregado</Text>
-        </View>
-      )}
+        <>
+          <View style={styles.seguimiento}>
+            <Text style={styles.entregadoTexto}>Pedido entregado</Text>
+          </View>
 
-      {/* Módulo de calificación al repartidor */}
-      {detalle.estado?.nombre_estado === "Entregado" && (
-        <View>
           <View style={styles.botonContainer}>
             <TouchableOpacity
               style={styles.botonCalificar}
               onPress={() => setModalVisible(true)}
             >
-              <Text style={styles.botonTexto}>
-                Calificar repartidor
-              </Text>
+              <Text style={styles.botonTexto}>Calificar repartidor</Text>
             </TouchableOpacity>
           </View>
+
           <Modal
             visible={modalVisible}
             animationType="slide"
@@ -339,17 +362,23 @@ export default function PedidoDetalleCliente({ pedido }) {
                 <CalificacionRepartidor
                   onSubmit={async ({ rating, comentario }) => {
                     try {
-                      // Enviar la calificación al repartidor
-                      await calificarRepartidor(detalle.id_pedido, rating, comentario);
+                      await calificarRepartidor(
+                        detalle.id_pedido,
+                        rating,
+                        comentario
+                      );
                       Alert.alert(
-                        "¡Gracias!", 
-                        "Tu calificación ha sido enviada exitosamente."
+                        "¡Gracias!",
+                        "Tu calificación ha sido enviada."
                       );
                       setModalVisible(false);
                     } catch (err) {
-                      console.error('Error al enviar calificación:', err);
-                      const errorMsg = err.response?.data?.message || "No se pudo enviar la calificación. Por favor, intenta nuevamente.";
-                      Alert.alert("Error", errorMsg);
+                      console.error("Error al enviar calificación:", err);
+                      Alert.alert(
+                        "Error",
+                        err.response?.data?.message ||
+                          "No se pudo enviar la calificación."
+                      );
                     }
                   }}
                 />
@@ -362,7 +391,7 @@ export default function PedidoDetalleCliente({ pedido }) {
               </View>
             </View>
           </Modal>
-        </View>
+        </>
       )}
     </ScrollView>
   );
