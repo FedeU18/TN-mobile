@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import styles from "./MapaRepartidorStyles";
 
@@ -8,6 +8,7 @@ export default function MapaRepartidor({
   origenUbicacion,
   destinoUbicacion,
 }) {
+  // Si no hay ubicaciones, mostrar mensaje
   if (!repartidorUbicacion && !origenUbicacion && !destinoUbicacion) {
     return (
       <View style={styles.mapaContainer}>
@@ -16,22 +17,14 @@ export default function MapaRepartidor({
     );
   }
 
-  // Centrar el mapa en el origen de la entrega
   // Determinar una ubicación inicial válida
   const puntoInicial =
     origenUbicacion || destinoUbicacion || repartidorUbicacion;
 
-  if (!puntoInicial) {
-    return (
-      <View style={styles.mapaContainer}>
-        <Text>No hay ubicaciones para mostrar.</Text>
-      </View>
-    );
-  }
-
+  // Configurar región inicial del mapa
   const initialRegion = {
-    latitude: puntoInicial.latitud,
-    longitude: puntoInicial.longitud,
+    latitude: puntoInicial?.latitud || -34.6037, // fallback Buenos Aires
+    longitude: puntoInicial?.longitud || -58.3816,
     latitudeDelta: 0.01,
     longitudeDelta: 0.01,
   };
@@ -52,10 +45,11 @@ export default function MapaRepartidor({
               longitude: origenUbicacion.longitud,
             }}
             title="Origen del pedido"
-            description="Origen del pedido"
+            description="Punto de retiro"
             pinColor="green"
           />
         )}
+
         {/* Destino */}
         {destinoUbicacion && (
           <Marker
@@ -63,11 +57,12 @@ export default function MapaRepartidor({
               latitude: destinoUbicacion.latitud,
               longitude: destinoUbicacion.longitud,
             }}
-            title="Dirección de entrega"
+            title="Destino del pedido"
             description="Dirección de entrega"
             pinColor="blue"
           />
         )}
+
         {/* Repartidor */}
         {repartidorUbicacion && (
           <Marker
@@ -76,13 +71,13 @@ export default function MapaRepartidor({
               longitude: repartidorUbicacion.longitud,
             }}
             title="Repartidor"
-            description="Repartidor"
+            description="Ubicación actual del repartidor"
             pinColor="red"
           />
         )}
       </MapView>
 
-      {/* Leyenda de colores */}
+      {/* Leyenda */}
       <View style={styles.leyendaContainer}>
         <Text style={styles.leyendaItem}>
           <Text style={{ color: "green", fontWeight: "bold" }}>●</Text> Origen
