@@ -1,9 +1,9 @@
 import React from "react";
 import { View, Text } from "react-native";
 import MapView, { Marker } from "react-native-maps";
-import styles from "./MapaRepartidorStyles";
+import styles from "../MapaStyles";
 
-export default function MapaRepartidor({
+export default function MapaCliente({
   repartidorUbicacion,
   origenUbicacion,
   destinoUbicacion,
@@ -12,21 +12,20 @@ export default function MapaRepartidor({
   if (!repartidorUbicacion && !origenUbicacion && !destinoUbicacion) {
     return (
       <View style={styles.mapaContainer}>
-        <Text>No hay ubicaciones para mostrar.</Text>
+        <Text>Mapa no disponible para este pedido.</Text>
       </View>
     );
   }
 
-  // Determinar una ubicación inicial válida
+  // Determinar punto inicial válido
   const puntoInicial =
-    origenUbicacion || destinoUbicacion || repartidorUbicacion;
+    repartidorUbicacion || origenUbicacion || destinoUbicacion;
 
-  // Configurar región inicial del mapa
   const initialRegion = {
     latitude: puntoInicial?.latitud || -34.6037, // fallback Buenos Aires
     longitude: puntoInicial?.longitud || -58.3816,
-    latitudeDelta: 0.01,
-    longitudeDelta: 0.01,
+    latitudeDelta: 0.02,
+    longitudeDelta: 0.02,
   };
 
   return (
