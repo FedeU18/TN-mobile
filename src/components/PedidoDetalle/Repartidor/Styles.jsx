@@ -42,6 +42,16 @@ export default StyleSheet.create({
     alignItems: "center",
     gap: 8, // some RN versions ignore gap; visual spacing handled by margins on children
   },
+  botonesFila: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginHorizontal: 15,
+    marginTop: 10,
+    marginBottom: 25,
+    gap: 8,
+  },
+
   botonEstado: {
     flex: 1,
     padding: 14,

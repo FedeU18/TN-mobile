@@ -11,19 +11,21 @@ export default function AccionesRepartidor({
 }) {
   return (
     <>
-      <TouchableOpacity
-        style={[
-          styles.boton,
-          { backgroundColor: estaRastreando ? "#dc3545" : "#007AFF" },
-        ]}
-        onPress={manejarSeguimiento}
-      >
-        <Text style={styles.botonTexto}>
-          {estaRastreando ? "Detener seguimiento" : "Iniciar seguimiento"}
-        </Text>
-      </TouchableOpacity>
+      <View style={styles.botonesFila}>
+        {/* SEGUIMIENTO */}
+        <TouchableOpacity
+          style={[
+            styles.botonEstado,
+            { backgroundColor: estaRastreando ? "#dc3545" : "#007AFF" },
+          ]}
+          onPress={manejarSeguimiento}
+        >
+          <Text style={styles.botonTexto}>
+            {estaRastreando ? "Detener" : "Iniciar"} seguimiento
+          </Text>
+        </TouchableOpacity>
 
-      <View style={styles.botonesEstado}>
+        {/* BOTONES DE ESTADO */}
         {detalle.estado?.nombre_estado === "Asignado" && (
           <TouchableOpacity
             style={[styles.botonEstado, { backgroundColor: "#FF9500" }]}
@@ -38,7 +40,7 @@ export default function AccionesRepartidor({
             style={[styles.botonEstado, { backgroundColor: "#007AFF" }]}
             onPress={() => setMostrarQR(true)}
           >
-            <Text style={styles.botonTexto}>Mostrar QR del pedido</Text>
+            <Text style={styles.botonTexto}>Mostrar QR</Text>
           </TouchableOpacity>
         )}
       </View>

@@ -44,7 +44,6 @@ export default function PedidoDetalleRepartidor({ pedido }) {
         <Text>No se encontró información del pedido.</Text>
       </View>
     );
-
   return (
     <ScrollView style={styles.container}>
       <PedidoInfo detalle={detalle} />
@@ -52,6 +51,7 @@ export default function PedidoDetalleRepartidor({ pedido }) {
         repartidorUbicacion={ultimaUbicacion}
         origenUbicacion={origen}
         destinoUbicacion={destino}
+        estadoPedido={pedido.estado.nombre_estado}
       />
       <AccionesRepartidor
         detalle={detalle}
