@@ -3,6 +3,7 @@ import { View, Text } from "react-native";
 import MapView, { Marker, Polyline } from "react-native-maps";
 import polyline from "@mapbox/polyline";
 import styles from "../MapaStyles";
+import PulsingDot from "../PulsingDot";
 
 export default function MapaRepartidor({
   repartidorUbicacion,
@@ -124,12 +125,13 @@ export default function MapaRepartidor({
         {repartidorUbicacion && (
           <Marker
             coordinate={{
-              latitude: repartidorUbicacion.latitud,
-              longitude: repartidorUbicacion.longitud,
+              latitude: Number(repartidorUbicacion.latitud),
+              longitude: Number(repartidorUbicacion.longitud),
             }}
-            pinColor="red"
-            title="Repartidor"
-          />
+            anchor={{ x: 0.5, y: 0.5 }}
+          >
+            <PulsingDot color="red" size={15} />
+          </Marker>
         )}
 
         {rutaCoords && (

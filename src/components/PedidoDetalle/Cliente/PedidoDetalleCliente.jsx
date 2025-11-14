@@ -23,7 +23,7 @@ export default function PedidoDetalleCliente({ pedido }) {
 
   const ubicacionRepartidor = useUbicacionSocket(
     pedido.id_pedido,
-    pedido.estado?.nombre_estado === "En camino"
+    detalle?.estado?.nombre_estado === "En camino"
   );
 
   if (loading)
@@ -55,6 +55,7 @@ export default function PedidoDetalleCliente({ pedido }) {
         repartidorUbicacion={ubicacionRepartidor}
         origen={origen}
         destino={destino}
+        estadoPedido={detalle?.estado?.nombre_estado} // ← AGREGADO
       />
 
       {detalle.estado?.nombre_estado === "En camino" && (

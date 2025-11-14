@@ -7,33 +7,57 @@ export const useUbicacionSocket = (pedidoId, habilitado = false) => {
   const socketRef = useRef(null);
 
   useEffect(() => {
-    if (!pedidoId || !habilitado) return;
+    console.log("📡 useUbicacionSocket INIT", { pedidoId, habilitado });
 
-    const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
-    if (!BACKEND_URL) {
-      console.warn("⚠️ EXPO_PUBLIC_BACKEND_URL no está definido en .env");
+    if (!pedidoId || !habilitado) {
+      console.log("⛔ Socket NO habilitado");
       return;
     }
 
+    const BACKEND_URL = process.env.EXPO_PUBLIC_API_BASE_URL;
+    console.log("🔗 BACKEND_URL:", BACKEND_URL);
+
+    // Crear socket
     socketRef.current = io(BACKEND_URL, {
-      transports: ["websocket"], // mejor desempeño en mobile
+      transports: ["websocket"],
     });
 
     const socket = socketRef.current;
 
-    socket.emit("joinPedido", pedidoId);
+    socket.on("connect", () => {
+      console.log("🟢 Conectado al socket:", socket.id);
+      socket.emit("joinPedido", pedidoId);
+      console.log("➡️ joinPedido enviado:", pedidoId);
+    });
 
     socket.on("ubicacionActualizada", (data) => {
-      if (data?.latitud && data?.longitud) {
-        setUbicacion({
-          latitud: data.latitud,
-          longitud: data.longitud,
-          timestamp: Date.now(),
-        });
+      console.log("📍 ubicación recibida cruda:", data);
+
+      // Convertir a números SIEMPRE
+      const lat = Number(data?.latitud);
+      const lon = Number(data?.longitud);
+
+      if (!lat || !lon || isNaN(lat) || isNaN(lon)) {
+        console.warn("⚠️ ubicación inválida recibida:", data);
+        return;
       }
+
+      const nuevaUbicacion = {
+        latitud: lat,
+        longitud: lon,
+        timestamp: Date.now(),
+      };
+
+      console.log("📍 ubicación procesada:", nuevaUbicacion);
+      setUbicacion(nuevaUbicacion);
+    });
+
+    socket.on("disconnect", () => {
+      console.log("🔴 Socket desconectado");
     });
 
     return () => {
+      console.log("👋 leavePedido:", pedidoId);
       socket.emit("leavePedido", pedidoId);
       socket.disconnect();
     };

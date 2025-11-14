@@ -3,7 +3,12 @@ import { View, Text } from "react-native";
 import MapaCliente from "../../Mapa/Cliente/MapaCliente";
 import styles from "./PedidoDetalleClienteStyles";
 
-export default function MapaPedido({ repartidorUbicacion, origen, destino }) {
+export default function MapaPedido({
+  repartidorUbicacion,
+  origen,
+  destino,
+  estadoPedido, // ← AGREGADO
+}) {
   if (!repartidorUbicacion && !origen && !destino) {
     return (
       <View style={styles.noMapa}>
@@ -17,6 +22,7 @@ export default function MapaPedido({ repartidorUbicacion, origen, destino }) {
       repartidorUbicacion={repartidorUbicacion}
       origenUbicacion={origen}
       destinoUbicacion={destino}
+      estadoPedido={estadoPedido} // ← PASADO AL MAPA CLIENTE
     />
   );
 }
