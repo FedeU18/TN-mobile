@@ -1,9 +1,10 @@
 import { StyleSheet } from 'react-native';
+import COLORS from '../../utils/colors';
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f3f4f6',
+    backgroundColor: COLORS.gray[100],
     padding: 20,
     justifyContent: 'space-between',
   },
@@ -15,20 +16,20 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 32,
     fontWeight: 'bold',
-    color: '#1f2937',
+    color: COLORS.gray[900],
     marginBottom: 20,
     textAlign: 'center',
   },
   greeting: {
     fontSize: 18,
-    color: '#4b5563',
+    color: COLORS.gray[600],
     textAlign: 'center',
     marginBottom: 10,
     lineHeight: 24,
   },
   subtitle: {
     fontSize: 16,
-    color: '#4b5563',
+    color: COLORS.gray[600],
     textAlign: 'center',
     lineHeight: 22,
   },
@@ -38,13 +39,13 @@ const styles = StyleSheet.create({
     gap: 15,
   },
   primaryButton: {
-    backgroundColor: '#1D6325',
+    backgroundColor: COLORS.primary,
     paddingVertical: 16,
     paddingHorizontal: 24,
     borderRadius: 12,
     alignItems: 'center',
     marginBottom: 10,
-    shadowColor: '#1D6325',
+    shadowColor: COLORS.primary,
     shadowOffset: {
       width: 0,
       height: 4,
@@ -65,7 +66,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     alignItems: 'center',
     borderWidth: 2,
-    borderColor: '#d1d5db',
+    borderColor: COLORS.gray[300],
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -76,12 +77,12 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   secondaryButtonText: {
-    color: '#1D6325',
+    color: COLORS.primary,
     fontSize: 16,
     fontWeight: '500',
   },
   logoutButton: {
-    backgroundColor: '#ef4444',
+    backgroundColor: COLORS.error,
     paddingVertical: 14,
     paddingHorizontal: 24,
     borderRadius: 12,
