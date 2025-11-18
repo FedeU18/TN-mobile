@@ -73,26 +73,28 @@ const useAuthStore = create(
         }
       },
 
-      verifyResetToken: async (token) => {
+      verifyResetToken: async (email, code) => {
         set({ isLoading: true, error: null });
         try {
           const { data } = await api.post("/auth/verify-reset-token", {
-            token,
+            email,
+            code,
           });
           set({ isLoading: false });
           return { success: true, data };
         } catch (error) {
-          const message = handleApiError(error, "Token inválido o expirado");
+          const message = handleApiError(error, "Código inválido o expirado");
           set({ isLoading: false, error: message });
           return { success: false, error: message };
         }
       },
 
-      resetPassword: async (token, newPassword) => {
+      resetPassword: async (email, code, newPassword) => {
         set({ isLoading: true, error: null });
         try {
           const { data } = await api.post("/auth/reset-password", {
-            token,
+            email,
+            code,
             newPassword,
           });
           set({ isLoading: false });

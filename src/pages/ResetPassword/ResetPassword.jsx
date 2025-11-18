@@ -1,71 +1,80 @@
-import React, { useState } from 'react';
-import styles from './ResetPasswordStyles';
-import { 
-  View, 
-  Text, 
-  TextInput, 
-  TouchableOpacity, 
+import React, { useState } from "react";
+import styles from "./ResetPasswordStyles";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
   Alert,
   KeyboardAvoidingView,
   Platform,
-  ScrollView 
-} from 'react-native';
-import { validateResetPassword } from '../../utils/validations';
-import useAuthStore from '../../stores/authStore';
+  ScrollView,
+} from "react-native";
+import { validateResetPassword } from "../../utils/validations";
+import useAuthStore from "../../stores/authStore";
 
 export default function ResetPassword({ navigation, route }) {
   const [form, setForm] = useState({
-    token: '',
-    newPassword: '',
-    confirmPassword: ''
+    token: "",
+    newPassword: "",
+    confirmPassword: "",
   });
   const [step, setStep] = useState(1); // 1: Verificar token, 2: Cambiar contraseña
-  const [validationError, setValidationError] = useState('');
-  
-  const { verifyResetToken, resetPassword, isLoading, error, clearError, successMessage, clearSuccessMessage } = useAuthStore();
+  const [validationError, setValidationError] = useState("");
+
+  const {
+    verifyResetToken,
+    resetPassword,
+    isLoading,
+    error,
+    clearError,
+    successMessage,
+    clearSuccessMessage,
+  } = useAuthStore();
   const { email } = route.params || {};
 
   React.useEffect(() => {
     clearError();
     clearSuccessMessage();
     setForm({
-      token: '',
-      newPassword: '',
-      confirmPassword: ''
+      token: "",
+      newPassword: "",
+      confirmPassword: "",
     });
     setStep(1);
-    setValidationError('');
+    setValidationError("");
   }, [clearError, clearSuccessMessage]);
 
   const handleChange = (name, value) => {
     setForm({
       ...form,
-      [name]: value
+      [name]: value,
     });
     if (validationError) {
-      setValidationError('');
+      setValidationError("");
     }
   };
 
   const handleVerifyToken = async () => {
     clearError();
     clearSuccessMessage();
-    setValidationError('');
-    
+    setValidationError("");
+
     if (!form.token.trim()) {
       setValidationError("Por favor ingresa el código de recuperación");
       return;
     }
-    
-    const result = await verifyResetToken(form.token);
-    
-    if (result.success && result.valid) {
+
+    const result = await verifyResetToken(email, form.token); // 👈 ahora enviamos email + code
+
+    if (result.success && result.data.valid) {
+      // 👈 backend devuelve { valid: true }
       setStep(2);
-      setValidationError('');
-      setForm(prev => ({
+      setValidationError("");
+      setForm((prev) => ({
         ...prev,
-        newPassword: '',
-        confirmPassword: ''
+        newPassword: "",
+        confirmPassword: "",
       }));
     } else {
       setValidationError(result.error || "Error al verificar el código");
@@ -75,27 +84,27 @@ export default function ResetPassword({ navigation, route }) {
   const handleResetPassword = async () => {
     clearError();
     clearSuccessMessage();
-    setValidationError('');
-    
+    setValidationError("");
+
     const validation = validateResetPassword(form);
     if (!validation.isValid) {
       setValidationError(validation.message);
       return;
     }
-    
-    const result = await resetPassword(form.token, form.newPassword);
-    
+
+    const result = await resetPassword(email, form.token, form.newPassword); // 👈 ahora enviamos email + code + newPassword
+
     if (result.success) {
       clearSuccessMessage();
-      
+
       navigation.reset({
         index: 0,
-        routes: [{ name: 'Login' }],
+        routes: [{ name: "Login" }],
       });
-      
+
       setTimeout(() => {
         Alert.alert(
-          "Éxito", 
+          "Éxito",
           "Tu contraseña ha sido restablecida exitosamente. Ahora puedes iniciar sesión con tu nueva contraseña."
         );
       }, 100);
@@ -105,39 +114,37 @@ export default function ResetPassword({ navigation, route }) {
   };
 
   return (
-    <KeyboardAvoidingView 
+    <KeyboardAvoidingView
       style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.formContainer}>
           <Text style={styles.title}>Restablecer Contraseña</Text>
-          
-          <Text style={styles.subtitle}>
-            {step === 1 ? (
-              email ? 
-                `Se envió un código a ${email}. Ingresa el código de recuperación para continuar.` : 
-                'Ingresa el código de recuperación que recibiste por email.'
-            ) : (
-              'Código verificado. Ahora establece tu nueva contraseña.'
-            )}
-          </Text>
-          
 
-          
+          <Text style={styles.subtitle}>
+            {step === 1
+              ? email
+                ? `Se envió un código a ${email}. Ingresa el código de recuperación para continuar.`
+                : "Ingresa el código de recuperación que recibiste por email."
+              : "Código verificado. Ahora establece tu nueva contraseña."}
+          </Text>
+
           {step === 1 ? (
             <TextInput
               style={styles.input}
               placeholder="Código de recuperación"
               placeholderTextColor="#9CA3AF"
               value={form.token}
-              onChangeText={(text) => handleChange('token', text)}
+              onChangeText={(text) => handleChange("token", text)}
               autoCapitalize="none"
               autoCorrect={false}
             />
           ) : (
             <View style={styles.tokenConfirmed}>
-              <Text style={styles.tokenConfirmedText}>Código verificado, ingrese su nueva contraseña</Text>
+              <Text style={styles.tokenConfirmedText}>
+                Código verificado, ingrese su nueva contraseña
+              </Text>
             </View>
           )}
 
@@ -148,18 +155,24 @@ export default function ResetPassword({ navigation, route }) {
                 placeholder="Nueva contraseña"
                 placeholderTextColor="#9CA3AF"
                 value={form.newPassword}
-                onChangeText={(text) => handleChange('newPassword', text)}
+                onChangeText={(text) => handleChange("newPassword", text)}
                 secureTextEntry={true}
                 autoCapitalize="none"
                 autoCorrect={false}
               />
 
               <View style={styles.passwordRequirements}>
-                <Text style={styles.requirementsTitle}>La contraseña debe contener:</Text>
-                <Text style={styles.requirementItem}>• Al menos 6 caracteres</Text>
+                <Text style={styles.requirementsTitle}>
+                  La contraseña debe contener:
+                </Text>
+                <Text style={styles.requirementItem}>
+                  • Al menos 6 caracteres
+                </Text>
                 <Text style={styles.requirementItem}>• Al menos un número</Text>
                 <Text style={styles.requirementItem}>• Al menos una letra</Text>
-                <Text style={styles.requirementItem}>• Al menos un carácter especial (como ! o &)</Text>
+                <Text style={styles.requirementItem}>
+                  • Al menos un carácter especial (como ! o &)
+                </Text>
               </View>
 
               <TextInput
@@ -167,7 +180,7 @@ export default function ResetPassword({ navigation, route }) {
                 placeholder="Confirmar nueva contraseña"
                 placeholderTextColor="#9CA3AF"
                 value={form.confirmPassword}
-                onChangeText={(text) => handleChange('confirmPassword', text)}
+                onChangeText={(text) => handleChange("confirmPassword", text)}
                 secureTextEntry={true}
                 autoCapitalize="none"
                 autoCorrect={false}
@@ -175,26 +188,29 @@ export default function ResetPassword({ navigation, route }) {
             </>
           )}
 
-          {(error || validationError) ? (
+          {error || validationError ? (
             <Text style={styles.errorText}>{validationError || error}</Text>
           ) : null}
-          
-          <TouchableOpacity 
-            style={[styles.button, isLoading && styles.buttonDisabled]} 
+
+          <TouchableOpacity
+            style={[styles.button, isLoading && styles.buttonDisabled]}
             onPress={step === 1 ? handleVerifyToken : handleResetPassword}
             disabled={isLoading}
           >
             <Text style={styles.buttonText}>
-              {isLoading ? 
-                (step === 1 ? 'Verificando...' : 'Restableciendo...') : 
-                (step === 1 ? 'Verificar código' : 'Restablecer contraseña')
-              }
+              {isLoading
+                ? step === 1
+                  ? "Verificando..."
+                  : "Restableciendo..."
+                : step === 1
+                ? "Verificar código"
+                : "Restablecer contraseña"}
             </Text>
           </TouchableOpacity>
 
           {step === 1 && (
-            <TouchableOpacity 
-              style={styles.linkButton} 
+            <TouchableOpacity
+              style={styles.linkButton}
               onPress={() => navigation.goBack()}
             >
               <Text style={styles.linkText}>
@@ -204,8 +220,8 @@ export default function ResetPassword({ navigation, route }) {
           )}
 
           {step === 2 && (
-            <TouchableOpacity 
-              style={styles.linkButton} 
+            <TouchableOpacity
+              style={styles.linkButton}
               onPress={() => setStep(1)}
             >
               <Text style={styles.linkText}>
@@ -214,8 +230,8 @@ export default function ResetPassword({ navigation, route }) {
             </TouchableOpacity>
           )}
 
-          <TouchableOpacity 
-            style={styles.buttonBack} 
+          <TouchableOpacity
+            style={styles.buttonBack}
             onPress={() => navigation.goBack()}
           >
             <Text style={styles.buttonText}>Volver</Text>
