@@ -1,9 +1,10 @@
 import { StyleSheet } from 'react-native';
+import COLORS from '../../utils/colors';
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f3f4f6',
+    backgroundColor: COLORS.gray[100],
   },
   scrollContainer: {
     flexGrow: 1,
@@ -28,20 +29,20 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: '700',
-    color: '#1f2937',
+    color: COLORS.gray[900],
     textAlign: 'center',
     marginBottom: 16,
   },
   subtitle: {
     fontSize: 18,
     fontWeight: '500',
-    color: '#6b7280',
+    color: COLORS.gray[500],
     textAlign: 'center',
     marginBottom: 24,
   },
   input: {
     borderWidth: 1,
-    borderColor: '#d1d5db',
+    borderColor: COLORS.gray[300],
     borderRadius: 8,
     paddingVertical: 12,
     paddingHorizontal: 16,
@@ -50,14 +51,14 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   button: {
-    backgroundColor: '#1D6325',
+    backgroundColor: COLORS.success,
     borderRadius: 8,
     paddingVertical: 12,
     alignItems: 'center',
     marginTop: 16,
   },
   buttonSecondary: {
-    backgroundColor: '#6b7280',
+    backgroundColor: COLORS.gray[500],
     borderRadius: 8,
     paddingVertical: 12,
     alignItems: 'center',
@@ -69,7 +70,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   buttonBack: {
-    backgroundColor: '#000000',
+    backgroundColor: COLORS.gray[900],
     borderRadius: 8,
     paddingVertical: 12,
     alignItems: 'center',
@@ -81,16 +82,16 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   errorText: {
-    color: 'red',
+    color: COLORS.error,
     fontSize: 14,
     textAlign: 'center',
     marginBottom: 16,
   },
   passwordRequirements: {
-    backgroundColor: '#f5f5f5',
+    backgroundColor: COLORS.gray[100],
     borderRadius: 8,
     borderLeftWidth: 4,
-    borderLeftColor: '#1D6325',
+    borderLeftColor: COLORS.success,
     padding: 12,
     marginBottom: 16,
   },

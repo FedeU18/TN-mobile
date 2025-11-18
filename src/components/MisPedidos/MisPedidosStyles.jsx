@@ -1,25 +1,27 @@
 import { StyleSheet } from 'react-native';
+import COLORS from '../../utils/colors';
 
 export default StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: COLORS.gray[100],
   },
   header: {
     backgroundColor: '#fff',
     padding: 20,
+    paddingTop: 30,
     borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
+    borderBottomColor: COLORS.gray[200],
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#333',
+    color: COLORS.gray[900],
     marginBottom: 5,
   },
   subtitle: {
     fontSize: 16,
-    color: '#666',
+    color: COLORS.gray[600],
   },
   listContainer: {
     padding: 15,
@@ -47,7 +49,7 @@ export default StyleSheet.create({
   pedidoId: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#007AFF',
+    color: COLORS.primary,
   },
   estadoBadge: {
     paddingHorizontal: 12,
@@ -65,17 +67,17 @@ export default StyleSheet.create({
   cliente: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#333',
+    color: COLORS.gray[900],
     marginBottom: 5,
   },
   repartidor: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#28a745',
+    color: COLORS.success,
     marginBottom: 5,
   },
   seguimientoIndicador: {
-    backgroundColor: '#e8f5e8',
+    backgroundColor: COLORS.successLight,
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 8,
@@ -101,7 +103,7 @@ export default StyleSheet.create({
   },
   verDetalleText: {
     fontSize: 14,
-    color: '#007AFF',
+    color: COLORS.primary,
     fontStyle: 'italic',
   },
   loadingContainer: {
@@ -112,7 +114,7 @@ export default StyleSheet.create({
   loadingText: {
     marginTop: 10,
     fontSize: 16,
-    color: '#666',
+    color: COLORS.gray[600],
   },
   emptyContainer: {
     flex: 1,
@@ -122,7 +124,7 @@ export default StyleSheet.create({
   },
   emptyText: {
     fontSize: 16,
-    color: '#666',
+    color: COLORS.gray[600],
     textAlign: 'center',
   },
 });

@@ -1,23 +1,24 @@
 import { StyleSheet } from 'react-native';
+import COLORS from '../../utils/colors';
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#f3f4f6',
+    backgroundColor: COLORS.gray[100],
     paddingHorizontal: 20,
   },
   title: {
     fontSize: 36,
     fontWeight: '700',
-    color: '#1f2937',
+    color: COLORS.gray[900],
     marginBottom: 32,
     textAlign: 'center',
   },
   subtitle: {
     fontSize: 20,
-    color: '#4b5563',
+    color: COLORS.gray[600],
     marginBottom: 48,
     textAlign: 'center',
   },
@@ -35,10 +36,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   registerButton: {
-    backgroundColor: '#1D6325',
+    backgroundColor: COLORS.success,
   },
   loginButton: {
-    backgroundColor: '#0950C3',
+    backgroundColor: COLORS.primary,
   },
   registerButtonText: {
     color: 'white',

@@ -1,25 +1,27 @@
 import { StyleSheet } from 'react-native';
+import COLORS from '../../utils/colors';
 
 export default StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: COLORS.gray[100],
   },
   header: {
     backgroundColor: '#fff',
     padding: 20,
+    paddingTop: 30,
     borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
+    borderBottomColor: COLORS.gray[200],
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#333',
+    color: COLORS.gray[900],
     marginBottom: 5,
   },
   subtitle: {
     fontSize: 16,
-    color: '#666',
+    color: COLORS.gray[600],
   },
   listContainer: {
     padding: 15,
@@ -47,11 +49,11 @@ export default StyleSheet.create({
   pedidoId: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#007AFF',
+    color: COLORS.primary,
   },
   horaEstimada: {
     fontSize: 14,
-    color: '#666',
+    color: COLORS.gray[600],
     fontWeight: '500',
   },
   pedidoInfo: {
@@ -60,23 +62,23 @@ export default StyleSheet.create({
   cliente: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#333',
+    color: COLORS.gray[900],
     marginBottom: 5,
   },
   direccion: {
     fontSize: 14,
-    color: '#666',
+    color: COLORS.gray[600],
     marginBottom: 3,
   },
   tomarButton: {
-    backgroundColor: '#28a745',
+    backgroundColor: COLORS.success,
     paddingVertical: 12,
     paddingHorizontal: 20,
     borderRadius: 8,
     alignItems: 'center',
   },
   tomarButtonDisabled: {
-    backgroundColor: '#ccc',
+    backgroundColor: COLORS.gray[300],
   },
   tomarButtonText: {
     color: '#fff',
@@ -91,7 +93,7 @@ export default StyleSheet.create({
   loadingText: {
     marginTop: 10,
     fontSize: 16,
-    color: '#666',
+    color: COLORS.gray[600],
   },
   emptyContainer: {
     flex: 1,
@@ -101,7 +103,7 @@ export default StyleSheet.create({
   },
   emptyText: {
     fontSize: 16,
-    color: '#666',
+    color: COLORS.gray[600],
     textAlign: 'center',
   },
 });

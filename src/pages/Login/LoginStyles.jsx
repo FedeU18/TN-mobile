@@ -1,9 +1,10 @@
 import { StyleSheet } from 'react-native';
+import COLORS from '../../utils/colors';
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f3f4f6',
+    backgroundColor: COLORS.gray[100],
   },
   scrollContainer: {
     flexGrow: 1,
@@ -26,13 +27,13 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: '700',
-    color: '#1f2937',
+    color: COLORS.gray[900],
     textAlign: 'center',
     marginBottom: 32,
   },
   input: {
     borderWidth: 1,
-    borderColor: '#d1d5db',
+    borderColor: COLORS.gray[300],
     borderRadius: 8,
     paddingVertical: 12,
     paddingHorizontal: 16,
@@ -41,14 +42,14 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   button: {
-    backgroundColor: '#0950C3',
+    backgroundColor: COLORS.primary,
     borderRadius: 8,
     paddingVertical: 12,
     alignItems: 'center',
     marginTop: 16,
   },
   buttonBack: {
-    backgroundColor: '#000000',
+    backgroundColor: COLORS.gray[900],
     borderRadius: 8,
     paddingVertical: 12,
     alignItems: 'center',
@@ -60,26 +61,26 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   errorText: {
-    color: 'red',
+    color: COLORS.error,
     fontSize: 14,
     textAlign: 'center',
     marginBottom: 16,
   },
   successText: {
-    color: '#059669',
+    color: COLORS.success,
     fontSize: 14,
     textAlign: 'center',
     marginBottom: 16,
-    backgroundColor: '#d1fae5',
+    backgroundColor: COLORS.successLight,
     padding: 12,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#a7f3d0',
+    borderColor: COLORS.successDark,
   },
   welcomeText: {
     fontSize: 24,
     fontWeight: '600',
-    color: '#1f2937',
+    color: COLORS.gray[900],
     textAlign: 'center',
     marginTop: 50,
   },
@@ -89,7 +90,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
   },
   linkText: {
-    color: '#0950C3',
+    color: COLORS.primary,
     fontSize: 16,
     fontWeight: '600',
     textDecorationLine: 'underline',
