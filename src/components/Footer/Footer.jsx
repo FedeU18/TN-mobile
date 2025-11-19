@@ -1,8 +1,24 @@
 import React from 'react';
-import { View, Text} from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import styles from './FooterStyles';
+import COLORS from '../../utils/colors';
 
-function Footer() {
+function Footer({ currentRoute, navigation }) {
+  const options = [
+    { label: 'Dashboard', screen: 'Dashboard', icon: 'home', params: {} },
+    { label: 'Pedidos', screen: 'MisPedidos', icon: 'list', params: {} },
+    { label: 'Disponibles', screen: 'PedidosDisponibles', icon: 'search', params: {} },
+  ];
+
+  const isActive = (screen) => currentRoute === screen;
+
+  const handleNavigation = (screen, params) => {
+    if (navigation) {
+      navigation.navigate(screen, params);
+    }
+  };
+
   return (
     <View style={styles.footer}>
       {options.map((item, index) => (
