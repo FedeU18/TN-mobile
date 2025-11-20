@@ -7,6 +7,7 @@ import AdminDashboard from "../pages/AdminDashboard/AdminDashboard";
 import Perfil from "../pages/Perfil/Perfil";
 import PedidosDisponibles from "../components/PedidosDisponibles/PedidosDisponibles";
 import MisPedidos from "../components/MisPedidos/MisPedidos";
+import HistorialEntregas from "../components/HistorialEntregas/HistorialEntregas";
 import PedidoDetalle from "../components/PedidoDetalle/PedidoDetalle";
 import Footer from "../components/Footer/Footer";
 import useAuthStore from "../stores/authStore";
@@ -42,6 +43,7 @@ const AppNavigator = () => {
         <Stack.Screen name="Dashboard" component={DefaultScreen} />
         <Stack.Screen name="PedidosDisponibles" component={PedidosDisponibles} />
         <Stack.Screen name="MisPedidos" component={MisPedidos} />
+        <Stack.Screen name="HistorialEntregas" component={HistorialEntregas} />
         <Stack.Screen name="PedidoDetalle" component={PedidoDetalle} />
         <Stack.Screen name="Perfil" component={Perfil} />
       </Stack.Navigator>

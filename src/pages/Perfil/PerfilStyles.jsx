@@ -22,11 +22,17 @@ const styles = StyleSheet.create({
   avatarContainer: {
     marginBottom: 16,
   },
+  avatarImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: COLORS.gray[200],
+  },
   userName: {
     fontSize: 24,
     fontWeight: "bold",
     color: COLORS.gray[900],
-    marginBottom: 4,
+    marginBottom: 12,
   },
   userRole: {
     fontSize: 14,
@@ -143,7 +149,8 @@ const styles = StyleSheet.create({
   actionButtons: {
     flexDirection: "row",
     paddingHorizontal: 16,
-    marginVertical: 16,
+    marginHorizontal: 0,
+    marginVertical: 6,
     gap: 12,
   },
   editButton: {
@@ -192,6 +199,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     backgroundColor: COLORS.error,
     marginHorizontal: 16,
+    marginVertical: 6,
     paddingVertical: 14,
     paddingHorizontal: 16,
     borderRadius: 12,
@@ -201,6 +209,28 @@ const styles = StyleSheet.create({
   },
   logoutButtonText: {
     color: "#fff",
+    fontSize: 16,
+    fontWeight: "600",
+  },
+  passwordButtonContainer: {
+    paddingHorizontal: 16,
+    marginHorizontal: 0,
+    marginVertical: 6,
+  },
+  changePasswordButton: {
+    flexDirection: "row",
+    backgroundColor: "#fff",
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+    borderRadius: 12,
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+    borderWidth: 2,
+    borderColor: COLORS.primary,
+  },
+  changePasswordButtonText: {
+    color: COLORS.primary,
     fontSize: 16,
     fontWeight: "600",
   },

@@ -90,16 +90,11 @@ export default function MisPedidos({ navigation, route }) {
     const routeUserRole = route?.params?.userRole;
     const finalUserRole = userRole || routeUserRole;
     
-    console.log('MisPedidos - user rol:', userRole);
-    console.log('MisPedidos - route rol:', routeUserRole);
-    console.log('MisPedidos - final rol:', finalUserRole);
 
     // Usar el store apropiado según el rol
     const usePedidos = finalUserRole === 'cliente' ? 
         require('../../stores/clienteStore').default :
         require('../../stores/pedidoStore').default;
-        
-    console.log('MisPedidos - usando store:', finalUserRole === 'cliente' ? 'clienteStore' : 'pedidoStore');
         
     const {
         misPedidos,
