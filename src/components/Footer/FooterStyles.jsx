@@ -5,7 +5,7 @@ const styles = StyleSheet.create({
   footer: {
     flexDirection: 'row',
     backgroundColor: COLORS.white,
-    paddingVertical: 8,
+    paddingVertical: 1,
     paddingHorizontal: 4,
     borderTopWidth: 1,
     borderTopColor: COLORS.gray[200],

@@ -33,6 +33,11 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     lineHeight: 22,
   },
+  errorText: {
+    color: COLORS.error,
+    fontSize: 14,
+    textAlign: 'center',
+  },
   buttonContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -44,7 +49,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     borderRadius: 12,
     alignItems: 'center',
-    marginBottom: 10,
     shadowColor: COLORS.primary,
     shadowOffset: {
       width: 0,

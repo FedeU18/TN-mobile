@@ -1,5 +1,6 @@
 import React from "react";
 import { View, Text, ActivityIndicator, ScrollView } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import usePedidoDetalle from "../../../hooks/usePedidoDetalle";
 import MapaRepartidor from "../../Mapa/Repartidor/MapaRepartidor";
 import EstadoPedido from "./EstadoPedido";
@@ -9,6 +10,7 @@ import PedidoInfo from "./PedidoInfo";
 import styles from "./Styles";
 
 export default function PedidoDetalleRepartidor({ pedido }) {
+  const insets = useSafeAreaInsets();
   const {
     detalle,
     loading,
@@ -45,7 +47,10 @@ export default function PedidoDetalleRepartidor({ pedido }) {
       </View>
     );
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView 
+      style={styles.container}
+      contentContainerStyle={{ paddingTop: insets.top, paddingBottom: insets.bottom + 20  }}
+    >
       <PedidoInfo detalle={detalle} />
       <MapaRepartidor
         repartidorUbicacion={ultimaUbicacion}

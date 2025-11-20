@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
+import { View, Text, TouchableOpacity, ActivityIndicator, Alert } from "react-native";
 import styles from "./RepartidorDashboardStyles";
 import useAuthStore from "../../stores/authStore";
 import useWeather from "../../hooks/useWeather";
@@ -9,7 +9,25 @@ export default function RepartidorDashboard({ navigation }) {
   const { user, logout } = useAuthStore();
   const { weather, loading, error } = useWeather();
 
-  const handleLogout = () => logout();
+  const handleLogout = () => {
+    Alert.alert(
+      'Cerrar sesión',
+      '¿Estás seguro de que deseas cerrar sesión?',
+      [
+        { text: 'Cancelar', onPress: () => {} },
+        {
+          text: 'Cerrar sesión',
+          onPress: () => {
+            logout();
+            navigation.reset({
+              index: 0,
+              routes: [{ name: 'Login' }],
+            });
+          },
+        },
+      ]
+    );
+  };
 
   const menuItems = [
     {
@@ -22,8 +40,10 @@ export default function RepartidorDashboard({ navigation }) {
       onPress: () =>
         navigation.navigate("MisPedidos", { userRole: "repartidor" }),
     },
-    { label: "Historial", onPress: () => console.log("Ver historial") },
-    { label: "Mi Perfil", onPress: () => console.log("Ver perfil") },
+    {
+      label: "Mi Perfil",
+      onPress: () => navigation.navigate("Perfil"),
+    },
   ];
 
   return (
@@ -32,7 +52,6 @@ export default function RepartidorDashboard({ navigation }) {
         <Text style={styles.title}>
           ¡Bienvenido {user?.nombre || "Repartidor"}!
         </Text>
-        <Text style={styles.greeting}>Panel de gestión de entregas.</Text>
         <Text style={styles.subtitle}>
           Desde aquí podrás ver tus pedidos y rutas activas.
         </Text>
@@ -73,11 +92,6 @@ export default function RepartidorDashboard({ navigation }) {
           </TouchableOpacity>
         ))}
       </View>
-
-      {/* --- LOGOUT --- */}
-      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-        <Text style={styles.logoutButtonText}>Cerrar Sesión</Text>
-      </TouchableOpacity>
     </View>
   );
 }

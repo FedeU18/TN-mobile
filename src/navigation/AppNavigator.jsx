@@ -4,6 +4,7 @@ import { View } from "react-native";
 import ClienteDashboard from "../pages/ClienteDashboard/ClienteDashboard";
 import RepartidorDashboard from "../pages/RepartidorDashboard/RepartidorDashboard";
 import AdminDashboard from "../pages/AdminDashboard/AdminDashboard";
+import Perfil from "../pages/Perfil/Perfil";
 import PedidosDisponibles from "../components/PedidosDisponibles/PedidosDisponibles";
 import MisPedidos from "../components/MisPedidos/MisPedidos";
 import PedidoDetalle from "../components/PedidoDetalle/PedidoDetalle";
@@ -42,6 +43,7 @@ const AppNavigator = () => {
         <Stack.Screen name="PedidosDisponibles" component={PedidosDisponibles} />
         <Stack.Screen name="MisPedidos" component={MisPedidos} />
         <Stack.Screen name="PedidoDetalle" component={PedidoDetalle} />
+        <Stack.Screen name="Perfil" component={Perfil} />
       </Stack.Navigator>
       <Footer currentRoute={currentRoute} />
     </View>

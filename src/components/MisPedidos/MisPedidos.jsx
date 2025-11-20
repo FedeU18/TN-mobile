@@ -9,6 +9,7 @@ import {
     RefreshControl
 } from 'react-native';
 import styles from './MisPedidosStyles';
+import useAuthStore from '../../stores/authStore';
 
 const PedidoItem = ({ pedido, onVerDetalle, userRole }) => {
     const getEstadoColor = (estado) => {
@@ -81,17 +82,24 @@ const PedidoItem = ({ pedido, onVerDetalle, userRole }) => {
 }
 
 export default function MisPedidos({ navigation, route }) {
-    // Obtener userRole de route.params
-    const userRole = route?.params?.userRole;
+    // Obtener el rol del usuario del authStore
+    const { user } = useAuthStore();
+    const userRole = user?.rol?.toLowerCase();
     
-    console.log('MisPedidos - userRole recibido:', userRole);
+    // También intentar obtener de route.params como fallback
+    const routeUserRole = route?.params?.userRole;
+    const finalUserRole = userRole || routeUserRole;
+    
+    console.log('MisPedidos - user rol:', userRole);
+    console.log('MisPedidos - route rol:', routeUserRole);
+    console.log('MisPedidos - final rol:', finalUserRole);
 
     // Usar el store apropiado según el rol
-    const usePedidos = userRole === 'cliente' ? 
+    const usePedidos = finalUserRole === 'cliente' ? 
         require('../../stores/clienteStore').default :
         require('../../stores/pedidoStore').default;
         
-    console.log('MisPedidos - usando store:', userRole === 'cliente' ? 'clienteStore' : 'pedidoStore');
+    console.log('MisPedidos - usando store:', finalUserRole === 'cliente' ? 'clienteStore' : 'pedidoStore');
         
     const {
         misPedidos,
@@ -126,7 +134,7 @@ export default function MisPedidos({ navigation, route }) {
         navigation.navigate('PedidoDetalle', {
             pedidoId: pedido.id_pedido,
             pedido: pedido,
-            userRole: userRole
+            userRole: finalUserRole
         });
     };
 
@@ -134,7 +142,7 @@ export default function MisPedidos({ navigation, route }) {
         <PedidoItem
             pedido={item}
             onVerDetalle={handleVerDetalle}
-            userRole={userRole}
+            userRole={finalUserRole}
         />
     );
 
@@ -153,8 +161,8 @@ export default function MisPedidos({ navigation, route }) {
                 <Text style={styles.title}>Mis Pedidos</Text>
                 <Text style={styles.subtitle}>
                     {misPedidos.length} pedido{misPedidos.length !== 1 ? 's' : ''} 
-                    {userRole === 'repartidor' ? ' asignado' : ''}
-                    {misPedidos.length !== 1 && userRole === 'repartidor' ? 's' : ''}
+                    {finalUserRole === 'repartidor' ? ' asignado' : ''}
+                    {misPedidos.length !== 1 && finalUserRole === 'repartidor' ? 's' : ''}
                 </Text>
             </View>
 

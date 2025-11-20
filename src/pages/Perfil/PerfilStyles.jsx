@@ -1,0 +1,209 @@
+import { StyleSheet } from "react-native";
+import COLORS from "../../utils/colors";
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "white"
+  },
+  scrollView: {
+    flex: 1,
+  },
+  contentContainer: {
+    paddingHorizontal: 0,
+    paddingBottom: 30,
+  },
+  profileSection: {
+    alignItems: "center",
+    paddingVertical: 30,
+    backgroundColor: "#fff",
+    marginVertical: 10,
+  },
+  avatarContainer: {
+    marginBottom: 16,
+  },
+  userName: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: COLORS.gray[900],
+    marginBottom: 4,
+  },
+  userRole: {
+    fontSize: 14,
+    color: COLORS.gray[600],
+    fontWeight: "500",
+  },
+  infoSection: {
+    paddingHorizontal: 16,
+    marginVertical: 10,
+  },
+  infoCard: {
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 12,
+    borderLeftWidth: 4,
+    borderLeftColor: COLORS.primary,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  infoRow: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  infoContent: {
+    marginLeft: 16,
+    flex: 1,
+  },
+  infoLabel: {
+    fontSize: 12,
+    color: COLORS.gray[600],
+    fontWeight: "500",
+    marginBottom: 4,
+  },
+  infoValue: {
+    fontSize: 16,
+    color: COLORS.gray[900],
+    fontWeight: "600",
+  },
+  statsSection: {
+    paddingHorizontal: 16,
+    marginVertical: 16,
+  },
+  statsTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: COLORS.gray[900],
+    marginBottom: 12,
+  },
+  statsContainer: {
+    flexDirection: "row",
+    gap: 12,
+  },
+  statCard: {
+    flex: 1,
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    padding: 16,
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  statNumber: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: COLORS.gray[900],
+    marginTop: 8,
+  },
+  statLabel: {
+    fontSize: 12,
+    color: COLORS.gray[600],
+    fontWeight: "500",
+    marginTop: 4,
+  },
+  historialSection: {
+    paddingHorizontal: 16,
+    marginVertical: 12,
+  },
+  historialButton: {
+    flexDirection: "row",
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    padding: 16,
+    alignItems: "center",
+    gap: 12,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  historialButtonText: {
+    flex: 1,
+    fontSize: 16,
+    fontWeight: "600",
+    color: COLORS.primary,
+  },
+  actionButtons: {
+    flexDirection: "row",
+    paddingHorizontal: 16,
+    marginVertical: 16,
+    gap: 12,
+  },
+  editButton: {
+    flex: 1,
+    flexDirection: "row",
+    backgroundColor: COLORS.primary,
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+    borderRadius: 12,
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+    shadowColor: COLORS.primary,
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
+  },
+  editButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "600",
+  },
+  settingsButton: {
+    flex: 1,
+    flexDirection: "row",
+    backgroundColor: "#fff",
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+    borderRadius: 12,
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+    borderWidth: 2,
+    borderColor: COLORS.primary,
+  },
+  settingsButtonText: {
+    color: COLORS.primary,
+    fontSize: 16,
+    fontWeight: "600",
+  },
+  logoutButton: {
+    flexDirection: "row",
+    backgroundColor: COLORS.error,
+    marginHorizontal: 16,
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+    borderRadius: 12,
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+  },
+  logoutButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "600",
+  },
+});
+
+export default styles;

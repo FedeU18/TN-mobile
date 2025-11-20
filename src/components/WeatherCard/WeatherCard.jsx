@@ -36,7 +36,6 @@ const WeatherCard = ({ weather }) => {
 const styles = StyleSheet.create({
   container: {
     alignItems: "center",
-    paddingVertical: 10,
   },
   title: {
     fontSize: 16,

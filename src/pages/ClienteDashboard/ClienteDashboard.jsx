@@ -1,18 +1,37 @@
 import React from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity, Alert } from 'react-native';
 import styles from './ClienteDashboardStyles';
 import useAuthStore from '../../stores/authStore';
 
 export default function ClienteDashboard({ navigation }) {
   const { user, logout } = useAuthStore();
 
-  const handleLogout = () => {
-    logout();
-    // El App.jsx manejará automáticamente el cambio de navegación cuando el token se limpie
-  };
-
   const navigateToMisPedidos = () => {
     navigation.navigate('MisPedidos', { userRole: 'cliente' });
+  };
+
+  const navigateToPerfil = () => {
+    navigation.navigate('Perfil');
+  };
+
+  const handleLogout = () => {
+    Alert.alert(
+      'Cerrar sesión',
+      '¿Estás seguro de que deseas cerrar sesión?',
+      [
+        { text: 'Cancelar', onPress: () => {} },
+        {
+          text: 'Cerrar sesión',
+          onPress: () => {
+            logout();
+            navigation.reset({
+              index: 0,
+              routes: [{ name: 'Login' }],
+            });
+          },
+        },
+      ]
+    );
   };
 
   return (
@@ -35,14 +54,11 @@ export default function ClienteDashboard({ navigation }) {
           <Text style={styles.secondaryButtonText}>Mis Pedidos</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.secondaryButton}>
+        <TouchableOpacity style={styles.secondaryButton} onPress={navigateToPerfil}>
           <Text style={styles.secondaryButtonText}>Mi Perfil</Text>
         </TouchableOpacity>
-      </View>
 
-      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-        <Text style={styles.logoutButtonText}>Cerrar Sesión</Text>
-      </TouchableOpacity>
+      </View>
     </View>
   );
 }

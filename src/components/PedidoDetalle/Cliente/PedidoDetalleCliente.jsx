@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Alert,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { usePedidoDetalleCliente } from "../../../hooks/usePedidoDetalleCliente";
 import { useUbicacionSocket } from "../../../hooks/useUbicacionSocket";
 import PedidoInfo from "./PedidoInfo";
@@ -16,6 +17,7 @@ import CalificarRepartidorModal from "./CalificarRepartidorModal";
 import styles from "./PedidoDetalleClienteStyles";
 
 export default function PedidoDetalleCliente({ pedido }) {
+  const insets = useSafeAreaInsets();
   const { detalle, loading, error, origen, destino, setDetalle } =
     usePedidoDetalleCliente(pedido.id_pedido);
   const [scannerVisible, setScannerVisible] = useState(false);
@@ -49,8 +51,10 @@ export default function PedidoDetalleCliente({ pedido }) {
     );
 
   return (
-    <ScrollView style={styles.container}>
-      <PedidoInfo detalle={detalle} />
+    <ScrollView 
+      style={styles.container}
+      contentContainerStyle={{ paddingTop: insets.top, paddingBottom: insets.bottom + 20 }}
+    >
       <MapaPedido
         repartidorUbicacion={ubicacionRepartidor}
         origen={origen}

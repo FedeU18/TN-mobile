@@ -69,6 +69,21 @@ export default function Login({ navigation, route }) {
     const result = await login(form.email, form.password);
 
     if (result.success) {
+      // Validar que el rol sea cliente o repartidor
+      const userRole = result.user?.rol?.toLowerCase();
+      
+      if (userRole === 'admin' || userRole === 'vendedor') {
+        // Hacer logout automáticamente
+        useAuthStore.getState().logout();
+        
+        Alert.alert(
+          "Acceso no permitido",
+          "Los administradores y vendedores deben usar la versión web de la aplicación.",
+          [{ text: "OK" }]
+        );
+        return;
+      }
+
       navigation.replace("Dashboard");
     } else {
       Alert.alert(
