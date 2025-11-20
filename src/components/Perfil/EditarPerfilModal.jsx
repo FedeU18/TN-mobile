@@ -100,13 +100,12 @@ export default function EditarPerfilModal({
 
       // Abrir galería
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ['image'],
         allowsEditing: true,
         aspect: [1, 1],
         quality: 0.6, // Reducir a 60% de calidad para minimizar tamaño
       });
 
-      if (!result.cancelled && result.assets && result.assets.length > 0) {
+      if (!result.canceled && result.assets && result.assets.length > 0) {
         const asset = result.assets[0];
         setFotoUri(asset.uri);
       }

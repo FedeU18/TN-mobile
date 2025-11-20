@@ -24,12 +24,10 @@ export const getProfile = async () => {
  */
 export const updateProfile = async (profileData) => {
   try {
-    console.log('📤 userService.updateProfile - Enviando:', profileData);
     const response = await api.put('/users/me', profileData);
-    console.log('✅ userService.updateProfile - Respuesta:', response.data);
     return response.data;
   } catch (error) {
-    console.error('❌ userService.updateProfile - Error:', error);
+    console.error('userService.updateProfile - Error:', error);
     console.error('Error details:', {
       code: error.code,
       message: error.message,
