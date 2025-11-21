@@ -172,6 +172,9 @@ export default StyleSheet.create({
     minWidth: 180,
     alignItems: "center",
   },
+  botonCalificadoDeshabilitado: {
+    backgroundColor: "#999",
+  },
   botonCancelarCalificacion: {
     marginTop: 10,
     alignItems: "center",

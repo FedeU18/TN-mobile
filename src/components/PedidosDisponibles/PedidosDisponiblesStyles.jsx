@@ -7,7 +7,7 @@ export default StyleSheet.create({
     backgroundColor: COLORS.gray[100],
   },
   header: {
-    backgroundColor: '#fff',
+    backgroundColor: COLORS.primary,
     padding: 20,
     paddingTop: 30,
     borderBottomWidth: 1,
@@ -16,12 +16,12 @@ export default StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: COLORS.gray[900],
+    color: COLORS.white,
     marginBottom: 5,
   },
   subtitle: {
     fontSize: 16,
-    color: COLORS.gray[600],
+    color: 'rgba(255, 255, 255, 0.8)',
   },
   listContainer: {
     padding: 15,
@@ -70,14 +70,32 @@ export default StyleSheet.create({
     color: COLORS.gray[600],
     marginBottom: 3,
   },
+  botoneesContainer: {
+    flexDirection: 'row',
+    gap: 10,
+  },
+  verDetalleButton: {
+    flex: 1,
+    backgroundColor: COLORS.primary,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  verDetalleButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
   tomarButton: {
+    flex: 1,
     backgroundColor: COLORS.success,
     paddingVertical: 12,
     paddingHorizontal: 20,
     borderRadius: 8,
     alignItems: 'center',
   },
-  tomarButtonDisabled: {
+  buttonDisabled: {
     backgroundColor: COLORS.gray[300],
   },
   tomarButtonText: {

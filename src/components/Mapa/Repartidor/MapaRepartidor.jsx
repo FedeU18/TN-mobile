@@ -2,8 +2,10 @@ import React, { useEffect, useState } from "react";
 import { View, Text } from "react-native";
 import MapView, { Marker, Polyline } from "react-native-maps";
 import polyline from "@mapbox/polyline";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import styles from "../MapaStyles";
 import PulsingDot from "../PulsingDot";
+import { MarcadorOrigen, MarcadorDestino, MarcadorRepartidor } from "../Marcadores";
 
 export default function MapaRepartidor({
   repartidorUbicacion,
@@ -85,8 +87,9 @@ export default function MapaRepartidor({
   };
 
   return (
-    <View style={styles.mapaContainer}>
-      {/* PANEL DE DISTANCIA RESTANTE */}
+    <View style={styles.mapWrapper}>
+      <View style={styles.mapaContainer}>
+        {/* PANEL DE DISTANCIA RESTANTE */}
       {infoRuta && (
         <View style={styles.infoRuta}>
           <Text style={styles.infoText}>
@@ -106,9 +109,10 @@ export default function MapaRepartidor({
               latitude: origenUbicacion.latitud,
               longitude: origenUbicacion.longitud,
             }}
-            pinColor="green"
             title="Origen"
-          />
+          >
+            <MarcadorOrigen />
+          </Marker>
         )}
 
         {destinoUbicacion && (
@@ -117,9 +121,10 @@ export default function MapaRepartidor({
               latitude: destinoUbicacion.latitud,
               longitude: destinoUbicacion.longitud,
             }}
-            pinColor="blue"
             title="Destino"
-          />
+          >
+            <MarcadorDestino />
+          </Marker>
         )}
 
         {repartidorUbicacion && (
@@ -130,7 +135,7 @@ export default function MapaRepartidor({
             }}
             anchor={{ x: 0.5, y: 0.5 }}
           >
-            <PulsingDot color="red" size={15} />
+            <MarcadorRepartidor />
           </Marker>
         )}
 
@@ -142,17 +147,21 @@ export default function MapaRepartidor({
           />
         )}
       </MapView>
+      </View>
 
       <View style={styles.leyendaContainer}>
-        <Text style={styles.leyendaItem}>
-          <Text style={{ color: "green" }}>●</Text> Origen
-        </Text>
-        <Text style={styles.leyendaItem}>
-          <Text style={{ color: "blue" }}>●</Text> Destino
-        </Text>
-        <Text style={styles.leyendaItem}>
-          <Text style={{ color: "red" }}>●</Text> Repartidor
-        </Text>
+        <View style={styles.leyendaItem}>
+          <MaterialCommunityIcons name="store" size={16} color="#22c55e" style={{ marginRight: 6 }} />
+          <Text>Origen</Text>
+        </View>
+        <View style={styles.leyendaItem}>
+          <MaterialCommunityIcons name="home" size={16} color="#3b82f6" style={{ marginRight: 6 }} />
+          <Text>Destino</Text>
+        </View>
+        <View style={styles.leyendaItem}>
+          <MaterialCommunityIcons name="bike" size={16} color="#ef4444" style={{ marginRight: 6 }} />
+          <Text>Repartidor</Text>
+        </View>
       </View>
     </View>
   );

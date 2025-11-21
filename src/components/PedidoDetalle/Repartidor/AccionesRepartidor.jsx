@@ -9,21 +9,28 @@ export default function AccionesRepartidor({
   manejarCambioEstado,
   setMostrarQR,
 }) {
+  // No mostrar botón de seguimiento si el pedido está cancelado o entregado
+  const mostrarBotonSeguimiento =
+    detalle.estado?.nombre_estado !== "Cancelado" &&
+    detalle.estado?.nombre_estado !== "Entregado";
+
   return (
     <>
       <View style={styles.botonesFila}>
         {/* SEGUIMIENTO */}
-        <TouchableOpacity
-          style={[
-            styles.botonEstado,
-            { backgroundColor: estaRastreando ? "#dc3545" : "#007AFF" },
-          ]}
-          onPress={manejarSeguimiento}
-        >
-          <Text style={styles.botonTexto}>
-            {estaRastreando ? "Detener" : "Iniciar"} seguimiento
-          </Text>
-        </TouchableOpacity>
+        {mostrarBotonSeguimiento && (
+          <TouchableOpacity
+            style={[
+              styles.botonEstado,
+              { backgroundColor: estaRastreando ? "#dc3545" : "#007AFF" },
+            ]}
+            onPress={manejarSeguimiento}
+          >
+            <Text style={styles.botonTexto}>
+              {estaRastreando ? "Detener" : "Iniciar"} GPS
+            </Text>
+          </TouchableOpacity>
+        )}
 
         {/* BOTONES DE ESTADO */}
         {detalle.estado?.nombre_estado === "Asignado" && (
@@ -31,7 +38,7 @@ export default function AccionesRepartidor({
             style={[styles.botonEstado, { backgroundColor: "#FF9500" }]}
             onPress={() => manejarCambioEstado("En camino")}
           >
-            <Text style={styles.botonTexto}>Iniciar trayecto</Text>
+            <Text style={styles.botonTexto}>Iniciar entrega</Text>
           </TouchableOpacity>
         )}
 

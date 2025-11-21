@@ -4,94 +4,116 @@ import COLORS from '../../utils/colors';
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.gray[100],
-    padding: 20,
-    justifyContent: 'space-between',
+    backgroundColor: COLORS.gray[50],
   },
-  welcomeContainer: {
+  
+  // ============== HEADER GRADIENT ==============
+  headerGradient: {
+    backgroundColor: COLORS.primary,
+    paddingTop: 50,
+    paddingHorizontal: 20,
+    paddingBottom: 30,
+  },
+  headerContent: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: 60,
-    marginBottom: 40,
+  },
+  headerText: {
+    flex: 1,
+  },
+  greetingSmall: {
+    fontSize: 14,
+    color: 'rgba(255, 255, 255, 0.8)',
+    marginBottom: 4,
   },
   title: {
-    fontSize: 32,
+    fontSize: 28,
     fontWeight: 'bold',
-    color: COLORS.gray[900],
-    marginBottom: 20,
+    color: COLORS.white,
   },
-  greeting: {
-    fontSize: 18,
+
+  // ============== SECTION SUBTITLE ==============
+  sectionSubtitle: {
+    fontSize: 14,
     color: COLORS.gray[600],
+    paddingHorizontal: 20,
+    marginTop: 24,
+    marginBottom: 16,
     textAlign: 'center',
-    marginBottom: 10,
-    lineHeight: 24,
+    lineHeight: 20,
   },
-  subtitle: {
-    fontSize: 16,
-    color: COLORS.gray[600],
-    textAlign: 'center',
-    lineHeight: 22,
+
+  // ============== MENU CONTAINER ==============
+  menuContainer: {
+    paddingHorizontal: 20,
+    gap: 12,
+    marginTop: 8,
   },
-  buttonContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    gap: 15,
-  },
-  primaryButton: {
+
+  // ============== PRIMARY MENU ITEM ==============
+  primaryMenuItem: {
     backgroundColor: COLORS.primary,
-    paddingVertical: 16,
-    paddingHorizontal: 24,
-    borderRadius: 12,
+    borderRadius: 16,
+    paddingVertical: 18,
+    paddingHorizontal: 16,
+    flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 10,
+    gap: 14,
     shadowColor: COLORS.primary,
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
+    shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
     elevation: 8,
   },
-  primaryButtonText: {
-    color: '#ffffff',
-    fontSize: 18,
+  menuIconContainer: {
+    width: 48,
+    height: 48,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  menuTextContainer: {
+    flex: 1,
+  },
+  menuLabelPrimary: {
+    color: COLORS.white,
+    fontSize: 16,
     fontWeight: '600',
   },
-  secondaryButton: {
-    backgroundColor: '#ffffff',
-    paddingVertical: 16,
-    paddingHorizontal: 24,
-    borderRadius: 12,
-    alignItems: 'center',
-    borderWidth: 2,
-    borderColor: COLORS.gray[300],
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+  menuDescription: {
+    color: 'rgba(255, 255, 255, 0.7)',
+    fontSize: 13,
+    marginTop: 4,
   },
-  secondaryButtonText: {
+
+  // ============== SECONDARY MENU ITEM ==============
+  secondaryMenuItem: {
+    backgroundColor: COLORS.white,
+    borderRadius: 16,
+    paddingVertical: 16,
+    paddingHorizontal: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+    borderWidth: 1,
+    borderColor: COLORS.gray[200],
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  menuLabelSecondary: {
     color: COLORS.primary,
     fontSize: 16,
-    fontWeight: '500',
+    fontWeight: '600',
   },
-  logoutButton: {
-    backgroundColor: COLORS.error,
-    paddingVertical: 14,
-    paddingHorizontal: 24,
-    borderRadius: 12,
-    alignItems: 'center',
-    marginTop: 20,
-  },
-  logoutButtonText: {
-    color: '#ffffff',
-    fontSize: 16,
-    fontWeight: '500',
+
+  // ============== FOOTER SPACE ==============
+  footerSpace: {
+    height: 40,
   },
 });
 

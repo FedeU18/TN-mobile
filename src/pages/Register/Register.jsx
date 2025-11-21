@@ -6,10 +6,13 @@ import {
   TextInput, 
   TouchableOpacity, 
   Alert,
-  ScrollView 
+  ScrollView,
+  StatusBar
 } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
 import { validateRegistrationStep1, validateRegistrationStep2 } from '../../utils/validations';
 import useAuthStore from '../../stores/authStore';
+import COLORS from '../../utils/colors';
 
 export default function Register({ navigation }) {
   const [currentStep, setCurrentStep] = useState(1);
@@ -38,7 +41,7 @@ export default function Register({ navigation }) {
   const validateStep1 = () => {
     const validation = validateRegistrationStep1(form);
     if (!validation.isValid) {
-      setError(validation.message);
+      // setError(validation.message);
       Alert.alert("Error", validation.message);
       return false;
     }
@@ -58,13 +61,13 @@ export default function Register({ navigation }) {
   };
 
   const handleSubmit = async () => {
-    setError("");
+    // setError("");
     clearError();
 
     // Validación del paso 2
     const validation = validateRegistrationStep2(form);
     if (!validation.isValid) {
-      setError(validation.message);
+      // setError(validation.message);
       Alert.alert("Error", validation.message);
       return;
     }
@@ -81,7 +84,7 @@ export default function Register({ navigation }) {
     if (result.success) {
       navigation.navigate("Login");
     } else {
-      setError(result.error);
+      // setError(result.error);
       Alert.alert("Error", result.error);
     }
   };
@@ -94,7 +97,7 @@ export default function Register({ navigation }) {
       <TextInput
         style={styles.input}
         placeholder="Nombre"
-        placeholderTextColor="#9CA3AF"
+        placeholderTextColor="#BDBDBD"
         value={form.nombre}
         onChangeText={(text) => handleChange('nombre', text)}
         autoCapitalize="words"
@@ -103,7 +106,7 @@ export default function Register({ navigation }) {
       <TextInput
         style={styles.input}
         placeholder="Apellido"
-        placeholderTextColor="#9CA3AF"
+        placeholderTextColor="#BDBDBD"
         value={form.apellido}
         onChangeText={(text) => handleChange('apellido', text)}
         autoCapitalize="words"
@@ -112,11 +115,48 @@ export default function Register({ navigation }) {
       <TextInput
         style={styles.input}
         placeholder="Teléfono"
-        placeholderTextColor="#9CA3AF"
+        placeholderTextColor="#BDBDBD"
         value={form.telefono}
         onChangeText={(text) => handleChange('telefono', text)}
         keyboardType="phone-pad"
       />
+
+      {/* Selector de rol */}
+      <Text style={styles.roleLabel}>Selecciona tu rol:</Text>
+      <View style={styles.roleContainer}>
+        <TouchableOpacity
+          style={[
+            styles.roleButton,
+            form.rol === 'cliente' && styles.roleButtonActive,
+          ]}
+          onPress={() => handleChange('rol', 'cliente')}
+        >
+          <Text
+            style={[
+              styles.roleButtonText,
+              form.rol === 'cliente' && styles.roleButtonTextActive,
+            ]}
+          >
+            Cliente
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[
+            styles.roleButton,
+            form.rol === 'repartidor' && styles.roleButtonActive,
+          ]}
+          onPress={() => handleChange('rol', 'repartidor')}
+        >
+          <Text
+            style={[
+              styles.roleButtonText,
+              form.rol === 'repartidor' && styles.roleButtonTextActive,
+            ]}
+          >
+            Repartidor
+          </Text>
+        </TouchableOpacity>
+      </View>
 
       {error ? <Text style={styles.errorText}>{error}</Text> : null}
       
@@ -125,7 +165,7 @@ export default function Register({ navigation }) {
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.buttonBack} onPress={() => navigation.navigate('Home')}>
-        <Text style={styles.buttonText}>Volver al menú principal</Text>
+        <Text style={styles.buttonBackText}>Volver al menú principal</Text>
       </TouchableOpacity>
     </>
   );
@@ -138,7 +178,7 @@ export default function Register({ navigation }) {
       <TextInput
         style={styles.input}
         placeholder="Email"
-        placeholderTextColor="#9CA3AF"
+        placeholderTextColor="#BDBDBD"
         value={form.email}
         onChangeText={(text) => handleChange('email', text)}
         keyboardType="email-address"
@@ -149,7 +189,7 @@ export default function Register({ navigation }) {
       <TextInput
         style={styles.input}
         placeholder="Contraseña"
-        placeholderTextColor="#9CA3AF"
+        placeholderTextColor="#BDBDBD"
         value={form.password}
         onChangeText={(text) => handleChange('password', text)}
         secureTextEntry={true}
@@ -172,7 +212,7 @@ export default function Register({ navigation }) {
       <TextInput
         style={styles.input}
         placeholder="Confirmar Contraseña"
-        placeholderTextColor="#9CA3AF"
+        placeholderTextColor="#BDBDBD"
         value={form.confirmPassword}
         onChangeText={(text) => handleChange('confirmPassword', text)}
         secureTextEntry={true}
@@ -201,7 +241,7 @@ export default function Register({ navigation }) {
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.buttonBack} onPress={() => navigation.navigate('Home')}>
-        <Text style={styles.buttonText}>Volver al menú principal</Text>
+        <Text style={styles.buttonBackText}>Volver al menú principal</Text>
       </TouchableOpacity>
     </>
   );
@@ -215,6 +255,15 @@ export default function Register({ navigation }) {
       nestedScrollEnabled={true}
       keyboardDismissMode="on-drag"
     >
+      <StatusBar barStyle="light-content" backgroundColor={COLORS.primary} />
+      
+      {/* HEADER HERO SECTION */}
+      <View style={styles.heroSection}>
+        <MaterialIcons name="inventory" size={60} color={COLORS.primary} />
+        <Text style={styles.heroTitle}>Track Now</Text>
+        <Text style={styles.heroSubtitle}>Únete a nuestra comunidad</Text>
+      </View>
+
       <View style={styles.formContainer}>
         {currentStep === 1 ? renderStep1() : renderStep2()}
       </View>

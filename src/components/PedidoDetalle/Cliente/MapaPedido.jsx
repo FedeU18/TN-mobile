@@ -9,6 +9,11 @@ export default function MapaPedido({
   destino,
   estadoPedido, // ← AGREGADO
 }) {
+  // No mostrar mapa si el pedido está cancelado o entregado
+  if (estadoPedido === "Cancelado" || estadoPedido === "Entregado") {
+    return null;
+  }
+
   if (!repartidorUbicacion && !origen && !destino) {
     return (
       <View style={styles.noMapa}>

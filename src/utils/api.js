@@ -34,8 +34,6 @@ api.interceptors.response.use(
     return response;
   },
   (error) => {
-    console.error("Error en la API:", error.response?.data || error.message);
-
     // Manejar tokens expirados o inválidos
     if (error.response?.status === 401 || error.response?.status === 403) {
       const errorMessage = error.response?.data?.message || "";

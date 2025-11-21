@@ -73,8 +73,10 @@ const usePedidoStore = create((set, get) => ({
         try {
             const pedido = await getPedidoDetalle(pedidoId);
             set({ pedidoSeleccionado: pedido, loading: false });
+            return pedido;
         } catch (error) {
             set({ error: error.message, loading: false });
+            throw error;
         }
     },
 

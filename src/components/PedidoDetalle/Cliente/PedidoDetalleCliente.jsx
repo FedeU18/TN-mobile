@@ -55,20 +55,17 @@ export default function PedidoDetalleCliente({ pedido }) {
       style={styles.container}
       contentContainerStyle={{ paddingTop: insets.top, paddingBottom: insets.bottom + 20 }}
     >
+      <PedidoInfo detalle={detalle} />
+
       <MapaPedido
         repartidorUbicacion={ubicacionRepartidor}
         origen={origen}
         destino={destino}
-        estadoPedido={detalle?.estado?.nombre_estado} // ← AGREGADO
+        estadoPedido={detalle?.estado?.nombre_estado}
       />
 
       {detalle.estado?.nombre_estado === "En camino" && (
         <>
-          <View style={styles.seguimiento}>
-            <Text style={styles.seguimientoTexto}>
-              📍 Seguimiento en tiempo real activo
-            </Text>
-          </View>
           <View style={styles.botonContainer}>
             <TouchableOpacity
               style={styles.botonEscanear}
@@ -88,15 +85,20 @@ export default function PedidoDetalleCliente({ pedido }) {
 
       {detalle.estado?.nombre_estado === "Entregado" && (
         <>
-          <View style={styles.seguimiento}>
-            <Text style={styles.entregadoTexto}>Pedido entregado</Text>
-          </View>
           <View style={styles.botonContainer}>
             <TouchableOpacity
-              style={styles.botonCalificar}
-              onPress={() => setModalVisible(true)}
+              style={[
+                styles.botonCalificar,
+                detalle.calificacion && styles.botonCalificadoDeshabilitado,
+              ]}
+              onPress={() => !detalle.calificacion && setModalVisible(true)}
+              disabled={!!detalle.calificacion}
             >
-              <Text style={styles.botonTexto}>Calificar repartidor</Text>
+              <Text style={styles.botonTexto}>
+                {detalle.calificacion
+                  ? "Pedido ya calificado"
+                  : "Calificar repartidor"}
+              </Text>
             </TouchableOpacity>
           </View>
           <CalificarRepartidorModal

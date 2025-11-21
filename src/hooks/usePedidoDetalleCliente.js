@@ -52,6 +52,7 @@ export function usePedidoDetalleCliente(pedidoId) {
         setDetalle((prev) => ({
           ...prev,
           estado: { nombre_estado: data.nuevoEstado },
+          ...(data.fecha_entrega ? { fecha_entrega: data.fecha_entrega } : {}),
         }));
       }
     });

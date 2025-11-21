@@ -27,6 +27,21 @@ export const getMisPedidos = async () => {
         const response = await api.get('/pedidos/mis-pedidos');
         return response.data;
     } catch (error) {
+        // Si el error es 404, significa que no hay pedidos - retornar array vacío
+        if (error.response?.status === 404) {
+            console.log('PedidoService - No hay pedidos para este repartidor (404)');
+            return [];
+        }
+        
+        // Si el mensaje indica que no hay pedidos activos, también retornar array vacío
+        const mensajeError = error.response?.data?.message || error.message || '';
+        if (mensajeError.toLowerCase().includes('no se encontraron') || 
+            mensajeError.toLowerCase().includes('sin pedidos') ||
+            mensajeError.toLowerCase().includes('no hay pedidos')) {
+            console.log('PedidoService - No hay pedidos activos para este repartidor');
+            return [];
+        }
+        
         console.error('Error al obtener mis pedidos:', error);
         throw error;
     }
@@ -56,6 +71,21 @@ export const getMisPedidosCliente = async () => {
         console.log('PedidoService - Respuesta exitosa:', response.data.length, 'pedidos');
         return response.data;
     } catch (error) {
+        // Si el error es 404 o es un mensaje de "sin pedidos", retornar array vacío
+        if (error.response?.status === 404) {
+            console.log('PedidoService - No hay pedidos para este cliente (404)');
+            return [];
+        }
+        
+        // Si el mensaje indica que no hay pedidos activos, también retornar array vacío
+        const mensajeError = error.response?.data?.message || error.message || '';
+        if (mensajeError.toLowerCase().includes('no se encontraron') || 
+            mensajeError.toLowerCase().includes('sin pedidos') ||
+            mensajeError.toLowerCase().includes('no hay pedidos')) {
+            console.log('PedidoService - No hay pedidos activos para este cliente');
+            return [];
+        }
+        
         console.error('PedidoService - Error al obtener pedidos del cliente:', error.response?.data || error.message);
         throw error;
     }

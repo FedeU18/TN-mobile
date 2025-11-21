@@ -7,11 +7,22 @@ export default StyleSheet.create({
     backgroundColor: COLORS.gray[100],
   },
   header: {
-    backgroundColor: '#fff',
-    padding: 20,
-    paddingTop: 30,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.gray[200],
+    paddingTop: 50,
+    paddingHorizontal: 20,
+    paddingBottom: 30,
+  },
+  headerContent: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  headerText: {
+    flex: 1,
+  },
+  headerTitle: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: COLORS.white,
   },
   title: {
     fontSize: 24,

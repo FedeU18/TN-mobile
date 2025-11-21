@@ -6,10 +6,13 @@ const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 const MAP_HEIGHT = SCREEN_HEIGHT * 0.55;
 
 export default StyleSheet.create({
+  mapWrapper: {
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+  },
   mapaContainer: {
     width: "100%",
     height: MAP_HEIGHT,
-    marginVertical: 16,
     borderRadius: 12,
     overflow: "hidden",
     backgroundColor: "#eee",
@@ -24,13 +27,14 @@ export default StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#f9f9f9",
     borderRadius: 8,
-    padding: 8,
+    padding: 10,
     marginTop: 8,
     gap: 16,
   },
   leyendaItem: {
-    fontSize: 14,
-    marginHorizontal: 8,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
   },
   infoRuta: {
     position: "absolute",

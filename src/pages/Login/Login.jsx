@@ -9,9 +9,12 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  StatusBar,
 } from "react-native";
+import { MaterialIcons } from '@expo/vector-icons';
 import { validateLogin } from "../../utils/validations";
 import useAuthStore from "../../stores/authStore";
+import COLORS from "../../utils/colors";
 
 export default function Login({ navigation, route }) {
   const [form, setForm] = useState({ email: "", password: "" });
@@ -47,7 +50,6 @@ export default function Login({ navigation, route }) {
   const roleScreenMap = new Map([
     ["cliente", "ClienteDashboard"],
     ["repartidor", "RepartidorDashboard"],
-    ["admin", "AdminDashboard"],
   ]);
 
   // Redirigir según el rol del usuario
@@ -114,7 +116,15 @@ export default function Login({ navigation, route }) {
       style={styles.container}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
+      <StatusBar barStyle="light-content" backgroundColor={COLORS.primary} />
+      <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
+        <View style={styles.heroSection}>
+          <MaterialIcons name="inventory" size={60} color={COLORS.primary} />
+          <Text style={styles.heroTitle}>Track Now</Text>
+          <Text style={styles.heroSubtitle}>Tu solución de seguimiento de paquetes</Text>
+        </View>
+
+        {/* Form */}
         <View style={styles.formContainer}>
           <Text style={styles.title}>Iniciar Sesión</Text>
 
@@ -125,7 +135,7 @@ export default function Login({ navigation, route }) {
           <TextInput
             style={styles.input}
             placeholder="Email"
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor="#BDBDBD"
             value={form.email}
             onChangeText={(text) => handleChange("email", text)}
             keyboardType="email-address"
@@ -136,7 +146,7 @@ export default function Login({ navigation, route }) {
           <TextInput
             style={styles.input}
             placeholder="Contraseña"
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor="#BDBDBD"
             value={form.password}
             onChangeText={(text) => handleChange("password", text)}
             secureTextEntry={true}
@@ -167,7 +177,7 @@ export default function Login({ navigation, route }) {
             style={styles.buttonBack}
             onPress={() => navigation.navigate("Home")}
           >
-            <Text style={styles.buttonText}>Volver al menú principal</Text>
+            <Text style={styles.buttonBackText}>Volver al menú principal</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>

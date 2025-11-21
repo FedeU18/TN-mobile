@@ -8,13 +8,85 @@ import {
   Alert,
   RefreshControl,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { MaterialIcons } from '@expo/vector-icons';
 import styles from './HistorialEntregasStyles';
 import api from '../../utils/api';
 import COLORS from '../../utils/colors';
 import { useFocusEffect } from '@react-navigation/native';
 import { useCallback } from 'react';
 import useAuthStore from '../../stores/authStore';
+
+const PedidoItem = ({ pedido, onVerDetalle, userRole }) => {
+  const getEstadoColor = (estado) => {
+    switch (estado?.nombre_estado) {
+      case 'Pendiente':
+        return '#ffc107';
+      case 'Asignado':
+        return '#007AFF';
+      case 'En camino':
+        return '#FF9500';
+      case 'Entregado':
+        return '#28a745';
+      case 'Cancelado':
+        return '#dc3545';
+      default:
+        return '#666';
+    }
+  };
+
+  const formatearFecha = (fecha) => {
+    return new Date(fecha).toLocaleDateString('es-ES', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  };
+
+  return (
+    <TouchableOpacity
+      style={styles.pedidoCard}
+      onPress={() => onVerDetalle(pedido)}
+    >
+      <View style={styles.pedidoHeader}>
+        <Text style={styles.pedidoId}>Pedido #{pedido.id_pedido}</Text>
+        <View
+          style={[
+            styles.estadoBadge,
+            { backgroundColor: getEstadoColor(pedido.estado) },
+          ]}
+        >
+          <Text style={styles.estadoText}>
+            {pedido.estado?.nombre_estado || 'Sin estado'}
+          </Text>
+        </View>
+      </View>
+
+      <View style={styles.pedidoInfo}>
+        {userRole === 'repartidor' ? (
+          <Text style={styles.cliente}>
+            Cliente: {pedido.cliente?.nombre || 'Sin Nombre'}{' '}
+            {pedido.cliente?.apellido || ''}
+          </Text>
+        ) : (
+          <Text style={styles.repartidor}>
+            Repartidor: {pedido.repartidor?.nombre || 'No asignado'}{' '}
+            {pedido.repartidor?.apellido || ''}
+          </Text>
+        )}
+        <Text style={styles.direccion}>Destino: {pedido.direccion_destino}</Text>
+        <Text style={styles.fecha}>
+          Creado: {formatearFecha(pedido.fecha_creacion)}
+        </Text>
+      </View>
+
+      <View style={styles.verDetalleContainer}>
+        <Text style={styles.verDetalleText}>Tocá para ver detalles →</Text>
+      </View>
+    </TouchableOpacity>
+  );
+};
 
 export default function HistorialEntregas({ navigation }) {
   const { user } = useAuthStore();
@@ -32,11 +104,18 @@ export default function HistorialEntregas({ navigation }) {
       const response = await api.get(endpoint);
       setEntregas(response.data);
     } catch (error) {
-      console.error('Error al obtener historial:', error);
       if (error.response?.status === 404) {
+        // No hay historial, establecer array vacío sin mostrar error
         setEntregas([]);
       } else {
-        Alert.alert('Error', 'No se pudo obtener el historial');
+        // Solo mostrar alert para errores reales
+        const mensajeError = error.response?.data?.message || error.message || '';
+        if (!mensajeError.toLowerCase().includes('no se encontraron') && 
+            !mensajeError.toLowerCase().includes('sin')) {
+          Alert.alert('Error', 'No se pudo obtener el historial');
+        } else {
+          setEntregas([]);
+        }
       }
     } finally {
       setLoading(false);
@@ -56,118 +135,28 @@ export default function HistorialEntregas({ navigation }) {
   };
 
   const handleVerDetalles = (pedido) => {
-    navigation.navigate('PedidoDetalle', { pedido });
+    navigation.navigate('PedidoDetalle', { id: pedido.id_pedido });
   };
 
-  const getEstadoColor = (estado) => {
-    switch (estado?.toLowerCase()) {
-      case 'entregado':
-        return COLORS.success;
-      case 'cancelado':
-        return COLORS.error;
-      default:
-        return COLORS.gray[600];
-    }
-  };
-
-  const getEstadoIcon = (estado) => {
-    switch (estado?.toLowerCase()) {
-      case 'entregado':
-        return 'checkmark-circle';
-      case 'cancelado':
-        return 'close-circle';
-      default:
-        return 'help-circle';
-    }
-  };
-
-  const getNombrePersona = (item) => {
-    if (isRepartidor) {
-      return `${item.cliente?.nombre} ${item.cliente?.apellido}`;
-    } else {
-      return `${item.repartidor?.nombre} ${item.repartidor?.apellido}`;
-    }
-  };
-
-  const renderCard = ({ item }) => (
-    <TouchableOpacity
-      style={styles.entregaCard}
-      onPress={() => handleVerDetalles(item)}
-    >
-      <View style={styles.cardHeader}>
-        <View style={styles.cardTitle}>
-          <Text style={styles.pedidoId}>Pedido #{item.id_pedido}</Text>
-          <Text style={styles.clienteName}>
-            {getNombrePersona(item)}
-          </Text>
-        </View>
-        <View
-          style={[
-            styles.estadoBadge,
-            { backgroundColor: getEstadoColor(item.estado?.nombre_estado) },
-          ]}
-        >
-          <Ionicons
-            name={getEstadoIcon(item.estado?.nombre_estado)}
-            size={16}
-            color="#fff"
-            style={{ marginRight: 4 }}
-          />
-          <Text style={styles.estadoText}>
-            {item.estado?.nombre_estado}
-          </Text>
-        </View>
-      </View>
-
-      <View style={styles.cardContent}>
-        <View style={styles.infoRow}>
-          <Ionicons name="location" size={16} color={COLORS.gray[600]} />
-          <Text style={styles.infoText}>{item.direccion_destino}</Text>
-        </View>
-
-        <View style={styles.infoRow}>
-          <Ionicons name="calendar" size={16} color={COLORS.gray[600]} />
-          <Text style={styles.infoText}>
-            {new Date(item.fecha_creacion).toLocaleDateString('es-CO', {
-              year: 'numeric',
-              month: 'short',
-              day: 'numeric',
-              hour: '2-digit',
-              minute: '2-digit',
-            })}
-          </Text>
-        </View>
-
-        {item.total && (
-          <View style={styles.infoRow}>
-            <Ionicons name="cash" size={16} color={COLORS.gray[600]} />
-            <Text style={[styles.infoText, { fontWeight: '600' }]}>
-              ${item.total.toLocaleString('es-CO')}
-            </Text>
-          </View>
-        )}
-      </View>
-
-      <View style={styles.footer}>
-        <Text style={styles.verDetalles}>Ver detalles</Text>
-        <Ionicons
-          name="chevron-forward"
-          size={16}
-          color={COLORS.primary}
-        />
-      </View>
-    </TouchableOpacity>
+  const renderPedido = ({ item }) => (
+    <PedidoItem
+      pedido={item}
+      onVerDetalle={handleVerDetalles}
+      userRole={isRepartidor ? 'repartidor' : 'cliente'}
+    />
   );
 
   if (loading && entregas.length === 0) {
     return (
       <View style={styles.container}>
-        <View style={styles.header}>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Ionicons name="chevron-back" size={28} color={COLORS.primary} />
-          </TouchableOpacity>
-          <Text style={styles.headerTitle}>{title}</Text>
-          <View style={{ width: 28 }} />
+        <View style={[styles.header, { backgroundColor: COLORS.primary }]}>
+          <View style={styles.headerContent}>
+            <View style={styles.headerText}>
+              <Text style={styles.headerTitle}>
+                {isRepartidor ? 'Historial de Entregas' : 'Historial de Pedidos'}
+              </Text>
+            </View>
+          </View>
         </View>
         <View style={styles.centerContainer}>
           <ActivityIndicator size="large" color={COLORS.primary} />
@@ -179,17 +168,19 @@ export default function HistorialEntregas({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Ionicons name="chevron-back" size={28} color={COLORS.primary} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>{title}</Text>
-        <View style={{ width: 28 }} />
+      <View style={[styles.header, { backgroundColor: COLORS.primary }]}>
+        <View style={styles.headerContent}>
+          <View style={styles.headerText}>
+            <Text style={styles.headerTitle}>
+              {isRepartidor ? 'Historial de Entregas' : 'Historial de Pedidos'}
+            </Text>
+          </View>
+        </View>
       </View>
 
       {entregas.length === 0 ? (
         <View style={styles.emptyContainer}>
-          <Ionicons name="inbox" size={64} color={COLORS.gray[300]} />
+          <MaterialIcons name="inbox" size={64} color={COLORS.gray[300]} />
           <Text style={styles.emptyTitle}>
             Sin {isRepartidor ? 'entregas' : 'pedidos'} completados
           </Text>
@@ -200,7 +191,7 @@ export default function HistorialEntregas({ navigation }) {
       ) : (
         <FlatList
           data={entregas}
-          renderItem={renderCard}
+          renderItem={renderPedido}
           keyExtractor={(item) => item.id_pedido.toString()}
           contentContainerStyle={styles.listContent}
           refreshControl={

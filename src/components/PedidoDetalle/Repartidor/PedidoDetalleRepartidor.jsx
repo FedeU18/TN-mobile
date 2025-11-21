@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Text, ActivityIndicator, ScrollView } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import useAuthStore from "../../../stores/authStore";
 import usePedidoDetalle from "../../../hooks/usePedidoDetalle";
 import MapaRepartidor from "../../Mapa/Repartidor/MapaRepartidor";
 import EstadoPedido from "./EstadoPedido";
@@ -11,6 +12,7 @@ import styles from "./Styles";
 
 export default function PedidoDetalleRepartidor({ pedido }) {
   const insets = useSafeAreaInsets();
+  const { user } = useAuthStore();
   const {
     detalle,
     loading,
@@ -24,6 +26,10 @@ export default function PedidoDetalleRepartidor({ pedido }) {
     manejarCambioEstado,
     manejarSeguimiento,
   } = usePedidoDetalle(pedido.id_pedido);
+
+  // Determinar si el pedido está asignado (tiene un repartidor)
+  // Si viene sin id_repartidor es un pedido disponible
+  const pedidoAsignado = detalle?.id_repartidor || detalle?.repartidor_id;
 
   if (loading)
     return (
@@ -52,19 +58,24 @@ export default function PedidoDetalleRepartidor({ pedido }) {
       contentContainerStyle={{ paddingTop: insets.top, paddingBottom: insets.bottom + 20  }}
     >
       <PedidoInfo detalle={detalle} />
-      <MapaRepartidor
-        repartidorUbicacion={ultimaUbicacion}
-        origenUbicacion={origen}
-        destinoUbicacion={destino}
-        estadoPedido={pedido.estado.nombre_estado}
-      />
-      <AccionesRepartidor
-        detalle={detalle}
-        estaRastreando={estaRastreando}
-        manejarSeguimiento={manejarSeguimiento}
-        manejarCambioEstado={manejarCambioEstado}
-        setMostrarQR={setMostrarQR}
-      />
+      {detalle.estado?.nombre_estado !== "Cancelado" &&
+        detalle.estado?.nombre_estado !== "Entregado" && (
+          <MapaRepartidor
+            repartidorUbicacion={ultimaUbicacion}
+            origenUbicacion={origen}
+            destinoUbicacion={destino}
+            estadoPedido={pedido.estado.nombre_estado}
+          />
+        )}
+      {pedidoAsignado && (
+        <AccionesRepartidor
+          detalle={detalle}
+          estaRastreando={estaRastreando}
+          manejarSeguimiento={manejarSeguimiento}
+          manejarCambioEstado={manejarCambioEstado}
+          setMostrarQR={setMostrarQR}
+        />
+      )}
       <ModalQR
         visible={mostrarQR}
         onClose={() => setMostrarQR(false)}

@@ -12,7 +12,7 @@ import usePedidoStore from "../../stores/pedidoStore";
 import useAuthStore from "../../stores/authStore";
 import styles from "./PedidosDisponiblesStyles";
 
-const PedidoItem = ({ pedido, onTomarPedido, loading }) => {
+const PedidoItem = ({ pedido, onTomarPedido, onVerDetalle, loading }) => {
   const formatearHora = (fecha) => {
     return new Date(fecha).toLocaleTimeString("es-ES", {
       hour: "2-digit",
@@ -59,17 +59,26 @@ const PedidoItem = ({ pedido, onTomarPedido, loading }) => {
         )}
       </View>
 
-      <TouchableOpacity
-        style={[styles.tomarButton, loading && styles.buttonDisabled]}
-        onPress={handleTomarPedido}
-        disabled={loading}
-      >
-        {loading ? (
-          <ActivityIndicator color="#fff" size="small" />
-        ) : (
-          <Text style={styles.tomarButtonText}>Tomar Pedido</Text>
-        )}
-      </TouchableOpacity>
+      <View style={styles.botoneesContainer}>
+        <TouchableOpacity
+          style={styles.verDetalleButton}
+          onPress={() => onVerDetalle(pedido.id_pedido)}
+        >
+          <Text style={styles.verDetalleButtonText}>Ver Mapa</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.tomarButton, loading && styles.buttonDisabled]}
+          onPress={handleTomarPedido}
+          disabled={loading}
+        >
+          {loading ? (
+            <ActivityIndicator color="#fff" size="small" />
+          ) : (
+            <Text style={styles.tomarButtonText}>Tomar Pedido</Text>
+          )}
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -122,10 +131,15 @@ export default function PedidosDisponibles({ navigation }) {
     }
   };
 
+  const handleVerDetalle = (pedidoId) => {
+    navigation.navigate("PedidoDetalle", { id: pedidoId });
+  };
+
   const renderPedido = ({ item }) => (
     <PedidoItem
       pedido={item}
       onTomarPedido={handleTomarPedido}
+      onVerDetalle={handleVerDetalle}
       loading={pedidoEnCarga === item.id_pedido}
     />
   );

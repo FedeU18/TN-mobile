@@ -4,25 +4,101 @@ import COLORS from '../../utils/colors';
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.gray[50],
+    backgroundColor: COLORS.gray[100],
   },
   header: {
+    paddingTop: 50,
+    paddingHorizontal: 20,
+    paddingBottom: 30,
+  },
+  headerContent: {
     flexDirection: 'row',
-    alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 16,
-    backgroundColor: '#fff',
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.gray[200],
-    marginTop: 16,
+    alignItems: 'center',
+  },
+  headerText: {
+    flex: 1,
   },
   headerTitle: {
-    fontSize: 20,
-    fontWeight: '700',
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: COLORS.white,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
     color: COLORS.gray[900],
-    flex: 1,
-    textAlign: 'center',
+    marginBottom: 5,
+  },
+  listContent: {
+    padding: 15,
+  },
+  pedidoCard: {
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    padding: 15,
+    marginBottom: 10,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  pedidoHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  pedidoId: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: COLORS.primary,
+  },
+  estadoBadge: {
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: 15,
+  },
+  estadoText: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  pedidoInfo: {
+    marginBottom: 10,
+  },
+  cliente: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: COLORS.gray[900],
+    marginBottom: 5,
+  },
+  repartidor: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: COLORS.success,
+    marginBottom: 5,
+  },
+  direccion: {
+    fontSize: 14,
+    color: '#666',
+    marginBottom: 3,
+  },
+  fecha: {
+    fontSize: 12,
+    color: '#999',
+  },
+  verDetalleContainer: {
+    alignItems: 'flex-end',
+  },
+  verDetalleText: {
+    fontSize: 14,
+    color: COLORS.primary,
+    fontStyle: 'italic',
   },
   centerContainer: {
     flex: 1,
@@ -53,86 +129,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
     textAlign: 'center',
   },
-  listContent: {
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-  },
-  entregaCard: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    marginBottom: 12,
-    padding: 16,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  cardHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: 12,
-  },
-  cardTitle: {
-    flex: 1,
-  },
-  pedidoId: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: COLORS.gray[900],
-  },
-  clienteName: {
-    fontSize: 13,
-    color: COLORS.gray[600],
-    marginTop: 2,
-  },
-  estadoBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 20,
-    marginLeft: 8,
-  },
-  estadoText: {
-    color: '#fff',
-    fontSize: 12,
-    fontWeight: '600',
-  },
-  cardContent: {
-    borderTopWidth: 1,
-    borderTopColor: COLORS.gray[200],
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.gray[200],
-    paddingVertical: 12,
-    marginBottom: 12,
-  },
-  infoRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  infoText: {
-    fontSize: 13,
-    color: COLORS.gray[700],
-    marginLeft: 8,
-    flex: 1,
-  },
-  footer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-  },
-  verDetalles: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: COLORS.primary,
-    marginRight: 4,
-  },
 });
 
 export default styles;
+

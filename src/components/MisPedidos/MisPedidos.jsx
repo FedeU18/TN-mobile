@@ -6,10 +6,15 @@ import {
     TouchableOpacity,
     ActivityIndicator,
     Alert,
-    RefreshControl
+    RefreshControl,
+    Animated
 } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
+import { useFocusEffect } from '@react-navigation/native';
+import io from 'socket.io-client';
 import styles from './MisPedidosStyles';
 import useAuthStore from '../../stores/authStore';
+import COLORS from '../../utils/colors';
 
 const PedidoItem = ({ pedido, onVerDetalle, userRole }) => {
     const getEstadoColor = (estado) => {
@@ -109,12 +114,48 @@ export default function MisPedidos({ navigation, route }) {
     useEffect(() => {
         fetchMisPedidos();
     }, []);
+    // Escuchar cambios de estado en tiempo real
+    useEffect(() => {
+        const socket = io(
+            process.env.EXPO_PUBLIC_API_BASE_URL || "http://localhost:3000",
+            { transports: ["websocket"] }
+        );
+
+        socket.on("connect", () => {
+        });
+
+        socket.on("estadoActualizado", (data) => {
+            // Refrescar la lista cuando cambia un estado
+            fetchMisPedidos();
+        });
+
+        socket.on("disconnect", () => {
+        });
+
+        socket.on("error", (error) => {
+        });
+
+        return () => {
+            socket.disconnect();
+        };
+    }, [fetchMisPedidos]);
 
     useEffect(() => {
         if (error) {
-            Alert.alert('Error', error, [
-                { text: 'OK', onPress: () => clearError() }
-            ]);
+            // Solo mostrar alert si es un error real, no si es "no hay pedidos"
+            const esErrorReal = !error.toLowerCase().includes('no hay') && 
+                               !error.toLowerCase().includes('sin pedidos') &&
+                               !error.toLowerCase().includes('sin repartos') &&
+                               error.trim() !== '';
+            
+            if (esErrorReal) {
+                Alert.alert('Error', error, [
+                    { text: 'OK', onPress: () => clearError() }
+                ]);
+            } else {
+                // Limpiar error silenciosamente si es solo "no hay pedidos"
+                clearError();
+            }
         }
     }, [error]);
 
@@ -152,15 +193,15 @@ export default function MisPedidos({ navigation, route }) {
 
     return (
         <View style={styles.container}>
-            <View style={styles.header}>
-                <Text style={styles.title}>Mis Pedidos</Text>
-                <Text style={styles.subtitle}>
-                    {misPedidos.length} pedido{misPedidos.length !== 1 ? 's' : ''} 
-                    {finalUserRole === 'repartidor' ? ' asignado' : ''}
-                    {misPedidos.length !== 1 && finalUserRole === 'repartidor' ? 's' : ''}
-                </Text>
+            <View style={[styles.header, { backgroundColor: COLORS.primary }]}>
+                <View style={styles.headerContent}>
+                    <View style={styles.headerText}>
+                        <Text style={styles.headerTitle}>
+                            Mis Pedidos
+                        </Text>
+                    </View>
+                </View>
             </View>
-
             <FlatList
                 data={misPedidos}
                 renderItem={renderPedido}
