@@ -3,7 +3,6 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { View } from "react-native";
 import ClienteDashboard from "../pages/ClienteDashboard/ClienteDashboard";
 import RepartidorDashboard from "../pages/RepartidorDashboard/RepartidorDashboard";
-import AdminDashboard from "../pages/AdminDashboard/AdminDashboard";
 import Perfil from "../pages/Perfil/Perfil";
 import PedidosDisponibles from "../components/PedidosDisponibles/PedidosDisponibles";
 import MisPedidos from "../components/MisPedidos/MisPedidos";
@@ -21,7 +20,7 @@ const AppNavigator = () => {
   const roleScreenMap = {
     cliente: ClienteDashboard,
     repartidor: RepartidorDashboard,
-    admin: AdminDashboard,
+    // admin: AdminDashboard,
   };
 
   const DefaultScreen =
@@ -29,7 +28,7 @@ const AppNavigator = () => {
 
   return (
     <View style={{ flex: 1 }}>
-      <Stack.Navigator 
+      <Stack.Navigator
         screenOptions={{ headerShown: false }}
         screenListeners={{
           state: (e) => {
@@ -41,7 +40,10 @@ const AppNavigator = () => {
         }}
       >
         <Stack.Screen name="Dashboard" component={DefaultScreen} />
-        <Stack.Screen name="PedidosDisponibles" component={PedidosDisponibles} />
+        <Stack.Screen
+          name="PedidosDisponibles"
+          component={PedidosDisponibles}
+        />
         <Stack.Screen name="MisPedidos" component={MisPedidos} />
         <Stack.Screen name="HistorialEntregas" component={HistorialEntregas} />
         <Stack.Screen name="PedidoDetalle" component={PedidoDetalle} />

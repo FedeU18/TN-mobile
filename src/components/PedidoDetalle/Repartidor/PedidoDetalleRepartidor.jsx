@@ -53,9 +53,12 @@ export default function PedidoDetalleRepartidor({ pedido }) {
       </View>
     );
   return (
-    <ScrollView 
+    <ScrollView
       style={styles.container}
-      contentContainerStyle={{ paddingTop: insets.top, paddingBottom: insets.bottom + 20  }}
+      contentContainerStyle={{
+        paddingTop: insets.top,
+        paddingBottom: insets.bottom + 20,
+      }}
     >
       <PedidoInfo detalle={detalle} />
       {detalle.estado?.nombre_estado !== "Cancelado" &&
@@ -64,7 +67,7 @@ export default function PedidoDetalleRepartidor({ pedido }) {
             repartidorUbicacion={ultimaUbicacion}
             origenUbicacion={origen}
             destinoUbicacion={destino}
-            estadoPedido={pedido.estado.nombre_estado}
+            estadoPedido={detalle.estado.nombre_estado}
           />
         )}
       {pedidoAsignado && (
