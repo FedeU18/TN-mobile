@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { View, Text, ActivityIndicator, ScrollView } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import useAuthStore from "../../../stores/authStore";
@@ -30,6 +30,12 @@ export default function PedidoDetalleRepartidor({ pedido }) {
   // Determinar si el pedido está asignado (tiene un repartidor)
   // Si viene sin id_repartidor es un pedido disponible
   const pedidoAsignado = detalle?.id_repartidor || detalle?.repartidor_id;
+  // Cerrar modal QR automáticamente cuando el cliente completa la entrega
+  useEffect(() => {
+    if (detalle?.estado?.nombre_estado === "Entregado") {
+      setMostrarQR(false);
+    }
+  }, [detalle?.estado?.nombre_estado]);
 
   if (loading)
     return (

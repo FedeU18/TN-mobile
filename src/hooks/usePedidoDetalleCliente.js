@@ -40,12 +40,13 @@ export function usePedidoDetalleCliente(pedidoId) {
 
   // Socket de actualizaciones
   useEffect(() => {
-    const socket = io(
-      process.env.EXPO_PUBLIC_API_BASE_URL || "http://localhost:3000",
-      {
-        transports: ["websocket"],
-      }
-    );
+    const socket = io(process.env.EXPO_PUBLIC_API_BASE_URL, {
+      transports: ["websocket"],
+    });
+
+    socket.on("connect", () => {
+      socket.emit("joinPedido", pedidoId); // <-- FALTA ESTO
+    });
 
     socket.on("estadoActualizado", (data) => {
       if (data.pedidoId === Number(pedidoId)) {
@@ -55,10 +56,6 @@ export function usePedidoDetalleCliente(pedidoId) {
           ...(data.fecha_entrega ? { fecha_entrega: data.fecha_entrega } : {}),
         }));
       }
-    });
-
-    socket.on("connect_error", (err) => {
-      console.error("❌ Error de conexión socket (cliente):", err.message);
     });
 
     return () => {
