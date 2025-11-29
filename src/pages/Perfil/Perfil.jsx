@@ -47,7 +47,7 @@ export default function Perfil({ navigation }) {
   const getRoleLabel = () => {
     if (isRepartidor) return 'Repartidor';
     if (isCliente) return 'Cliente';
-    return 'Usuario';
+    return (user?.rol?.charAt(0).toUpperCase() + user?.rol?.slice(1).toLowerCase()) || 'Usuario';
   };
 
   const handleEditProfileSuccess = (updatedUser) => {

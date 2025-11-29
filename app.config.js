@@ -66,6 +66,7 @@ export default () => ({
       BACKEND_URL: process.env.EXPO_PUBLIC_BACKEND_URL,
       API_BASE_URL: process.env.EXPO_PUBLIC_API_BASE_URL,
       ORS_API_KEY: process.env.EXPO_PUBLIC_ORS_API_KEY,
+      MERCADO_PAGO_PUBLIC_KEY: process.env.EXPO_PUBLIC_MERCADO_PAGO_PUBLIC_KEY,
     },
 
   },

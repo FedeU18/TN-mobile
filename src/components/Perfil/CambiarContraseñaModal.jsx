@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import styles from './CambiarContraseñaModalStyles';
+import PasswordInput from '../PasswordInput/PasswordInput';
 import api from '../../utils/api';
 import COLORS from '../../utils/colors';
 import { validateRequired, validatePassword } from '../../utils/validations';
@@ -26,11 +27,6 @@ export default function CambiarContraseñaModal({
     confirmPassword: '',
   });
   const [loading, setLoading] = useState(false);
-  const [showPasswords, setShowPasswords] = useState({
-    current: false,
-    new: false,
-    confirm: false,
-  });
 
   const handleInputChange = (field, value) => {
     setFormData((prev) => ({
@@ -116,13 +112,6 @@ export default function CambiarContraseñaModal({
     }
   };
 
-  const toggleShowPassword = (field) => {
-    setShowPasswords((prev) => ({
-      ...prev,
-      [field]: !prev[field],
-    }));
-  };
-
   const handleClose = () => {
     setFormData({
       currentPassword: '',
@@ -166,106 +155,40 @@ export default function CambiarContraseñaModal({
             {/* Contraseña actual */}
             <View style={styles.formGroup}>
               <Text style={styles.label}>Contraseña Actual</Text>
-              <View style={styles.passwordInputContainer}>
-                <Ionicons
-                  name="lock"
-                  size={20}
-                  color={COLORS.primary}
-                  style={styles.inputIcon}
-                />
-                <TextInput
-                  style={styles.input}
-                  placeholder="Tu contraseña actual"
-                  value={formData.currentPassword}
-                  onChangeText={(value) =>
-                    handleInputChange('currentPassword', value)
-                  }
-                  secureTextEntry={!showPasswords.current}
-                  editable={!loading}
-                  placeholderTextColor={COLORS.gray[400]}
-                  autoCapitalize="none"
-                />
-                <TouchableOpacity
-                  onPress={() => toggleShowPassword('current')}
-                  disabled={loading}
-                >
-                  <Ionicons
-                    name={showPasswords.current ? 'eye' : 'eye-off'}
-                    size={20}
-                    color={COLORS.gray[600]}
-                  />
-                </TouchableOpacity>
-              </View>
+              <PasswordInput
+                placeholder="Tu contraseña actual"
+                value={formData.currentPassword}
+                onChangeText={(value) =>
+                  handleInputChange('currentPassword', value)
+                }
+                editable={!loading}
+              />
             </View>
 
             {/* Nueva contraseña */}
             <View style={styles.formGroup}>
               <Text style={styles.label}>Nueva Contraseña</Text>
-              <View style={styles.passwordInputContainer}>
-                <Ionicons
-                  name="lock"
-                  size={20}
-                  color={COLORS.primary}
-                  style={styles.inputIcon}
-                />
-                <TextInput
-                  style={styles.input}
-                  placeholder="Tu nueva contraseña"
-                  value={formData.newPassword}
-                  onChangeText={(value) =>
-                    handleInputChange('newPassword', value)
-                  }
-                  secureTextEntry={!showPasswords.new}
-                  editable={!loading}
-                  placeholderTextColor={COLORS.gray[400]}
-                  autoCapitalize="none"
-                />
-                <TouchableOpacity
-                  onPress={() => toggleShowPassword('new')}
-                  disabled={loading}
-                >
-                  <Ionicons
-                    name={showPasswords.new ? 'eye' : 'eye-off'}
-                    size={20}
-                    color={COLORS.gray[600]}
-                  />
-                </TouchableOpacity>
-              </View>
+              <PasswordInput
+                placeholder="Tu nueva contraseña"
+                value={formData.newPassword}
+                onChangeText={(value) =>
+                  handleInputChange('newPassword', value)
+                }
+                editable={!loading}
+              />
             </View>
 
             {/* Confirmar contraseña */}
             <View style={styles.formGroup}>
               <Text style={styles.label}>Confirmar Nueva Contraseña</Text>
-              <View style={styles.passwordInputContainer}>
-                <Ionicons
-                  name="lock"
-                  size={20}
-                  color={COLORS.primary}
-                  style={styles.inputIcon}
-                />
-                <TextInput
-                  style={styles.input}
-                  placeholder="Confirma tu nueva contraseña"
-                  value={formData.confirmPassword}
-                  onChangeText={(value) =>
-                    handleInputChange('confirmPassword', value)
-                  }
-                  secureTextEntry={!showPasswords.confirm}
-                  editable={!loading}
-                  placeholderTextColor={COLORS.gray[400]}
-                  autoCapitalize="none"
-                />
-                <TouchableOpacity
-                  onPress={() => toggleShowPassword('confirm')}
-                  disabled={loading}
-                >
-                  <Ionicons
-                    name={showPasswords.confirm ? 'eye' : 'eye-off'}
-                    size={20}
-                    color={COLORS.gray[600]}
-                  />
-                </TouchableOpacity>
-              </View>
+              <PasswordInput
+                placeholder="Confirma tu nueva contraseña"
+                value={formData.confirmPassword}
+                onChangeText={(value) =>
+                  handleInputChange('confirmPassword', value)
+                }
+                editable={!loading}
+              />
             </View>
           </ScrollView>
 

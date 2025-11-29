@@ -12,6 +12,7 @@ import {
 import { MaterialIcons } from '@expo/vector-icons';
 import { validateRegistrationStep1, validateRegistrationStep2 } from '../../utils/validations';
 import useAuthStore from '../../stores/authStore';
+import PasswordInput from '../../components/PasswordInput/PasswordInput';
 import COLORS from '../../utils/colors';
 
 export default function Register({ navigation }) {
@@ -186,19 +187,12 @@ export default function Register({ navigation }) {
         autoCorrect={false}
       />
       
-      <TextInput
-        style={styles.input}
+      <PasswordInput
         placeholder="Contraseña"
-        placeholderTextColor="#BDBDBD"
         value={form.password}
         onChangeText={(text) => handleChange('password', text)}
-        secureTextEntry={true}
         autoCapitalize="none"
         autoCorrect={false}
-        autoComplete="new-password"
-        textContentType="newPassword"
-        importantForAutofill="no"
-        keyboardType="default"
       />
       
       <View style={styles.passwordRequirements}>
@@ -209,19 +203,12 @@ export default function Register({ navigation }) {
         <Text style={styles.requirementItem}>• Al menos un carácter especial (como ! o &)</Text>
       </View>
       
-      <TextInput
-        style={styles.input}
+      <PasswordInput
         placeholder="Confirmar Contraseña"
-        placeholderTextColor="#BDBDBD"
         value={form.confirmPassword}
         onChangeText={(text) => handleChange('confirmPassword', text)}
-        secureTextEntry={true}
         autoCapitalize="none"
         autoCorrect={false}
-        autoComplete="new-password"
-        textContentType="newPassword"
-        importantForAutofill="no"
-        keyboardType="default"
       />
 
       {error ? <Text style={styles.errorText}>{error}</Text> : null}

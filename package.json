@@ -23,6 +23,7 @@
     "expo-location": "~19.0.7",
     "expo-status-bar": "~3.0.8",
     "i18next": "^23.10.1",
+    "mercadopago": "^2.11.0",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-i18next": "^13.2.2",

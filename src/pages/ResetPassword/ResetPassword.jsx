@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import { validateResetPassword } from "../../utils/validations";
 import useAuthStore from "../../stores/authStore";
+import PasswordInput from "../../components/PasswordInput/PasswordInput";
 
 export default function ResetPassword({ navigation, route }) {
   const [form, setForm] = useState({
@@ -150,13 +151,10 @@ export default function ResetPassword({ navigation, route }) {
 
           {step === 2 && (
             <>
-              <TextInput
-                style={styles.input}
+              <PasswordInput
                 placeholder="Nueva contraseña"
-                placeholderTextColor="#9CA3AF"
                 value={form.newPassword}
                 onChangeText={(text) => handleChange("newPassword", text)}
-                secureTextEntry={true}
                 autoCapitalize="none"
                 autoCorrect={false}
               />
@@ -175,13 +173,10 @@ export default function ResetPassword({ navigation, route }) {
                 </Text>
               </View>
 
-              <TextInput
-                style={styles.input}
+              <PasswordInput
                 placeholder="Confirmar nueva contraseña"
-                placeholderTextColor="#9CA3AF"
                 value={form.confirmPassword}
                 onChangeText={(text) => handleChange("confirmPassword", text)}
-                secureTextEntry={true}
                 autoCapitalize="none"
                 autoCorrect={false}
               />

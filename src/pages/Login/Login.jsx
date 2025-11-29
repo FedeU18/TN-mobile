@@ -14,6 +14,7 @@ import {
 import { MaterialIcons } from '@expo/vector-icons';
 import { validateLogin } from "../../utils/validations";
 import useAuthStore from "../../stores/authStore";
+import PasswordInput from "../../components/PasswordInput/PasswordInput";
 import COLORS from "../../utils/colors";
 
 export default function Login({ navigation, route }) {
@@ -143,15 +144,10 @@ export default function Login({ navigation, route }) {
             autoCorrect={false}
           />
 
-          <TextInput
-            style={styles.input}
+          <PasswordInput
             placeholder="Contraseña"
-            placeholderTextColor="#BDBDBD"
             value={form.password}
             onChangeText={(text) => handleChange("password", text)}
-            secureTextEntry={true}
-            autoCapitalize="none"
-            autoCorrect={false}
           />
 
           {error ? <Text style={styles.errorText}>{error}</Text> : null}
