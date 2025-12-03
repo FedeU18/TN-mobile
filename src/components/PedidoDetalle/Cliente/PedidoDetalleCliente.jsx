@@ -14,6 +14,7 @@ import PedidoInfo from "./PedidoInfo";
 import MapaPedido from "./MapaPedido";
 import ScannerQR from "./ScannerQR";
 import CalificarRepartidorModal from "./CalificarRepartidorModal";
+import PaymentButtonMobile from "../../PaymentButtonMobile/PaymentButtonMobile";
 import styles from "./PedidoDetalleClienteStyles";
 
 export default function PedidoDetalleCliente({ pedido }) {
@@ -56,6 +57,24 @@ export default function PedidoDetalleCliente({ pedido }) {
       contentContainerStyle={{ paddingTop: insets.top, paddingBottom: insets.bottom + 20 }}
     >
       <PedidoInfo detalle={detalle} />
+
+      {/* Botón de pago si el pedido está en "No pagado" */}
+      {detalle?.estado?.nombre_estado === "No pagado" && (
+        <View style={styles.botonContainer}>
+          <PaymentButtonMobile
+            id_pedido={detalle.id_pedido}
+            estado_pago={detalle.estado_pago}
+            estado_pedido={detalle.estado?.nombre_estado}
+            monto={detalle.monto_pedido}
+            onPaymentSuccess={() => {
+              // Recargar detalle después del pago
+              setTimeout(() => {
+                // Aquí puedes llamar a fetch de detalle si necesitas
+              }, 2000);
+            }}
+          />
+        </View>
+      )}
 
       <MapaPedido
         repartidorUbicacion={ubicacionRepartidor}

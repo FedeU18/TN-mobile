@@ -28,7 +28,7 @@ export default function App() {
   //   if (user) {
   //     const timer = setTimeout(() => {
   //       Alert.alert(
-  //         "📦 Pedido confirmado",
+  //         "Pedido confirmado",
   //         "Tu pedido #123 fue confirmado correctamente 🚴‍♂️"
   //       );
   //     }, 3000);

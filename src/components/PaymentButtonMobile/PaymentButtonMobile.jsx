@@ -3,7 +3,7 @@ import { TouchableOpacity, Text, Alert, ActivityIndicator, View } from "react-na
 import { crearPreferenciaPagoMobile, abrirCheckoutMercadoPago } from "../../services/pagosService";
 import styles from "./PaymentButtonMobile.styles";
 
-export default function PaymentButtonMobile({ id_pedido, estado_pago, estado_pedido, monto }) {
+export default function PaymentButtonMobile({ id_pedido, estado_pago, estado_pedido, monto, onPaymentSuccess }) {
   const [loading, setLoading] = useState(false);
 
   // Solo mostrar botón si el pedido está en "No pagado"
@@ -16,6 +16,7 @@ export default function PaymentButtonMobile({ id_pedido, estado_pago, estado_ped
       setLoading(true);
 
       // Crear preferencia en Mercado Pago
+      // El backend automáticamente cambiará el estado del pedido después de 1 segundo
       const { init_point } = await crearPreferenciaPagoMobile(id_pedido);
 
       // Abrir checkout en navegador
@@ -24,8 +25,15 @@ export default function PaymentButtonMobile({ id_pedido, estado_pago, estado_ped
       // Notificar al usuario
       Alert.alert(
         "Pago iniciado",
-        "Se abrirá Mercado Pago en el navegador. Completa el pago y vuelve a la app.",
-        [{ text: "OK" }]
+        "Se abrirá Mercado Pago en el navegador. Vuelve a la app después de completar el pago.",
+        [{ text: "OK", onPress: () => {
+          // Llamar callback si existe
+          if (onPaymentSuccess) {
+            setTimeout(() => {
+              onPaymentSuccess();
+            }, 2000);
+          }
+        }}]
       );
     } catch (err) {
       Alert.alert(

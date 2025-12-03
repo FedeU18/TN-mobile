@@ -114,6 +114,14 @@ export default function MisPedidos({ navigation, route }) {
     useEffect(() => {
         fetchMisPedidos();
     }, []);
+
+    // Recargar pedidos cuando vuelves a la pantalla
+    useFocusEffect(
+        React.useCallback(() => {
+            fetchMisPedidos();
+        }, [fetchMisPedidos])
+    );
+
     // Escuchar cambios de estado en tiempo real
     useEffect(() => {
         const socket = io(
