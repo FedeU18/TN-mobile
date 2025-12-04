@@ -52,9 +52,12 @@ export default function PedidoDetalleCliente({ pedido }) {
     );
 
   return (
-    <ScrollView 
+    <ScrollView
       style={styles.container}
-      contentContainerStyle={{ paddingTop: insets.top, paddingBottom: insets.bottom + 20 }}
+      contentContainerStyle={{
+        paddingTop: insets.top,
+        paddingBottom: insets.bottom + 20,
+      }}
     >
       <PedidoInfo detalle={detalle} />
 

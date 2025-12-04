@@ -1,9 +1,24 @@
 import React, { useState } from "react";
-import { TouchableOpacity, Text, Alert, ActivityIndicator, View } from "react-native";
-import { crearPreferenciaPagoMobile, abrirCheckoutMercadoPago } from "../../services/pagosService";
+import {
+  TouchableOpacity,
+  Text,
+  Alert,
+  ActivityIndicator,
+  View,
+} from "react-native";
+import {
+  crearPreferenciaPagoMobile,
+  abrirCheckoutMercadoPago,
+} from "../../services/pagosService";
 import styles from "./PaymentButtonMobile.styles";
 
-export default function PaymentButtonMobile({ id_pedido, estado_pago, estado_pedido, monto, onPaymentSuccess }) {
+export default function PaymentButtonMobile({
+  id_pedido,
+  estado_pago,
+  estado_pedido,
+  monto,
+  onPaymentSuccess,
+}) {
   const [loading, setLoading] = useState(false);
 
   // Solo mostrar botón si el pedido está en "No pagado"
@@ -26,14 +41,19 @@ export default function PaymentButtonMobile({ id_pedido, estado_pago, estado_ped
       Alert.alert(
         "Pago iniciado",
         "Se abrirá Mercado Pago en el navegador. Vuelve a la app después de completar el pago.",
-        [{ text: "OK", onPress: () => {
-          // Llamar callback si existe
-          if (onPaymentSuccess) {
-            setTimeout(() => {
-              onPaymentSuccess();
-            }, 2000);
-          }
-        }}]
+        [
+          {
+            text: "OK",
+            onPress: () => {
+              // Llamar callback si existe
+              if (onPaymentSuccess) {
+                setTimeout(() => {
+                  onPaymentSuccess();
+                }, 2000);
+              }
+            },
+          },
+        ]
       );
     } catch (err) {
       Alert.alert(
@@ -67,7 +87,8 @@ export default function PaymentButtonMobile({ id_pedido, estado_pago, estado_ped
 
       {monto && (
         <Text style={styles.amount}>
-          Monto a pagar: <Text style={styles.amountBold}>${parseFloat(monto).toFixed(2)}</Text>
+          Monto a pagar:{" "}
+          <Text style={styles.amountBold}>${parseFloat(monto).toFixed(2)}</Text>
         </Text>
       )}
     </View>
