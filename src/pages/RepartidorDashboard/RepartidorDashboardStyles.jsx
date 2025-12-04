@@ -28,9 +28,10 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   title: {
-    fontSize: 28,
-    fontWeight: 'bold',
+    fontSize: 32,
+    fontWeight: '700',
     color: COLORS.white,
+    letterSpacing: -0.5,
   },
   headerIcon: {
     width: 60,

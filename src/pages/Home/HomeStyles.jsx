@@ -51,19 +51,21 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   registerButton: {
-    backgroundColor: COLORS.success,
-  },
-  loginButton: {
     backgroundColor: COLORS.primary,
   },
+  loginButton: {
+    backgroundColor: COLORS.white,
+    borderWidth: 2,
+    borderColor: COLORS.primary,
+  },
   registerButtonText: {
-    color: 'white',
+    color: COLORS.white,
     fontSize: 16,
     fontWeight: '700',
     letterSpacing: 0.3,
   },
   loginButtonText: {
-    color: COLORS.white,
+    color: COLORS.primary,
     fontSize: 16,
     fontWeight: '700',
     letterSpacing: 0.3,

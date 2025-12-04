@@ -219,7 +219,7 @@ export default function Register({ navigation }) {
         disabled={isLoading}
       >
         <Text style={styles.buttonText}>
-          {isLoading ? 'Registrando...' : 'Registrarse'}
+          {isLoading ? 'Creando cuenta...' : 'Crear cuenta'}
         </Text>
       </TouchableOpacity>
 

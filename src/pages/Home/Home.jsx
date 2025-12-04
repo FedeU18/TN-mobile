@@ -21,17 +21,17 @@ export default function Home({ navigation }) {
       {/* Botones */}
       <View style={styles.buttonsContainer}>
         <TouchableOpacity 
-          style={[styles.button, styles.loginButton]}
-          onPress={() => navigation && navigation.navigate('Login')}
-        >
-          <Text style={styles.loginButtonText}>{t('home.login')}</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity 
           style={[styles.button, styles.registerButton]}
           onPress={() => navigation && navigation.navigate('Register')}
         >
           <Text style={styles.registerButtonText}>{t('home.register')}</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity 
+          style={[styles.button, styles.loginButton]}
+          onPress={() => navigation && navigation.navigate('Login')}
+        >
+          <Text style={styles.loginButtonText}>{t('home.login')}</Text>
         </TouchableOpacity>
         
       </View>

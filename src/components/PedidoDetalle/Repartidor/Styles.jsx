@@ -27,10 +27,15 @@ export default StyleSheet.create({
     marginHorizontal: 15,
     marginVertical: 10,
     padding: 14,
-    borderRadius: 10,
+    borderRadius: 8,
     alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.12,
+    shadowRadius: 4,
+    elevation: 2,
   },
-  botonTexto: { color: "#fff", fontWeight: "600", fontSize: 16 },
+  botonTexto: { color: "#fff", fontWeight: "700", fontSize: 15 },
 
   // Row of state action buttons
   botonesEstado: {
@@ -40,7 +45,7 @@ export default StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    gap: 8, // some RN versions ignore gap; visual spacing handled by margins on children
+    gap: 8,
   },
   botonesFila: {
     flexDirection: "row",
@@ -54,10 +59,15 @@ export default StyleSheet.create({
 
   botonEstado: {
     flex: 1,
-    padding: 14,
-    borderRadius: 10,
+    padding: 12,
+    borderRadius: 8,
     alignItems: "center",
     marginHorizontal: 4,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.12,
+    shadowRadius: 4,
+    elevation: 2,
   },
 
   // Modal (QR)

@@ -28,20 +28,22 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   title: {
-    fontSize: 28,
-    fontWeight: 'bold',
+    fontSize: 32,
+    fontWeight: '700',
     color: COLORS.white,
+    letterSpacing: -0.5,
   },
 
   // ============== SECTION SUBTITLE ==============
   sectionSubtitle: {
-    fontSize: 14,
+    fontSize: 15,
     color: COLORS.gray[600],
     paddingHorizontal: 20,
     marginTop: 24,
-    marginBottom: 16,
+    marginBottom: 24,
     textAlign: 'center',
-    lineHeight: 20,
+    lineHeight: 22,
+    fontWeight: '500',
   },
 
   // ============== MENU CONTAINER ==============
@@ -54,17 +56,17 @@ const styles = StyleSheet.create({
   // ============== PRIMARY MENU ITEM ==============
   primaryMenuItem: {
     backgroundColor: COLORS.primary,
-    borderRadius: 16,
-    paddingVertical: 18,
+    borderRadius: 12,
+    paddingVertical: 16,
     paddingHorizontal: 16,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 14,
-    shadowColor: COLORS.primary,
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
+    shadowOpacity: 0.15,
     shadowRadius: 8,
-    elevation: 8,
+    elevation: 5,
   },
   menuIconContainer: {
     width: 48,
@@ -80,7 +82,7 @@ const styles = StyleSheet.create({
   menuLabelPrimary: {
     color: COLORS.white,
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: '700',
   },
   menuDescription: {
     color: 'rgba(255, 255, 255, 0.7)',
@@ -91,7 +93,7 @@ const styles = StyleSheet.create({
   // ============== SECONDARY MENU ITEM ==============
   secondaryMenuItem: {
     backgroundColor: COLORS.white,
-    borderRadius: 16,
+    borderRadius: 12,
     paddingVertical: 16,
     paddingHorizontal: 16,
     flexDirection: 'row',
@@ -101,14 +103,14 @@ const styles = StyleSheet.create({
     borderColor: COLORS.gray[200],
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
+    shadowOpacity: 0.10,
     shadowRadius: 4,
     elevation: 2,
   },
   menuLabelSecondary: {
     color: COLORS.primary,
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: '700',
   },
 
   // ============== FOOTER SPACE ==============
