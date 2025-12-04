@@ -29,15 +29,20 @@ export default function PedidoInfo({ detalle }) {
         {detalle.direccion_destino}
       </Text>
       <Text style={styles.texto}>
+        <Text style={styles.label}>Descripcion:</Text>{" "}
+        {detalle.descripcion || "Sin descripción"}
+      </Text>
+      <Text style={styles.texto}>
         <Text style={styles.label}>Fecha creación:</Text>{" "}
         {new Date(detalle.fecha_creacion).toLocaleString("es-AR")}
       </Text>
-      {detalle.estado?.nombre_estado === "Entregado" && detalle.fecha_entrega && (
-        <Text style={styles.texto}>
-          <Text style={styles.label}>Fecha entrega:</Text>{" "}
-          {new Date(detalle.fecha_entrega).toLocaleString("es-AR")}
-        </Text>
-      )}
+      {detalle.estado?.nombre_estado === "Entregado" &&
+        detalle.fecha_entrega && (
+          <Text style={styles.texto}>
+            <Text style={styles.label}>Fecha entrega:</Text>{" "}
+            {new Date(detalle.fecha_entrega).toLocaleString("es-AR")}
+          </Text>
+        )}
     </View>
   );
 }

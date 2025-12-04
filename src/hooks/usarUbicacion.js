@@ -93,7 +93,7 @@ const usarUbicacion = () => {
         ) {
           await enviarUbicacion(pedidoId);
         }
-      }, 10000);
+      }, 2000);
 
       return true;
     } catch (err) {
