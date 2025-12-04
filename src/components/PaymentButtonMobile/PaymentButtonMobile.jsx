@@ -61,7 +61,10 @@ export default function PaymentButtonMobile({ id_pedido, estado_pago, estado_ped
         {loading ? (
           <ActivityIndicator size="small" color="#fff" />
         ) : (
-          <Text style={styles.buttonText}>Pagar con Mercado Pago</Text>
+          <View style={styles.buttonContent}>
+            <Text style={styles.icon}>💳</Text>
+            <Text style={styles.buttonText}>Pagar con Mercado Pago</Text>
+          </View>
         )}
       </TouchableOpacity>
 

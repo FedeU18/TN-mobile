@@ -9,6 +9,17 @@ export default StyleSheet.create({
     borderRadius: 8,
     marginVertical: 12,
   },
+  compact: {
+    width: "90%",
+    alignSelf: "center",
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    backgroundColor: "#fef3c7",
+    borderLeftWidth: 5,
+    borderColor: "#f59e0b",
+    borderRadius: 8,
+    marginVertical: 16,
+  },
   header: {
     flexDirection: "row",
     alignItems: "center",
@@ -17,6 +28,7 @@ export default StyleSheet.create({
   title: {
     fontSize: 16,
     fontWeight: "700",
+    textAlign: "center",
   },
   description: {
     fontSize: 14,

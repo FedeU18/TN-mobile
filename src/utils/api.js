@@ -1,9 +1,12 @@
 import axios from "axios";
 import { EXPO_CONFIG } from "../config/expo.config";
 
+const baseURL = process.env.EXPO_PUBLIC_API_BASE_URL
+  ? `${process.env.EXPO_PUBLIC_API_BASE_URL.replace(/\/$/, '')}/api`
+  : EXPO_CONFIG.getAPIUrl();
+
 const api = axios.create({
-  baseURL:
-    `${process.env.EXPO_PUBLIC_API_BASE_URL}/api` || EXPO_CONFIG.getAPIUrl(),
+  baseURL: baseURL,
   timeout: 10000,
   headers: {
     "Content-Type": "application/json",

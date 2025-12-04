@@ -75,7 +75,7 @@ export default function ClienteDashboard({ navigation }) {
       </View>
 
       <Text style={styles.sectionSubtitle}>
-        Desde aquí podrás gestionar tus pedidos y seguir las entregas.
+        Desde acá podés gestionar tus pedidos y seguir las entregas
       </Text>
 
       {/* Ítems del menú */}

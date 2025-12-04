@@ -49,6 +49,10 @@ export default () => ({
       ],
     ],
 
+    updates: {
+      enabled: false,
+    },
+
     /**
      * Todas las variables EXPO_PUBLIC_* del .env
      * quedan disponibles en Constants.expoConfig.extra

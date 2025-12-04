@@ -31,6 +31,18 @@ export default StyleSheet.create({
     fontWeight: "bold",
     color: "#555",
   },
+  paymentCard: {
+    backgroundColor: "#f8f9fa",
+    marginHorizontal: 15,
+    marginVertical: 12,
+    padding: 16,
+    borderRadius: 8,
+    borderLeftWidth: 4,
+    borderLeftColor: "#3483fa",
+  },
+  paymentButtonWrapper: {
+    marginTop: 12,
+  },
   seguimiento: {
     backgroundColor: "#e6f7ff",
     padding: 10,
